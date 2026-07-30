@@ -19,7 +19,8 @@
     "db:reset": "supabase db reset",
     "db:diff": "supabase db diff",
     "db:types": "supabase gen types typescript --local --schema public > packages/shared/src/types/database.ts",
-    "db:test:rls": "supabase db reset && psql \"$SUPABASE_LOCAL_DB_URL\" -f supabase/tests/rls.test.sql"
+    "db:test:rls": "supabase db reset && psql \"$SUPABASE_LOCAL_DB_URL\" -f supabase/tests/rls.test.sql",
+    "test": "turbo run test"
   },
   "devDependencies": {
     "@types/node": "^22.15.3",

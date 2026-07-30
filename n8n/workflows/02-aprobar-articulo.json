@@ -1,0 +1,231 @@
+{
+  "name": "Reset Alfa · 02 · Aprobar o rechazar",
+  "_documentacion": [
+    "Recibe el botón pulsado en Telegram y publica o descarta el borrador.",
+    "",
+    "Al aprobar: estado 'publicado' + fecha, revalida la ruta en Next.js (para que",
+    "esté en vivo en segundos, no en una hora) y programa el push de las 07:30.",
+    "",
+    "SEGURIDAD: el webhook de Telegram es una URL pública. Se comprueba que quien",
+    "pulsa es el chat autorizado; sin esa comprobación, cualquiera que descubriese",
+    "la URL podría publicar en la web."
+  ],
+
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "reset-alfa-aprobacion",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook",
+      "name": "Webhook de Telegram",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-600, 300],
+      "webhookId": "reset-alfa-aprobacion"
+    },
+
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "version": 2 },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.body.callback_query?.message?.chat?.id?.toString() }}",
+              "rightValue": "={{ $env.TELEGRAM_CHAT_ID }}",
+              "operator": { "type": "string", "operation": "equals" }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "autorizado",
+      "name": "¿Chat autorizado?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [-380, 300],
+      "_nota": "La URL del webhook es pública. Sin este filtro, cualquiera que la descubra podría publicar artículos en la web."
+    },
+
+    {
+      "parameters": {
+        "jsCode": "// callback_data llega como 'aprobar:<uuid>' o 'rechazar:<uuid>'.\nconst cb = $input.first().json.body.callback_query;\nconst [accion, articleId] = (cb.data ?? '').split(':');\n\nif (!['aprobar', 'rechazar'].includes(accion)) {\n  throw new Error('Accion no reconocida: ' + accion);\n}\n\n// El UUID viene de un mensaje que enviamos nosotros, pero se valida igual:\n// interpolarlo sin comprobar en una URL de PostgREST seria una via de inyeccion.\nconst UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;\nif (!UUID.test(articleId ?? '')) {\n  throw new Error('Identificador de articulo no valido');\n}\n\nreturn [{ json: { accion, articleId, callbackQueryId: cb.id } }];"
+      },
+      "id": "parsear",
+      "name": "Leer la decisión",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-160, 300]
+    },
+
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "version": 2 },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.accion }}",
+              "rightValue": "aprobar",
+              "operator": { "type": "string", "operation": "equals" }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "es-aprobacion",
+      "name": "¿Aprobado?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [60, 300]
+    },
+
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/articles",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "id", "value": "=eq.{{ $json.articleId }}" },
+            {
+              "name": "estado",
+              "value": "eq.draft",
+              "_nota": "Solo publica si sigue en borrador. Hace la operación idempotente: pulsar Aprobar dos veces no reescribe la fecha de publicación."
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [{ "name": "Prefer", "value": "return=representation" }]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ estado: 'publicado', fecha_publicacion: new Date().toISOString() }) }}",
+        "options": {}
+      },
+      "id": "publicar",
+      "name": "Publicar",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [280, 200]
+    },
+
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SITE_URL }}/api/revalidate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "x-revalidate-secret", "value": "={{ $env.REVALIDATE_SECRET }}" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ slug: $json[0].slug }) }}",
+        "options": {}
+      },
+      "id": "revalidar",
+      "name": "Revalidar en Next.js",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [500, 200],
+      "_nota": "Sin esto, el artículo tardaría hasta una hora en aparecer (el ciclo de ISR). Con esto está en vivo en segundos, y el push de las 07:30 puede enlazarlo sin dar un 404."
+    },
+
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/rpc/encolar_push_articulo",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ p_article_id: $('Leer la decisión').first().json.articleId }) }}",
+        "options": {}
+      },
+      "id": "encolar-push",
+      "name": "Encolar push 07:30",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [720, 200],
+      "_nota": "Crea una notificación por usuario suscrito. El envío real lo hace el workflow de la Fase 5 a las 07:30, respetando la zona horaria de cada usuario."
+    },
+
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/articles",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [{ "name": "id", "value": "=eq.{{ $json.articleId }}" }]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ estado: 'draft' }) }}",
+        "options": {}
+      },
+      "id": "rechazar",
+      "name": "Dejar en borrador",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [280, 420],
+      "_nota": "Rechazar NO borra. El texto puede servir tras una reescritura, y el tema ya está consumido del banco."
+    },
+
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{ $credentials.telegramApi.accessToken }}/answerCallbackQuery",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  callback_query_id: $('Leer la decisión').first().json.callbackQueryId,\n  text: $('Leer la decisión').first().json.accion === 'aprobar' ? '✅ Publicado y en vivo' : '❌ Descartado, queda en borrador'\n}) }}",
+        "options": {}
+      },
+      "id": "confirmar",
+      "name": "Confirmar en Telegram",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [940, 300],
+      "_nota": "answerCallbackQuery quita el reloj de carga del botón. Sin esto, Telegram deja el botón girando y parece que ha fallado."
+    },
+
+    {
+      "parameters": { "respondWith": "text", "responseBody": "ok", "options": {} },
+      "id": "responder",
+      "name": "200 OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1160, 300],
+      "_nota": "Telegram reintenta si no recibe un 2xx. Sin esta respuesta, la misma pulsación llegaría varias veces."
+    }
+  ],
+
+  "connections": {
+    "Webhook de Telegram": { "main": [[{ "node": "¿Chat autorizado?", "type": "main", "index": 0 }]] },
+    "¿Chat autorizado?": { "main": [[{ "node": "Leer la decisión", "type": "main", "index": 0 }], []] },
+    "Leer la decisión": { "main": [[{ "node": "¿Aprobado?", "type": "main", "index": 0 }]] },
+    "¿Aprobado?": {
+      "main": [
+        [{ "node": "Publicar", "type": "main", "index": 0 }],
+        [{ "node": "Dejar en borrador", "type": "main", "index": 0 }]
+      ]
+    },
+    "Publicar": { "main": [[{ "node": "Revalidar en Next.js", "type": "main", "index": 0 }]] },
+    "Revalidar en Next.js": { "main": [[{ "node": "Encolar push 07:30", "type": "main", "index": 0 }]] },
+    "Encolar push 07:30": { "main": [[{ "node": "Confirmar en Telegram", "type": "main", "index": 0 }]] },
+    "Dejar en borrador": { "main": [[{ "node": "Confirmar en Telegram", "type": "main", "index": 0 }]] },
+    "Confirmar en Telegram": { "main": [[{ "node": "200 OK", "type": "main", "index": 0 }]] }
+  },
+
+  "settings": { "executionOrder": "v1" },
+  "active": false
+}

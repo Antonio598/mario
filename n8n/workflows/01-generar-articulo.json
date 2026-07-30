@@ -1,0 +1,252 @@
+{
+  "name": "Reset Alfa · 01 · Generar borrador diario",
+  "_documentacion": [
+    "Cron 06:00 -> toma tema del banco -> Claude -> inserta borrador -> avisa por Telegram.",
+    "",
+    "NUNCA PUBLICA SOLO. El artículo entra como 'draft'. La publicación la hace el",
+    "workflow 02 tras la aprobación humana. Google penaliza el contenido masivo sin",
+    "supervisión, y la voz de la marca depende del autor.",
+    "",
+    "Credenciales necesarias (en n8n, nunca aquí):",
+    "  · supabaseApi        service_role del proyecto",
+    "  · anthropicApi       clave de la API de Claude",
+    "  · telegramApi        token del bot",
+    "Variables: SUPABASE_URL, TELEGRAM_CHAT_ID"
+  ],
+
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "cronExpression", "expression": "0 6 * * *" }]
+        }
+      },
+      "id": "cron-diario",
+      "name": "Cron 06:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [-600, 300]
+    },
+
+    {
+      "parameters": {
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/topic_bank",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "usado", "value": "eq.false" },
+            { "name": "select", "value": "id,tema,keyword_objetivo,categoria,notas" },
+            {
+              "name": "order",
+              "value": "prioridad.desc,created_at.asc",
+              "_nota": "Mayor prioridad primero; a igualdad, el más antiguo."
+            },
+            { "name": "limit", "value": "1" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "obtener-tema",
+      "name": "Siguiente tema",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-380, 300]
+    },
+
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "version": 2 },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": { "type": "string", "operation": "exists" }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "hay-tema",
+      "name": "¿Queda algún tema?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [-160, 300],
+      "_nota": "Si el banco se vacía, avisa en vez de fallar en silencio. Un pipeline que se para sin decir nada tarda semanas en detectarse."
+    },
+
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "anthropicApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "anthropic-version", "value": "2023-06-01" },
+            {
+              "name": "anthropic-beta",
+              "value": "server-side-fallback-2026-07-01",
+              "_nota": "Habilita fallbacks. Ver el comentario del cuerpo."
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  model: 'claude-opus-5',\n  max_tokens: 16000,\n  fallbacks: 'default',\n  system: [{ type: 'text', text: $('Prompt de marca').first().json.sistema }],\n  output_config: {\n    format: {\n      type: 'json_schema',\n      schema: {\n        type: 'object',\n        properties: {\n          titulo: { type: 'string' },\n          meta_description: { type: 'string' },\n          contenido_md: { type: 'string' },\n          keywords: { type: 'array', items: { type: 'string' } },\n          categoria: { type: 'string', enum: ['disciplina','autocontrol','productividad','entrenamiento','finanzas','mentalidad','relaciones'] }\n        },\n        required: ['titulo','meta_description','contenido_md','keywords','categoria'],\n        additionalProperties: false\n      }\n    }\n  },\n  messages: [{\n    role: 'user',\n    content: 'Tema: ' + $json.tema + '\\nKeyword objetivo: ' + $json.keyword_objetivo + '\\nCategoria sugerida: ' + $json.categoria + ($json.notas ? '\\nNotas: ' + $json.notas : '')\n  }]\n}) }}",
+        "options": { "timeout": 300000 }
+      },
+      "id": "claude",
+      "name": "Claude · redactar",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [280, 220],
+      "_notas_del_cuerpo": [
+        "SIN temperature, top_p NI top_k. Claude Opus 5 los rechaza con error 400.",
+        "Para variar el tono se usa el prompt, no parámetros de muestreo.",
+        "",
+        "output_config.format obliga a que la respuesta cumpla el esquema JSON. En un",
+        "pipeline desatendido esto lo cambia todo: sin ello, un JSON mal formado un",
+        "domingo por la mañana rompe el flujo sin que nadie lo vea.",
+        "",
+        "fallbacks: 'default' — los clasificadores de seguridad pueden rechazar una",
+        "petición y devolver stop_reason 'refusal' con HTTP 200. El tema roza materia",
+        "sensible, así que puede ocurrir con un artículo perfectamente legítimo. Con",
+        "esta opción la propia API reintenta en otro modelo en la misma llamada.",
+        "",
+        "SIN cache_control a propósito: el prompt se envía una vez al día y la caché",
+        "de 5 minutos habría caducado. Marcarlo solo pagaría el sobrecoste de",
+        "escritura (1,25x) sin llegar a leerse nunca.",
+        "",
+        "timeout 300000: con razonamiento adaptativo activo una petición larga puede",
+        "tardar varios minutos. El timeout por defecto de n8n la cortaría."
+      ]
+    },
+
+    {
+      "parameters": {
+        "jsCode": "// El prompt de marca vive en n8n/prompts/sistema-marca.md.\n// Se pega aquí para que el workflow sea autocontenido al importarlo.\n// Al cambiar el fichero, actualiza también este nodo.\nconst sistema = `Eres el redactor de Modo Guerrero...`;\nreturn [{ json: { sistema } }];"
+      },
+      "id": "prompt-marca",
+      "name": "Prompt de marca",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [60, 220]
+    },
+
+    {
+      "parameters": {
+        "jsCode": "// Validación antes de tocar la base de datos.\n//\n// output_config.format ya garantiza la forma del JSON, pero no las reglas de\n// negocio: longitudes que Google trunca, y sobre todo el vocabulario prohibido\n// que puede costar la cuenta publicitaria.\n\nconst r = $input.first().json;\n\n// Los clasificadores pueden rechazar la petición con HTTP 200.\nif (r.stop_reason === 'refusal') {\n  throw new Error('Claude ha rechazado la peticion: ' + (r.stop_details?.category ?? 'sin categoria'));\n}\n\nconst texto = r.content?.find((b) => b.type === 'text')?.text;\nif (!texto) throw new Error('Respuesta sin bloque de texto');\n\nlet a;\ntry {\n  a = JSON.parse(texto);\n} catch {\n  throw new Error('La respuesta no es JSON valido pese al esquema');\n}\n\n// Vocabulario que no puede aparecer. No es preferencia de estilo: una\n// afirmacion fisiologica o un termino explicito puede costar la cuenta de\n// AdSense, que es lo que financia el proyecto.\nconst PROHIBIDO = [\n  'testosterona', 'dopamina', 'hormona', 'neurotransmisor',\n  'curar', 'curacion', 'sanar', 'superpoder', 'piedra filosofal',\n  'garantizado', 'garantizamos',\n];\n\nconst cuerpo = (a.titulo + ' ' + a.meta_description + ' ' + a.contenido_md).toLowerCase();\nconst encontrados = PROHIBIDO.filter((p) => cuerpo.includes(p));\n\n// Slug desde el titulo: minusculas, sin acentos, sin signos.\nconst slug = a.titulo\n  .toLowerCase()\n  .normalize('NFD').replace(/[\\u0300-\\u036f]/g, '')\n  .replace(/[^a-z0-9]+/g, '-')\n  .replace(/^-+|-+$/g, '')\n  .slice(0, 80);\n\nconst palabras = a.contenido_md.trim().split(/\\s+/).length;\n\nreturn [{\n  json: {\n    ...a,\n    slug,\n    tiempo_lectura: Math.max(1, Math.round(palabras / 200)),\n    _palabras: palabras,\n    // Avisos, no errores: los decide una persona en Telegram.\n    _avisos: [\n      ...(encontrados.length ? ['Vocabulario prohibido: ' + encontrados.join(', ')] : []),\n      ...(a.titulo.length > 65 ? ['Titulo de ' + a.titulo.length + ' caracteres (Google trunca en ~65)'] : []),\n      ...(a.meta_description.length > 155 ? ['Meta description de ' + a.meta_description.length + ' caracteres (se trunca en ~155)'] : []),\n      ...(palabras < 900 ? ['Solo ' + palabras + ' palabras'] : []),\n      ...(/^#\\s/m.test(a.contenido_md) ? ['El markdown lleva un H1: saldra duplicado con el titulo'] : []),\n    ],\n  },\n}];"
+      },
+      "id": "validar",
+      "name": "Validar y preparar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [500, 220]
+    },
+
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/articles",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [{ "name": "Prefer", "value": "return=representation" }]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  slug: $json.slug,\n  titulo: $json.titulo,\n  meta_description: $json.meta_description,\n  contenido_md: $json.contenido_md,\n  categoria: $json.categoria,\n  keywords: $json.keywords,\n  tiempo_lectura: $json.tiempo_lectura,\n  estado: 'draft'\n}) }}",
+        "options": {}
+      },
+      "id": "guardar-borrador",
+      "name": "Guardar como borrador",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [720, 220],
+      "_nota": "estado 'draft' de forma explícita. La RLS impide que anon lo vea, así que hasta que se apruebe no existe para el mundo."
+    },
+
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/topic_bank",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "id", "value": "=eq.{{ $('Siguiente tema').first().json.id }}" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ usado: true, usado_at: new Date().toISOString(), article_id: $json[0].id }) }}",
+        "options": {}
+      },
+      "id": "marcar-tema",
+      "name": "Marcar tema usado",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [940, 220],
+      "_nota": "Se marca DESPUÉS de guardar el borrador. Al revés, un fallo de Claude quemaría el tema sin haber producido nada."
+    },
+
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{ $credentials.telegramApi.accessToken }}/sendMessage",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  chat_id: $env.TELEGRAM_CHAT_ID,\n  parse_mode: 'HTML',\n  text: '<b>Borrador del dia</b>\\n\\n<b>' + $('Validar y preparar').first().json.titulo + '</b>\\n<i>' + $('Validar y preparar').first().json.meta_description + '</i>\\n\\nCategoria: ' + $('Validar y preparar').first().json.categoria + '\\nPalabras: ' + $('Validar y preparar').first().json._palabras + '\\nLectura: ' + $('Validar y preparar').first().json.tiempo_lectura + ' min\\n\\n' + ($('Validar y preparar').first().json._avisos.length ? '⚠️ <b>Revisar</b>\\n' + $('Validar y preparar').first().json._avisos.map(a => '· ' + a).join('\\n') + '\\n\\n' : '') + '<a href=\"' + $env.STAGING_URL + '/preview/' + $('Validar y preparar').first().json.slug + '\">Leer completo</a>',\n  reply_markup: {\n    inline_keyboard: [[\n      { text: '✅ Aprobar', callback_data: 'aprobar:' + $json[0].id },\n      { text: '❌ Rechazar', callback_data: 'rechazar:' + $json[0].id }\n    ]]\n  }\n}) }}",
+        "options": {}
+      },
+      "id": "telegram",
+      "name": "Telegram · aprobar o rechazar",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1160, 220],
+      "_nota": "Los avisos de la validación van arriba y en negrita. Si hay que leer un mensaje largo para encontrarlos, no se leen."
+    },
+
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{ $credentials.telegramApi.accessToken }}/sendMessage",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ chat_id: $env.TELEGRAM_CHAT_ID, text: '⚠️ Reset Alfa: el banco de temas esta vacio. Hoy no hay articulo.' }) }}",
+        "options": {}
+      },
+      "id": "aviso-sin-temas",
+      "name": "Aviso: sin temas",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [280, 440]
+    }
+  ],
+
+  "connections": {
+    "Cron 06:00": { "main": [[{ "node": "Siguiente tema", "type": "main", "index": 0 }]] },
+    "Siguiente tema": { "main": [[{ "node": "¿Queda algún tema?", "type": "main", "index": 0 }]] },
+    "¿Queda algún tema?": {
+      "main": [
+        [{ "node": "Prompt de marca", "type": "main", "index": 0 }],
+        [{ "node": "Aviso: sin temas", "type": "main", "index": 0 }]
+      ]
+    },
+    "Prompt de marca": { "main": [[{ "node": "Claude · redactar", "type": "main", "index": 0 }]] },
+    "Claude · redactar": { "main": [[{ "node": "Validar y preparar", "type": "main", "index": 0 }]] },
+    "Validar y preparar": { "main": [[{ "node": "Guardar como borrador", "type": "main", "index": 0 }]] },
+    "Guardar como borrador": { "main": [[{ "node": "Marcar tema usado", "type": "main", "index": 0 }]] },
+    "Marcar tema usado": { "main": [[{ "node": "Telegram · aprobar o rechazar", "type": "main", "index": 0 }]] }
+  },
+
+  "settings": { "executionOrder": "v1" },
+  "active": false
+}

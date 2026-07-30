@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Oswald, Inter } from 'next/font/google';
+import { ConsentBanner } from '@/components/ConsentBanner';
 import { publicEnv } from '@/lib/env';
 import './globals.css';
 
@@ -54,10 +55,40 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+/**
+ * Valores por defecto del Modo de Consentimiento v2.
+ *
+ * Este script debe ejecutarse ANTES que cualquier script de Google. Ese orden
+ * es lo que hace valida la implementacion: declarar todo como denegado de
+ * partida y actualizarlo solo si el usuario acepta. Si el script de Google se
+ * cargara primero y se denegara despues, los datos ya habrian salido.
+ *
+ * Va en `beforeInteractive` mediante una etiqueta en el propio head, no como
+ * componente cliente: un componente se hidrata tarde, y para entonces el
+ * momento util ya paso.
+ */
+const CONSENT_DEFAULTS = `
+window.dataLayer=window.dataLayer||[];
+function gtag(){dataLayer.push(arguments);}
+gtag('consent','default',{
+  ad_storage:'denied',
+  ad_user_data:'denied',
+  ad_personalization:'denied',
+  analytics_storage:'denied',
+  wait_for_update: 500
+});
+`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" className={`${oswald.variable} ${inter.variable}`}>
-      <body className="min-h-screen bg-mg-negro text-mg-blanco antialiased">{children}</body>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: CONSENT_DEFAULTS }} />
+      </head>
+      <body className="min-h-screen bg-mg-negro text-mg-blanco antialiased">
+        {children}
+        <ConsentBanner />
+      </body>
     </html>
   );
 }

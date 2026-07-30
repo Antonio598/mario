@@ -86,6 +86,20 @@ dos veces.
 
 ## Puntos que conviene conocer antes de tocar el código
 
+### Claude Opus 5 rechaza `temperature` y `top_p`
+
+El pipeline de contenido llama a la API de Claude sin parámetros de muestreo: en Opus 5
+devuelven error 400. Para variar el tono se usa el prompt de marca, no los parámetros.
+La respuesta se fuerza con `output_config.format` y un esquema JSON, de modo que un JSON
+mal formado no pueda romper el flujo un domingo por la mañana.
+
+### La idempotencia del webhook de Stripe vive en la base de datos
+
+`entitlements` tiene `UNIQUE (user_id, product_id)`. Stripe reintenta las entregas y a
+veces envía el mismo evento dos veces; con `upsert` sobre esa clave, una entrega repetida
+actualiza la fila en lugar de duplicar el permiso. Que la garantía esté en el motor
+significa que sigue en pie con varias réplicas.
+
 ### Las `NEXT_PUBLIC_*` se incrustan al compilar
 
 Next las sustituye en tiempo de compilación, no de ejecución. En EasyPanel deben declararse
@@ -133,10 +147,14 @@ multiplica las páginas indexables y sube el CPC.
 | Fase | Contenido | Estado |
 |---|---|---|
 | 1 | Monorepo, esquema con RLS, autenticación, navegación, Docker y despliegue | **Completada** |
-| 2 | Modal diario, lógica de rachas, formulario post-recaída, calendario | Pendiente |
-| 3 | Web de artículos, SEO, anuncios, cookies, pipeline n8n | Pendiente |
-| 4 | Stripe, webhooks, paywall en la app, tienda | Pendiente |
-| 5 | Push, insignias, estadísticas, patrones de disparadores | Pendiente |
+| 2 | Modal diario, lógica de rachas, formulario post-recaída, calendario | **Completada** |
+| 3 | Web de artículos, SEO, anuncios, cookies, pipeline n8n | **Completada** |
+| 4 | Stripe, webhooks, paywall en la app, tienda | **Completada** |
+| 5 | Push, insignias, estadísticas, patrones de disparadores | **Completada** |
+
+Todo el código está escrito y verificado. Lo que falta para estar en producción no es
+código, sino servicios: proyecto Supabase, VPS con EasyPanel, cuenta de Stripe, bot de
+Telegram y los datos legales del titular. Ver la sección siguiente.
 
 ## Documentación
 

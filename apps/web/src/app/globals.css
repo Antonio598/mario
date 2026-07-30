@@ -87,3 +87,99 @@ h3 {
     scroll-behavior: auto !important;
   }
 }
+
+/**
+ * Tipografia del cuerpo del articulo.
+ *
+ * Se escribe a mano en vez de usar @tailwindcss/typography: el plugin trae
+ * decenas de reglas para elementos que aqui no se usan, y en la pagina de la
+ * que depende el ingreso publicitario cada kilobyte de CSS entra en la ruta
+ * critica del LCP.
+ */
+.prose-mg {
+  color: var(--color-mg-gris-texto);
+}
+
+.prose-mg > * + * {
+  margin-top: 1.25em;
+}
+
+.prose-mg h2 {
+  color: var(--color-mg-blanco);
+  font-size: 1.5rem;
+  margin-top: 2em;
+}
+
+.prose-mg h3 {
+  color: var(--color-mg-blanco);
+  font-size: 1.25rem;
+  margin-top: 1.75em;
+}
+
+.prose-mg strong {
+  color: var(--color-mg-blanco);
+  font-weight: 600;
+}
+
+.prose-mg a {
+  color: var(--color-mg-rojo);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.prose-mg ul,
+.prose-mg ol {
+  padding-left: 1.5rem;
+}
+
+.prose-mg ul {
+  list-style: disc;
+}
+
+.prose-mg ol {
+  list-style: decimal;
+}
+
+.prose-mg li + li {
+  margin-top: 0.5em;
+}
+
+.prose-mg blockquote {
+  border-left: 2px solid var(--color-mg-rojo);
+  padding-left: 1rem;
+  font-style: italic;
+}
+
+/**
+ * Altura reservada del bloque de anuncio.
+ *
+ * El hueco existe con su altura definitiva antes de que cargue el anuncio. Es
+ * lo unico que impide que al aparecer empuje el texto hacia abajo, y un CLS por
+ * encima de 0,1 penaliza el posicionamiento del que vive todo el modelo.
+ */
+.ad-slot {
+  min-height: var(--mg-ad-h-movil, 280px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .ad-slot {
+    min-height: var(--mg-ad-h-escritorio, 90px);
+  }
+}
+
+/* Etiqueta accesible solo para lectores de pantalla. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

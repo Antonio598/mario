@@ -14,6 +14,17 @@ export type {
 export { tieneAcceso, cursoDesbloqueado } from './entitlements/index.js';
 
 export {
+  fechaLocal,
+  diasEntre,
+  sumarDias,
+  longitudRacha,
+  diasDelMes,
+  diaSemanaLunes,
+  nombreMes,
+  fechaLarga,
+} from './streak/index.js';
+
+export {
   TIMEZONE_POR_DEFECTO,
   HITOS_RACHA,
   RECURSOS_AYUDA,
