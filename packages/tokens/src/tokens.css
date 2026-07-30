@@ -1,0 +1,38 @@
+/**
+ * Version CSS de los tokens de marca. Debe mantenerse en paralelo con index.ts.
+ *
+ * Tailwind los consume a traves de tailwind.config.ts, de modo que las clases
+ * de utilidad y estos valores no puedan divergir.
+ */
+
+:root {
+  --mg-negro: #0a0a0a;
+  --mg-negro-elevado: #141414;
+  --mg-negro-borde: #242424;
+
+  --mg-rojo: #d32f2f;
+  --mg-rojo-claro: #ef5350;
+  --mg-rojo-oscuro: #9a0007;
+
+  --mg-blanco: #ffffff;
+  --mg-gris-texto: #b8b8b8;
+  --mg-gris-tenue: #6e6e6e;
+
+  --mg-exito: #2e7d32;
+  --mg-recaida: #d32f2f;
+  --mg-sin-registro: #3a3a3a;
+  --mg-aviso: #ed6c02;
+
+  --mg-font-titular: 'Oswald', 'Arial Narrow', sans-serif;
+  --mg-font-cuerpo: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /**
+   * Altura reservada para los bloques de anuncio (Fase 3).
+   *
+   * Es la unica forma de que un anuncio que carga tarde no empuje el contenido
+   * hacia abajo. Un CLS por encima de 0,1 penaliza el posicionamiento, que es
+   * exactamente lo que sostiene el negocio.
+   */
+  --mg-ad-height-mobile: 280px;
+  --mg-ad-height-desktop: 90px;
+}

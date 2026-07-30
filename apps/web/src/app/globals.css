@@ -1,0 +1,89 @@
+@import 'tailwindcss';
+
+/**
+ * Tokens de marca expuestos a Tailwind v4.
+ *
+ * Deben coincidir con packages/tokens/src/index.ts, que es la fuente que
+ * consume la app movil. Al recibir la guia de marca real, cambian los dos
+ * ficheros y nada mas.
+ */
+@theme {
+  --color-mg-negro: #0a0a0a;
+  --color-mg-negro-elevado: #141414;
+  --color-mg-negro-borde: #242424;
+
+  --color-mg-rojo: #d32f2f;
+  --color-mg-rojo-claro: #ef5350;
+  --color-mg-rojo-oscuro: #9a0007;
+
+  --color-mg-blanco: #ffffff;
+  --color-mg-gris-texto: #b8b8b8;
+  --color-mg-gris-tenue: #6e6e6e;
+
+  --color-mg-exito: #2e7d32;
+  --color-mg-sin-registro: #3a3a3a;
+
+  --font-titular: var(--font-oswald), 'Arial Narrow', sans-serif;
+  --font-cuerpo: var(--font-inter), system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: dark;
+
+  /**
+   * Altura reservada para los bloques de anuncio (Fase 3).
+   *
+   * Reservar el hueco por CSS antes de que el anuncio cargue es lo que impide
+   * que al aparecer empuje el contenido hacia abajo. Un CLS por encima de 0,1
+   * penaliza el posicionamiento, y el posicionamiento es el negocio.
+   */
+  --mg-ad-height: 280px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --mg-ad-height: 90px;
+  }
+}
+
+html {
+  background-color: var(--color-mg-negro);
+  color: var(--color-mg-blanco);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-cuerpo);
+  /**
+   * Un cuerpo de texto por debajo de 1,6 de interlineado cansa en articulos
+   * largos, y los articulos largos son el producto.
+   */
+  line-height: 1.65;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-titular);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+}
+
+/** Foco visible en todo momento: requisito de accesibilidad, no un adorno. */
+:focus-visible {
+  outline: 2px solid var(--color-mg-rojo);
+  outline-offset: 2px;
+}
+
+/** Respeta a quien haya pedido menos animacion en su sistema. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

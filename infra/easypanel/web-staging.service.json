@@ -1,0 +1,74 @@
+{
+  "_comentario": [
+    "Configuracion del servicio `web` en EasyPanel. Documentacion reproducible:",
+    "el panel se configura por interfaz, esto describe el resultado esperado.",
+    "",
+    "CRITICO: las NEXT_PUBLIC_* aparecen en `buildArgs` porque Next las incrusta",
+    "en tiempo de COMPILACION. Declararlas solo en `env` produce un despliegue",
+    "en verde con las claves vacias en el navegador."
+  ],
+
+  "name": "web-staging",
+  "type": "app",
+
+  "source": {
+    "type": "github",
+    "repo": "<usuario>/<repositorio>",
+    "ref": "develop",
+    "path": "/"
+  },
+
+  "build": {
+    "type": "dockerfile",
+    "file": "infra/docker/web.Dockerfile",
+    "context": "/"
+  },
+
+  "buildArgs": {
+    "NEXT_PUBLIC_SUPABASE_URL": "<url-del-proyecto-supabase>",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "<anon-key>",
+    "NEXT_PUBLIC_SITE_URL": "https://staging.modoguerrero.es",
+    "NEXT_PUBLIC_ENVIRONMENT": "staging",
+    "NEXT_PUBLIC_PRIVACY_POLICY_VERSION": "2026-07-30"
+  },
+
+  "env": {
+    "SUPABASE_SERVICE_ROLE_KEY": "<service-role-key · SALTA TODA LA RLS>",
+    "CONSENT_IP_SALT": "<openssl rand -hex 32>",
+    "REVALIDATE_SECRET": "<openssl rand -hex 32>"
+  },
+
+  "domains": [
+    {
+      "host": "staging.modoguerrero.es",
+      "https": true,
+      "port": 3000,
+      "_comentario": "NEXT_PUBLIC_ENVIRONMENT=staging activa la cabecera X-Robots-Tag: noindex. Sin ella, staging competiria en Google con produccion."
+    }
+  ],
+
+  "mounts": [
+    {
+      "type": "volume",
+      "name": "web-staging-next-cache",
+      "mountPath": "/app/.next/cache",
+      "_comentario": [
+        "Conserva la cache de ISR entre reinicios. Sin esto, cada reinicio",
+        "regenera todos los articulos a la vez.",
+        "LIMITE: es local al contenedor. Con varias replicas hara falta un",
+        "cache handler compartido en Redis."
+      ]
+    }
+  ],
+
+  "resources": {
+    "memoryLimit": "1G",
+    "cpuLimit": 0.5,
+    "_comentario": "Impide que un pico de n8n agote la memoria del host y tumbe la web."
+  },
+
+  "deploy": {
+    "autoDeploy": true,
+    "_comentario": "Copiar el webhook al repositorio: Settings > Webhooks."
+  }
+}

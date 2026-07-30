@@ -1,0 +1,18 @@
+# El repositorio se desarrolla en Windows y se construye en contenedores Linux.
+# Sin esto, un script con finales de linea CRLF falla en Alpine con un
+# "bad interpreter" que no dice nada sobre la causa real.
+
+* text=auto eol=lf
+
+*.sh   text eol=lf
+*.sql  text eol=lf
+Dockerfile     text eol=lf
+*.Dockerfile   text eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary

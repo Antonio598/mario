@@ -1,0 +1,72 @@
+# n8n + su propio Postgres, aislado del de la aplicación.
+#
+# La separación es deliberada: n8n guarda credenciales de terceros y un historial de
+# ejecuciones que crece sin límite. Nada de eso tiene por qué compartir base con los datos
+# personales de los usuarios, y menos con los de categoría especial.
+#
+# EasyPanel ofrece una plantilla oficial de n8n. Este fichero documenta la configuración
+# esperada por si hay que reconstruirla a mano.
+
+services:
+  postgres-n8n:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: n8n
+      POSTGRES_PASSWORD: ${POSTGRES_N8N_PASSWORD}
+      POSTGRES_DB: n8n
+    volumes:
+      - postgres-n8n-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U n8n']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    restart: unless-stopped
+    depends_on:
+      postgres-n8n:
+        condition: service_healthy
+    environment:
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: postgres-n8n
+      DB_POSTGRESDB_DATABASE: n8n
+      DB_POSTGRESDB_USER: n8n
+      DB_POSTGRESDB_PASSWORD: ${POSTGRES_N8N_PASSWORD}
+
+      N8N_HOST: n8n.modoguerrero.es
+      N8N_PROTOCOL: https
+      WEBHOOK_URL: https://n8n.modoguerrero.es/
+      GENERIC_TIMEZONE: Europe/Madrid
+      TZ: Europe/Madrid
+
+      # Cifra las credenciales guardadas. PERDER ESTA CLAVE INUTILIZA TODAS LAS
+      # CREDENCIALES ALMACENADAS, aunque la copia de la base esté intacta.
+      # Guardarla fuera del servidor.
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}
+
+      # Sin autenticación básica delante, cualquiera con la URL entra al panel y
+      # a las credenciales.
+      N8N_BASIC_AUTH_ACTIVE: 'true'
+      N8N_BASIC_AUTH_USER: ${N8N_BASIC_AUTH_USER}
+      N8N_BASIC_AUTH_PASSWORD: ${N8N_BASIC_AUTH_PASSWORD}
+
+      # El historial de ejecuciones crece sin freno y acaba llenando el disco.
+      EXECUTIONS_DATA_PRUNE: 'true'
+      EXECUTIONS_DATA_MAX_AGE: 336 # horas (14 días)
+    volumes:
+      - n8n-data:/home/node/.n8n
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+volumes:
+  postgres-n8n-data:
+  n8n-data:

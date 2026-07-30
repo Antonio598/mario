@@ -1,0 +1,37 @@
+# Cuanto menor sea el contexto de build, mas rapido sube a EasyPanel.
+# La app movil se excluye entera: no participa en la imagen de la web.
+
+node_modules
+**/node_modules
+
+apps/mobile
+
+.next
+**/.next
+out
+dist
+.turbo
+**/.turbo
+
+.git
+.github
+.gitignore
+
+# Ninguna clave real debe entrar jamas en una capa de imagen.
+.env
+.env.*
+!.env.example
+
+docs
+n8n
+supabase/.branches
+supabase/.temp
+
+*.md
+!README.md
+
+.vscode
+.idea
+**/.DS_Store
+**/Thumbs.db
+**/*.log
