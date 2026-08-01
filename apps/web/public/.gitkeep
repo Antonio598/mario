@@ -1,0 +1,12 @@
+Este fichero existe para que Git versione la carpeta.
+
+Git no registra directorios vacios. Sin este marcador, `apps/web/public/` no
+llega al repositorio, y el `COPY` del Dockerfile falla con:
+
+    failed to calculate checksum ... "/app/apps/web/public": not found
+
+El build de Next.js termina bien —la carpeta es opcional para el— y el fallo
+aparece al final, en la etapa runner, sin relacion aparente con la causa.
+
+Aqui van los estaticos servidos desde la raiz del dominio: favicon, imagenes
+Open Graph por defecto, y en su momento ads.txt para AdSense.
