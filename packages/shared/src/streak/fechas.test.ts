@@ -7,7 +7,7 @@ import {
   fechaLocal,
   longitudRacha,
   sumarDias,
-} from './fechas.js';
+} from './fechas';
 
 describe('fechaLocal', () => {
   it('devuelve dias distintos para zonas horarias a ambos lados del cambio de fecha', () => {

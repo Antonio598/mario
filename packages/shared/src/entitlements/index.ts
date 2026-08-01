@@ -1,4 +1,4 @@
-import type { Tables } from '../types/database.js';
+import type { Tables } from '../types/database';
 
 /**
  * Resolucion de acceso en cliente.

@@ -11,9 +11,9 @@ export type {
   EntitlementOrigen,
   NotificationTipo,
   ConsentTipo,
-} from './types/database.js';
+} from './types/database';
 
-export { tieneAcceso, cursoDesbloqueado } from './entitlements/index.js';
+export { tieneAcceso, cursoDesbloqueado } from './entitlements/index';
 
 export {
   fechaLocal,
@@ -24,11 +24,11 @@ export {
   diaSemanaLunes,
   nombreMes,
   fechaLarga,
-} from './streak/index.js';
+} from './streak/index';
 
 export {
   TIMEZONE_POR_DEFECTO,
   HITOS_RACHA,
   RECURSOS_AYUDA,
   AVISO_NO_TERAPEUTICO,
-} from './constants/index.js';
+} from './constants/index';

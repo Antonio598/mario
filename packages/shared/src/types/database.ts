@@ -399,7 +399,22 @@ export interface EsquemaResetAlfa {
       Args: Record<string, never>;
       Returns: Json;
     };
+    /**
+     * Borrado del art. 17 RGPD. El nombre depende de la instalacion:
+     *
+     *   delete_my_account  Proyecto dedicado. Elimina auth.users y todo cae en
+     *                      cascada.
+     *   borrar_mis_datos   Proyecto compartido con otra app. NO toca
+     *                      auth.users —expulsaria al usuario tambien de la
+     *                      otra app— y borra solo los datos de Reset Alfa.
+     *
+     * El cliente elige segun NEXT_PUBLIC_SUPABASE_SCHEMA.
+     */
     delete_my_account: {
+      Args: Record<string, never>;
+      Returns: undefined;
+    };
+    borrar_mis_datos: {
       Args: Record<string, never>;
       Returns: undefined;
     };

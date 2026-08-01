@@ -7,4 +7,4 @@ export {
   diaSemanaLunes,
   nombreMes,
   fechaLarga,
-} from './fechas.js';
+} from './fechas';

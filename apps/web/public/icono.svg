@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Modo Guerrero">
+  <!--
+    Icono de la PWA.
+
+    SVG y no PNG a proposito: un solo fichero de 1 KB sirve para todos los
+    tamanos, desde el favicon de 16 px hasta el icono de 512 px de la pantalla
+    de inicio, y no hay que mantener ocho ficheros binarios en el repositorio.
+
+    ZONA DE SEGURIDAD: Android recorta los iconos `maskable` a la forma del
+    sistema —circulo, cuadrado redondeado o gota segun el fabricante— y puede
+    comerse hasta el 20 % del borde. Toda la marca vive dentro del circulo
+    central de radio 205, que es lo que sobrevive a cualquier recorte.
+  -->
+  <rect width="512" height="512" fill="#0A0A0A"/>
+
+  <!-- Escudo. Forma cerrada y compacta: a 48 px un trazo fino desaparece. -->
+  <path
+    d="M256 118 L366 158 V262 C366 330 318 378 256 402 C194 378 146 330 146 262 V158 Z"
+    fill="none"
+    stroke="#D32F2F"
+    stroke-width="26"
+    stroke-linejoin="round"
+  />
+
+  <!-- Marca de verificacion: el dia sostenido. -->
+  <path
+    d="M206 258 L241 296 L312 218"
+    fill="none"
+    stroke="#F7F7F7"
+    stroke-width="30"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>
