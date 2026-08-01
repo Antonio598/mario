@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { NavegacionApp } from '@/components/app/NavegacionApp';
+import { RegistrarSW } from '@/components/app/RegistrarSW';
 
 /**
  * Armazón de la app web (PWA).
@@ -47,6 +48,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         elemento de cada pantalla queda tapado por la navegación.
       */}
       <main className="flex-1 pb-24">{children}</main>
+      <RegistrarSW />
       <NavegacionApp />
     </div>
   );
