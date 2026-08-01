@@ -2,10 +2,12 @@
 # Imagen de produccion de la web (Next.js 15, monorepo pnpm)
 #
 # Construir DESDE LA RAIZ DEL REPOSITORIO, no desde apps/web:
-#   docker build -f infra/docker/web.Dockerfile .
+#   docker build .
 #
-# En EasyPanel: Build Method = Dockerfile, Build Context = / (raiz),
-# Dockerfile Path = infra/docker/web.Dockerfile
+# Vive en la raiz y no en infra/ a proposito: es donde EasyPanel y la mayoria
+# de plataformas lo buscan por defecto. Tenerlo en otro sitio obliga a
+# configurar la ruta a mano en el panel, y olvidarlo produce un
+# "failed to read dockerfile" que no dice cual es el problema real.
 # =============================================================================
 
 

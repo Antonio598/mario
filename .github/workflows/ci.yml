@@ -57,7 +57,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: infra/docker/web.Dockerfile
+          file: Dockerfile
           push: false
           build-args: |
             NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co

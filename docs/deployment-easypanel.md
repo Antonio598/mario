@@ -59,17 +59,39 @@ no.
 - Provider: GitHub → repositorio del proyecto, rama `main`
 - Build Method: **Dockerfile**
 - Build Context: `/` (la raíz — el Dockerfile es de monorepo y necesita `packages/`)
-- Dockerfile Path: `infra/docker/web.Dockerfile`
+- Dockerfile Path: `Dockerfile`
 
 **Build Arguments** — este es el punto que más despliegues rompe:
 
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGci...
+NEXT_PUBLIC_SUPABASE_SCHEMA=public
 NEXT_PUBLIC_SITE_URL=https://modoguerrero.es
 NEXT_PUBLIC_ENVIRONMENT=production
 NEXT_PUBLIC_PRIVACY_POLICY_VERSION=2026-07-30
 ```
+
+Los nombres son literales: el Dockerfile solo declara `ARG` para estos. Un
+argumento con otro nombre —`SUPABASE_URL`, `DATABASE_URL`— se acepta sin error y
+se ignora, y la web se despliega con las claves vacías.
+
+`NEXT_PUBLIC_SUPABASE_SCHEMA` vale `public` en un proyecto Supabase dedicado y
+`reset_alfa` si el proyecto se comparte con otra app
+(`supabase/instalacion-esquema-aislado.sql`).
+
+**La `anon` key, no la `service_role`.** La `anon` es pública por diseño y no
+concede nada por sí misma: lo que puede leerse con ella lo deciden las políticas
+RLS.
+
+> **Nunca pongas un secreto como Build Argument.** Los build args quedan
+> grabados en el historial de capas de la imagen: `docker history` los muestra a
+> cualquiera que tenga acceso al registro. Los secretos van en **Environment**,
+> que solo existe en tiempo de ejecución.
+>
+> Reset Alfa tampoco usa `DATABASE_URL`: no se conecta a Postgres directamente,
+> sino a través de PostgREST, que es lo que permite que la RLS lo proteja. Una
+> conexión directa se saltaría todo el modelo de seguridad.
 
 > Next.js sustituye las `NEXT_PUBLIC_*` **en tiempo de compilación**. Si solo se declaran
 > como variables de entorno del servicio, `next build` se ejecuta sin ellas: el despliegue

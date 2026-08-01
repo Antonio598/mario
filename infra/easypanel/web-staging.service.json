@@ -20,7 +20,7 @@
 
   "build": {
     "type": "dockerfile",
-    "file": "infra/docker/web.Dockerfile",
+    "file": "Dockerfile",
     "context": "/"
   },
 
