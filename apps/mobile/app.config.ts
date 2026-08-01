@@ -58,6 +58,8 @@ const config: ExpoConfig = {
   extra: {
     supabaseUrl: process.env['EXPO_PUBLIC_SUPABASE_URL'],
     supabaseAnonKey: process.env['EXPO_PUBLIC_SUPABASE_ANON_KEY'],
+    // 'public' o 'reset_alfa'. Ver supabase/instalacion-esquema-aislado.sql
+    supabaseSchema: process.env['EXPO_PUBLIC_SUPABASE_SCHEMA'] ?? 'public',
     siteUrl: process.env['EXPO_PUBLIC_SITE_URL'] ?? 'https://modoguerrero.es',
   },
 };

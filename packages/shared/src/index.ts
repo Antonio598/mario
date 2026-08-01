@@ -1,5 +1,7 @@
 export type {
   Database,
+  EsquemaResetAlfa,
+  EsquemaSupabase,
   Json,
   Tables,
   CheckinEstado,

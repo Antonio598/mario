@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
-import type { Database } from '@reset-alfa/shared';
+import type { Database, EsquemaSupabase } from '@reset-alfa/shared';
 import { publicEnv } from '../env';
 
 /**
@@ -14,10 +14,11 @@ import { publicEnv } from '../env';
 export async function updateSession(request: NextRequest): Promise<NextResponse> {
   let supabaseResponse = NextResponse.next({ request });
 
-  const supabase = createServerClient<Database>(
+  const supabase = createServerClient<Database, EsquemaSupabase>(
     publicEnv.supabaseUrl,
     publicEnv.supabaseAnonKey,
     {
+      db: { schema: publicEnv.supabaseSchema },
       cookies: {
         getAll() {
           return request.cookies.getAll();

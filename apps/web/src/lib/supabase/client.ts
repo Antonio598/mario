@@ -1,5 +1,5 @@
 import { createBrowserClient } from '@supabase/ssr';
-import type { Database } from '@reset-alfa/shared';
+import type { Database, EsquemaSupabase } from '@reset-alfa/shared';
 import { publicEnv } from '../env';
 
 /**
@@ -10,5 +10,7 @@ import { publicEnv } from '../env';
  * politicas RLS de supabase/migrations, no esta clave.
  */
 export function createClient() {
-  return createBrowserClient<Database>(publicEnv.supabaseUrl, publicEnv.supabaseAnonKey);
+  return createBrowserClient<Database, EsquemaSupabase>(publicEnv.supabaseUrl, publicEnv.supabaseAnonKey, {
+    db: { schema: publicEnv.supabaseSchema },
+  });
 }

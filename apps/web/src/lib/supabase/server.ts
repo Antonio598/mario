@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import type { Database } from '@reset-alfa/shared';
+import type { Database, EsquemaSupabase } from '@reset-alfa/shared';
 import { publicEnv } from '../env';
 
 /**
@@ -13,7 +13,8 @@ import { publicEnv } from '../env';
 export async function createClient() {
   const cookieStore = await cookies();
 
-  return createServerClient<Database>(publicEnv.supabaseUrl, publicEnv.supabaseAnonKey, {
+  return createServerClient<Database, EsquemaSupabase>(publicEnv.supabaseUrl, publicEnv.supabaseAnonKey, {
+    db: { schema: publicEnv.supabaseSchema },
     cookies: {
       getAll() {
         return cookieStore.getAll();

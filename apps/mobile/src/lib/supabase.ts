@@ -2,7 +2,7 @@ import { createClient, type SupportedStorage } from '@supabase/supabase-js';
 import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
-import type { Database } from '@reset-alfa/shared';
+import type { Database, EsquemaSupabase } from '@reset-alfa/shared';
 
 /**
  * ALMACENAMIENTO DE TOKENS.
@@ -70,10 +70,25 @@ function leerExtra(clave: 'supabaseUrl' | 'supabaseAnonKey' | 'siteUrl'): string
 
 export const siteUrl = leerExtra('siteUrl');
 
-export const supabase = createClient<Database>(
+/**
+ * Esquema Postgres donde vive Reset Alfa.
+ *
+ *   `public`      Proyecto Supabase dedicado (instalacion normal).
+ *   `reset_alfa`  Proyecto compartido con otra app, instalado con
+ *                 supabase/instalacion-esquema-aislado.sql
+ *
+ * Debe coincidir con lo instalado en la base y, en self-hosted, con
+ * PGRST_DB_SCHEMAS del servicio `rest`. Si no coincide, la API responde 404 en
+ * todas las tablas.
+ */
+const esquema: EsquemaSupabase =
+  Constants.expoConfig?.extra?.['supabaseSchema'] === 'reset_alfa' ? 'reset_alfa' : 'public';
+
+export const supabase = createClient<Database, EsquemaSupabase>(
   leerExtra('supabaseUrl'),
   leerExtra('supabaseAnonKey'),
   {
+    db: { schema: esquema },
     auth: {
       storage: secureStorage,
       autoRefreshToken: true,

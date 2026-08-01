@@ -10,7 +10,7 @@
 import 'server-only';
 
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '@reset-alfa/shared';
+import type { Database, EsquemaSupabase } from '@reset-alfa/shared';
 import { publicEnv } from '../env';
 
 /**
@@ -29,7 +29,8 @@ export function createAdminClient() {
     throw new Error('Falta SUPABASE_SERVICE_ROLE_KEY. Se define en el panel de EasyPanel.');
   }
 
-  return createSupabaseClient<Database>(publicEnv.supabaseUrl, serviceRoleKey, {
+  return createSupabaseClient<Database, EsquemaSupabase>(publicEnv.supabaseUrl, serviceRoleKey, {
+    db: { schema: publicEnv.supabaseSchema },
     auth: {
       autoRefreshToken: false,
       persistSession: false,
