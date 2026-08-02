@@ -1,5 +1,5 @@
 -- =============================================================================
--- RESET ALFA · INSTALACION EN UN PROYECTO SUPABASE COMPARTIDO
+-- RESET ALFA - INSTALACION EN UN PROYECTO SUPABASE COMPARTIDO
 --
 -- Pega este fichero entero en el SQL Editor de Supabase y ejecutalo una vez.
 -- Es idempotente en lo que puede serlo: si algo falla a mitad, corrige y vuelve
@@ -18,7 +18,7 @@
 -- `reset_alfa.profiles` conviviendo sin relacion alguna.
 --
 --
--- LO QUE ESTE AISLAMIENTO **NO** SEPARA  ·  LEE ESTO ANTES DE EJECUTAR
+-- LO QUE ESTE AISLAMIENTO **NO** SEPARA  -  LEE ESTO ANTES DE EJECUTAR
 --
 -- 1. LA AUTENTICACION ES COMPARTIDA. `auth.users` es unico por proyecto. Quien
 --    se registre en tu otra app existira tambien aqui, y al reves. No hay forma
@@ -53,7 +53,7 @@
 
 
 -- =============================================================================
--- 1 · ESQUEMAS Y PERMISOS
+-- 1 - ESQUEMAS Y PERMISOS
 -- =============================================================================
 
 create schema if not exists reset_alfa;
@@ -83,7 +83,7 @@ grant usage on schema reset_alfa_priv to authenticated, service_role;
 
 
 -- =============================================================================
--- 2 · TIPOS
+-- 2 - TIPOS
 -- =============================================================================
 
 do $$
@@ -109,7 +109,7 @@ end $$;
 
 
 -- =============================================================================
--- 3 · FUNCIONES AUXILIARES
+-- 3 - FUNCIONES AUXILIARES
 -- =============================================================================
 
 create or replace function reset_alfa_priv.set_updated_at()
@@ -133,7 +133,7 @@ end $$;
 
 
 -- =============================================================================
--- 4 · PERFILES
+-- 4 - PERFILES
 --
 -- `record_personal` y `dias_totales` viven aqui y no en `streaks`: son
 -- agregados de usuario. En streaks se duplicarian en cada fila historica y
@@ -223,7 +223,7 @@ end $$;
 
 
 -- =============================================================================
--- 5 · CONSENTIMIENTOS  ·  arts. 7 y 9 RGPD
+-- 5 - CONSENTIMIENTOS  -  arts. 7 y 9 RGPD
 --
 -- Libro de solo insercion. Revocar no borra: inserta una fila con
 -- concedido = false. Un registro que se puede alterar no acredita nada.
@@ -265,7 +265,7 @@ $$;
 
 
 -- =============================================================================
--- 6 · RACHAS Y CHECK-INS
+-- 6 - RACHAS Y CHECK-INS
 -- =============================================================================
 
 create table reset_alfa.streaks (
@@ -334,7 +334,7 @@ create policy "checkins_select_own" on reset_alfa.checkins for select
 
 
 -- =============================================================================
--- 7 · RECAIDAS  ·  DATOS DE CATEGORIA ESPECIAL (art. 9 RGPD)
+-- 7 - RECAIDAS  -  DATOS DE CATEGORIA ESPECIAL (art. 9 RGPD)
 --
 -- Todos los campos son opcionales por minimizacion. La insercion sin
 -- consentimiento explicito la bloquea un trigger, no la interfaz.
@@ -407,7 +407,7 @@ create policy "relapses_delete_own" on reset_alfa.relapses for delete
 
 
 -- =============================================================================
--- 8 · CONTENIDO EDITORIAL  (unico bloque con lectura anonima)
+-- 8 - CONTENIDO EDITORIAL  (unico bloque con lectura anonima)
 -- =============================================================================
 
 create table reset_alfa.autores (
@@ -502,7 +502,7 @@ create policy "articles_public_read" on reset_alfa.articles for select
 
 
 -- =============================================================================
--- 9 · PRODUCTOS Y PERMISOS
+-- 9 - PRODUCTOS Y PERMISOS
 --
 -- La app movil nunca muestra `precio_cents` ni abre un checkout: eso obligaria
 -- a usar la compra integrada de Apple y Google, con su comision del 15-30 %.
@@ -580,7 +580,7 @@ create policy "entitlements_select_own" on reset_alfa.entitlements for select
 
 
 -- =============================================================================
--- 10 · FORMACION  ·  el paywall vive en la politica RLS de `lessons`
+-- 10 - FORMACION  -  el paywall vive en la politica RLS de `lessons`
 -- =============================================================================
 
 create table reset_alfa.courses (
@@ -673,7 +673,7 @@ create policy "progress_update_own" on reset_alfa.progress for update
 
 
 -- =============================================================================
--- 11 · NOTIFICACIONES, PUSH Y SUSCRIPTORES
+-- 11 - NOTIFICACIONES, PUSH Y SUSCRIPTORES
 -- =============================================================================
 
 create table reset_alfa.notifications (
@@ -772,7 +772,7 @@ alter table reset_alfa.email_subscribers enable row level security;
 
 
 -- =============================================================================
--- 12 · MOTOR DE RACHAS
+-- 12 - MOTOR DE RACHAS
 --
 -- Registrar un check-in no es una escritura: es una transicion de varios pasos
 -- (cerrar racha, actualizar record, acumular total, abrir racha nueva). Aqui
@@ -1036,7 +1036,7 @@ end $$;
 
 
 -- =============================================================================
--- 13 · PATRONES DE RECAIDA
+-- 13 - PATRONES DE RECAIDA
 --
 -- SECURITY INVOKER a proposito, no DEFINER: opera sobre datos del art. 9 y pasa
 -- por la RLS, de modo que es imposible por construccion consultar los patrones
@@ -1088,7 +1088,7 @@ end $$;
 
 
 -- =============================================================================
--- 14 · DERECHOS DEL INTERESADO  ·  arts. 15, 17 y 20 RGPD
+-- 14 - DERECHOS DEL INTERESADO  -  arts. 15, 17 y 20 RGPD
 -- =============================================================================
 
 create table reset_alfa.deletion_log (
@@ -1175,7 +1175,7 @@ end $$;
 
 
 -- =============================================================================
--- 15 · PERMISOS DE EJECUCION
+-- 15 - PERMISOS DE EJECUCION
 --
 -- Se hace al final, cuando ya existen todas las funciones. `anon` no puede
 -- ejecutar ninguna: todas exigen sesion.

@@ -12,21 +12,21 @@
 -- Es idempotente: puedes ejecutarlo varias veces sin duplicar nada.
 --
 --
--- REGLAS DE CONTENIDO QUE CUMPLE ESTE TEXTO  ·  no son opcionales
+-- REGLAS DE CONTENIDO QUE CUMPLE ESTE TEXTO  -  no son opcionales
 --
 -- La cuenta de AdSense depende de ellas. Si los articulos se leen como
 -- contenido adulto, la cuenta se rechaza o se desmoneta, y con ella
 -- desaparece la fuente de ingresos del proyecto.
 --
---   · Registro clinico y de disciplina. Nada de lenguaje explicito ni
+--   - Registro clinico y de disciplina. Nada de lenguaje explicito ni
 --     descripciones graficas.
---   · CERO afirmaciones medicas o fisiologicas. Ni testosterona, ni hormonas,
+--   - CERO afirmaciones medicas o fisiologicas. Ni testosterona, ni hormonas,
 --     ni efectos sobre el cuerpo, ni "curacion". Solo experiencia subjetiva y
 --     habito.
---   · Temario amplio a proposito: disciplina, productividad, entrenamiento,
+--   - Temario amplio a proposito: disciplina, productividad, entrenamiento,
 --     finanzas, mentalidad y relaciones, no solo abstinencia. Multiplica las
---     paginas indexables, sube el CPC —el inventario de anunciantes en
---     "adiccion" es pobre— y protege la cuenta.
+--     paginas indexables, sube el CPC --el inventario de anunciantes en
+--     "adiccion" es pobre-- y protege la cuenta.
 -- =============================================================================
 
 
@@ -132,13 +132,13 @@ insert into reset_alfa.courses (id, slug, titulo, descripcion, tipo, product_id,
    'Dejar de resistirte a un habito y convertirte en alguien que sencillamente no lo tiene.',
    'gratis', null, 4),
 
-  ('c0000000-0000-4000-8000-000000000005', 'fase-i-desencadenado', 'Fase I · Desencadenado',
+  ('c0000000-0000-4000-8000-000000000005', 'fase-i-desencadenado', 'Fase I - Desencadenado',
    'Identificacion de disparadores y construccion de tu Protocolo Anti-Deseo.',
    'premium', 'b0000000-0000-4000-8000-000000000003', 5),
-  ('c0000000-0000-4000-8000-000000000006', 'fase-ii-transmutacion', 'Fase II · Transmutacion',
+  ('c0000000-0000-4000-8000-000000000006', 'fase-ii-transmutacion', 'Fase II - Transmutacion',
    'Redirigir la energia liberada hacia entrenamiento, trabajo y proyectos.',
    'premium', 'b0000000-0000-4000-8000-000000000003', 6),
-  ('c0000000-0000-4000-8000-000000000007', 'fase-iii-liderazgo', 'Fase III · Liderazgo',
+  ('c0000000-0000-4000-8000-000000000007', 'fase-iii-liderazgo', 'Fase III - Liderazgo',
    'Sostener el cambio en el tiempo y liderar a otros desde el ejemplo.',
    'premium', 'b0000000-0000-4000-8000-000000000003', 7),
   ('c0000000-0000-4000-8000-000000000008', 'mentorias-grabadas', 'Mentorias grabadas',
