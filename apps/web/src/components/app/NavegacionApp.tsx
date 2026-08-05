@@ -76,8 +76,10 @@ export function NavegacionApp() {
               <Link
                 href={p.href}
                 aria-current={activo ? 'page' : undefined}
-                className={`flex min-h-[56px] flex-col items-center justify-center gap-1 py-2 text-[11px] transition-colors ${
-                  activo ? 'text-mg-rojo' : 'text-mg-gris-tenue hover:text-mg-gris-texto'
+                className={`mg-pulsable relative flex min-h-[56px] flex-col items-center justify-center gap-1 py-2 text-[11px] transition-colors ${
+                  activo
+                    ? 'mg-tab-activa text-mg-rojo'
+                    : 'text-mg-gris-tenue hover:text-mg-gris-texto'
                 }`}
               >
                 <Icono nombre={p.icono} />

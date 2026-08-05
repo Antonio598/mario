@@ -47,7 +47,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         pb-24 reserva el hueco de la barra inferior fija. Sin él, el último
         elemento de cada pantalla queda tapado por la navegación.
       */}
-      <main className="flex-1 pb-24">{children}</main>
+      <main className="mg-pagina flex-1 pb-24">{children}</main>
       <RegistrarSW />
       <NavegacionApp />
     </div>

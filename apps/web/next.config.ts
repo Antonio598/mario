@@ -52,6 +52,22 @@ const nextConfig: NextConfig = {
     };
 
     /**
+     * El service worker NUNCA debe cachearse.
+     *
+     * Si el navegador guarda una copia de sw.js, sigue ejecutando el service
+     * worker viejo aunque se despliegue uno nuevo, y con el la cache vieja. El
+     * sintoma es que los cambios se ven en otro navegador pero no en el propio.
+     * Con no-cache, el navegador comprueba siempre si hay version nueva.
+     */
+    const swSinCache = {
+      source: '/sw.js',
+      headers: [
+        { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
+        { key: 'Service-Worker-Allowed', value: '/' },
+      ],
+    };
+
+    /**
      * El entorno de staging no debe indexarse jamas. Si Google lo indexa,
      * compite con produccion por las mismas palabras clave y canibaliza el
      * trafico que sostiene el ingreso publicitario.
@@ -62,6 +78,7 @@ const nextConfig: NextConfig = {
     if (process.env['NEXT_PUBLIC_ENVIRONMENT'] !== 'production') {
       return [
         seguridad,
+        swSinCache,
         {
           source: '/:path*',
           headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }],
@@ -69,7 +86,7 @@ const nextConfig: NextConfig = {
       ];
     }
 
-    return [seguridad];
+    return [seguridad, swSinCache];
   },
 };
 

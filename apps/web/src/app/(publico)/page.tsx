@@ -42,9 +42,9 @@ export default async function HomePage() {
       {/* Hero                                                               */}
       {/* ------------------------------------------------------------------ */}
       <section className="mx-auto max-w-6xl px-5 pt-16 pb-14 sm:pt-24 sm:pb-20">
-        <p className="mg-kicker">Modo Guerrero</p>
+        <p className="mg-kicker mg-entrada">Modo Guerrero</p>
 
-        <h1 className="mt-4 max-w-4xl text-5xl sm:text-7xl">
+        <h1 className="mg-entrada mt-4 max-w-4xl text-5xl sm:text-7xl" style={{ animationDelay: '60ms' }}>
           Disciplina,
           <br />
           autocontrol
@@ -52,21 +52,21 @@ export default async function HomePage() {
           <span className="text-mg-rojo">y foco.</span>
         </h1>
 
-        <p className="mt-7 max-w-xl text-lg text-mg-gris-texto">
+        <p className="mg-entrada mt-7 max-w-xl text-lg text-mg-gris-texto" style={{ animationDelay: '140ms' }}>
           Hábitos, constancia y decisiones. Artículos nuevos cada día y una app para llevar la
           cuenta de lo único que importa: los días que sostienes.
         </p>
 
-        <div className="mt-9 flex flex-wrap gap-3">
+        <div className="mg-entrada mt-9 flex flex-wrap gap-3" style={{ animationDelay: '220ms' }}>
           <Link
             href="/app"
-            className="rounded-md bg-mg-rojo px-6 py-3 font-titular font-semibold tracking-wider text-mg-blanco-puro uppercase transition-colors hover:bg-mg-rojo-oscuro"
+            className="mg-boton-principal mg-pulsable rounded-md bg-mg-rojo px-6 py-3 font-titular font-semibold tracking-wider text-mg-blanco-puro uppercase transition-colors hover:bg-mg-rojo-oscuro"
           >
             Empezar ahora
           </Link>
           <Link
             href="/articulos"
-            className="rounded-md border border-mg-negro-borde px-6 py-3 font-titular font-semibold tracking-wider uppercase transition-colors hover:border-mg-gris-tenue"
+            className="mg-pulsable rounded-md border border-mg-negro-borde px-6 py-3 font-titular font-semibold tracking-wider uppercase transition-colors hover:border-mg-gris-tenue"
           >
             Leer los artículos
           </Link>
@@ -77,7 +77,7 @@ export default async function HomePage() {
       {/* Los tres pilares                                                   */}
       {/* ------------------------------------------------------------------ */}
       <section className="border-y border-mg-negro-borde bg-mg-negro-elevado">
-        <div className="mx-auto grid max-w-6xl gap-px bg-mg-negro-borde sm:grid-cols-3">
+        <div className="mg-escalonado mx-auto grid max-w-6xl gap-px bg-mg-negro-borde sm:grid-cols-3">
           {PILARES.map((p) => (
             <div key={p.numero} className="bg-mg-negro-elevado px-6 py-10">
               <span className="font-titular text-3xl text-mg-rojo">{p.numero}</span>

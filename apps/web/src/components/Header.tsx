@@ -32,7 +32,7 @@ export function Header() {
           className="hidden flex-1 items-center gap-6 text-sm text-mg-gris-texto md:flex"
         >
           {NAVEGACION.map((item) => (
-            <Link key={item.href} href={item.href} className="transition-colors hover:text-mg-blanco">
+            <Link key={item.href} href={item.href} className="mg-nav-link transition-colors hover:text-mg-blanco">
               {item.texto}
             </Link>
           ))}
@@ -40,7 +40,7 @@ export function Header() {
 
         <Link
           href="/app"
-          className="ml-auto rounded-md bg-mg-rojo px-4 py-2 font-titular text-sm font-semibold tracking-wider text-mg-blanco-puro uppercase transition-colors hover:bg-mg-rojo-oscuro md:ml-0"
+          className="mg-boton-principal mg-pulsable ml-auto rounded-md bg-mg-rojo px-4 py-2 font-titular text-sm font-semibold tracking-wider text-mg-blanco-puro uppercase transition-colors hover:bg-mg-rojo-oscuro md:ml-0"
         >
           Abrir la app
         </Link>

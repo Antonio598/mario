@@ -402,3 +402,124 @@ h3 {
     font-size: max(16px, 1rem);
   }
 }
+
+/* ==========================================================================
+   Movimiento ampliado
+   ========================================================================== */
+
+@keyframes mg-deslizar-izq {
+  from { opacity: 0; transform: translateX(-14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes mg-zoom {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: none; }
+}
+
+/** Brillo que recorre una superficie. Para estados de carga. */
+@keyframes mg-brillo {
+  from { background-position: -180% 0; }
+  to   { background-position: 180% 0; }
+}
+
+/** Respiracion muy lenta del halo del contador. */
+@keyframes mg-respirar {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50%      { opacity: 0.85; transform: scale(1.04); }
+}
+
+/** Subrayado que crece desde la izquierda. */
+@keyframes mg-subrayar {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+.mg-deslizar-izq { animation: mg-deslizar-izq 420ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.mg-zoom         { animation: mg-zoom 340ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/**
+ * Halo detras del contador de racha.
+ *
+ * Doce segundos por ciclo: lo bastante lento para no reclamar atencion cuando
+ * el usuario esta leyendo, pero suficiente para que la pantalla no parezca una
+ * captura de pantalla.
+ */
+.mg-halo {
+  animation: mg-respirar 12s ease-in-out infinite;
+}
+
+/** Marcador de carga con brillo, en vez de un texto "cargando". */
+.mg-esqueleto {
+  background: linear-gradient(
+    90deg,
+    var(--color-mg-negro-elevado) 25%,
+    var(--color-mg-negro-alto) 50%,
+    var(--color-mg-negro-elevado) 75%
+  );
+  background-size: 200% 100%;
+  animation: mg-brillo 1.4s ease-in-out infinite;
+}
+
+/** Enlace de navegacion con subrayado animado. Solo con raton. */
+@media (hover: hover) {
+  .mg-nav-link {
+    position: relative;
+  }
+  .mg-nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -4px;
+    height: 2px;
+    background-color: var(--color-mg-rojo);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .mg-nav-link:hover::after {
+    transform: scaleX(1);
+  }
+}
+
+/**
+ * Transicion entre paginas.
+ *
+ * Se aplica al contenedor de contenido de cada pantalla. Es una entrada corta,
+ * no un efecto de deslizamiento: en una app que se abre a diario, una
+ * transicion vistosa se vuelve un peaje.
+ */
+.mg-pagina {
+  animation: mg-entrada 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/** Realce del boton principal al pasar el raton. */
+@media (hover: hover) {
+  .mg-boton-principal {
+    transition:
+      background-color 160ms ease,
+      box-shadow 200ms ease,
+      transform 160ms ease;
+  }
+  .mg-boton-principal:hover {
+    box-shadow: 0 6px 24px -6px var(--color-mg-rojo);
+    transform: translateY(-1px);
+  }
+}
+
+/**
+ * Barra inferior: la pestana activa se marca con una linea superior.
+ * Se anima con transform y no con width, que obliga al navegador a recalcular
+ * el layout en cada fotograma.
+ */
+.mg-tab-activa::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 25%;
+  right: 25%;
+  height: 2px;
+  background-color: var(--color-mg-rojo);
+  animation: mg-subrayar 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
