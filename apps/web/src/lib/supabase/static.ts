@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '@reset-alfa/shared';
+import type { Database, EsquemaSupabase } from '@reset-alfa/shared';
 import { publicEnv } from '../env';
 
 /**
@@ -22,10 +22,24 @@ import { publicEnv } from '../env';
  * invisibles, y eso lo garantiza la base de datos, no esta funcion.
  */
 export function createStaticClient() {
-  return createSupabaseClient<Database>(publicEnv.supabaseUrl, publicEnv.supabaseAnonKey, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
+  return createSupabaseClient<Database, EsquemaSupabase>(
+    publicEnv.supabaseUrl,
+    publicEnv.supabaseAnonKey,
+    {
+      /**
+       * El esquema NO puede omitirse aqui.
+       *
+       * Este cliente lee todo el contenido publico: articulos, categorias y el
+       * sitemap. Si apunta a `public` mientras las tablas viven en
+       * `reset_alfa`, las consultas no fallan de forma ruidosa: devuelven vacio.
+       * El resultado es una web que se despliega correctamente y no muestra un
+       * solo articulo, con 404 en cada ficha, sin ningun error a la vista.
+       */
+      db: { schema: publicEnv.supabaseSchema },
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+      },
     },
-  });
+  );
 }

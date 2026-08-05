@@ -63,7 +63,7 @@ export default async function ArticulosPage({
           Todavía no hay artículos publicados. Vuelve en unos días.
         </p>
       ) : (
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mg-escalonado mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {articulos.map((a) => (
             <TarjetaArticulo key={a.id} articulo={a} />
           ))}

@@ -29,7 +29,7 @@ export function ContadorRacha({ dias, record, diasTotales }: Props) {
       : (dias - hitoAnterior) / (siguienteHito - hitoAnterior);
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="mg-entrada flex flex-col items-center">
       <div className="relative">
         <svg width="220" height="220" viewBox="0 0 220 220" aria-hidden="true">
           <circle
@@ -50,6 +50,7 @@ export function ContadorRacha({ dias, record, diasTotales }: Props) {
             strokeLinecap="round"
             strokeDasharray={CIRCUNFERENCIA}
             strokeDashoffset={CIRCUNFERENCIA * (1 - progreso)}
+            className="mg-anillo"
             // Empieza arriba, no a las tres en punto, que es donde SVG sitúa el
             // ángulo cero.
             transform="rotate(-90 110 110)"

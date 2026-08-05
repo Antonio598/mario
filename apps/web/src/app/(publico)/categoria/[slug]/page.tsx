@@ -66,7 +66,7 @@ export default async function CategoriaPage({ params }: { params: Promise<{ slug
       {articulos.length === 0 ? (
         <p className="mt-14 text-mg-gris-tenue">Todavía no hay artículos en esta categoría.</p>
       ) : (
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mg-escalonado mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {articulos.map((a) => (
             <TarjetaArticulo key={a.id} articulo={a} />
           ))}

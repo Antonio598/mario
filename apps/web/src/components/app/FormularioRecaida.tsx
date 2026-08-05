@@ -250,7 +250,7 @@ export function FormularioRecaida({ consiente }: { consiente: boolean }) {
           el navegador conserva el valor escrito en el campo anterior porque
           reutiliza el mismo nodo del DOM.
         */}
-        <div key={pregunta.campo}>
+        <div key={pregunta.campo} className="mg-entrada">
           <h1 className="text-2xl sm:text-3xl">{pregunta.titulo}</h1>
           <p className="mt-3 text-sm text-mg-gris-tenue">{pregunta.ayuda}</p>
 

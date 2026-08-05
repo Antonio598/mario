@@ -37,7 +37,7 @@ export function CheckinDiario({ estado }: { estado: EstadoDiario }) {
 
   if (!estado.necesita_checkin) {
     return (
-      <div className="rounded-lg border border-mg-exito/30 bg-mg-exito/10 px-5 py-4 text-center">
+      <div className="mg-entrada rounded-lg border border-mg-exito/30 bg-mg-exito/10 px-5 py-4 text-center">
         <p className="font-titular tracking-wider text-mg-exito uppercase">Hoy ya está registrado</p>
         <p className="mt-1 text-sm text-mg-gris-texto">Nos vemos mañana.</p>
       </div>
@@ -58,14 +58,14 @@ export function CheckinDiario({ estado }: { estado: EstadoDiario }) {
           type="button"
           onClick={() => void confirmarRacha()}
           disabled={enviando}
-          className="min-h-[52px] rounded-md bg-mg-rojo px-6 font-titular font-semibold tracking-wider text-mg-blanco-puro uppercase transition-colors hover:bg-mg-rojo-oscuro disabled:opacity-60"
+          className="mg-pulsable min-h-[52px] rounded-md bg-mg-rojo px-6 font-titular font-semibold tracking-wider text-mg-blanco-puro uppercase transition-colors hover:bg-mg-rojo-oscuro disabled:opacity-60"
         >
           {enviando ? 'Guardando…' : 'Sí, sigo'}
         </button>
 
         <a
           href="/app/recaida"
-          className="flex min-h-[52px] items-center justify-center rounded-md border border-mg-negro-borde px-6 font-titular font-semibold tracking-wider text-mg-gris-texto uppercase transition-colors hover:border-mg-gris-tenue hover:text-mg-blanco"
+          className="mg-pulsable flex min-h-[52px] items-center justify-center rounded-md border border-mg-negro-borde px-6 font-titular font-semibold tracking-wider text-mg-gris-texto uppercase transition-colors hover:border-mg-gris-tenue hover:text-mg-blanco"
         >
           He recaído
         </a>

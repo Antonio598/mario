@@ -32,7 +32,7 @@ export function Calendario({ dias }: { dias: DiaCalendario[] }) {
         {nombreMes(mes)} {anio}
       </h2>
 
-      <div className="mt-4 grid grid-cols-7 gap-1.5">
+      <div className="mg-aparecer mt-4 grid grid-cols-7 gap-1.5">
         {DIAS_SEMANA.map((d, i) => (
           <div
             key={`${d}-${i}`}

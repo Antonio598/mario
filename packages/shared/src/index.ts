@@ -11,6 +11,7 @@ export type {
   EntitlementOrigen,
   NotificationTipo,
   ConsentTipo,
+  UsuarioRol,
 } from './types/database';
 
 export { tieneAcceso, cursoDesbloqueado } from './entitlements/index';

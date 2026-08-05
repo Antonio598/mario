@@ -19,6 +19,7 @@ export type CourseTipo = 'gratis' | 'premium';
 export type ProductTipo = 'libro' | 'reto' | 'programa' | 'mastermind';
 export type EntitlementOrigen = 'stripe' | 'manual';
 export type NotificationTipo = 'articulo_diario' | 'recordatorio_checkin' | 'hito' | 'sistema';
+export type UsuarioRol = 'usuario' | 'editor' | 'admin';
 export type ConsentTipo = 'datos_sensibles' | 'marketing_email' | 'push' | 'analitica';
 export type SuscriptorEstado = 'pendiente' | 'confirmado' | 'baja';
 
@@ -47,6 +48,8 @@ export interface EsquemaResetAlfa {
         record_personal: number;
         dias_totales: number;
         onboarding_completado: boolean;
+        /** usuario | editor | admin. Lo escribe solo un administrador por SQL. */
+        rol: UsuarioRol;
         created_at: string;
         updated_at: string;
       };
@@ -205,9 +208,26 @@ export interface EsquemaResetAlfa {
         created_at: string;
         updated_at: string;
       };
-      /** Solo service_role (n8n). */
-      Insert: never;
-      Update: never;
+      /**
+       * Escribible por editores desde el panel, ademas de por service_role
+       * (n8n). Lo autoriza la politica RLS `articles_editor_insert`, que
+       * comprueba el rol en la base de datos: la pantalla de administracion
+       * no concede nada por si misma.
+       */
+      Insert: {
+        slug: string;
+        titulo: string;
+        contenido_md: string;
+        categoria: string;
+        meta_description?: string | null;
+        autor_id?: string | null;
+        estado?: ArticleEstado;
+        fecha_publicacion?: string | null;
+        tiempo_lectura?: number | null;
+        keywords?: string[];
+        og_image_url?: string | null;
+      };
+      Update: Partial<EsquemaResetAlfa['Tables']['articles']['Insert']>;
       Relationships: [];
     };
 
@@ -417,6 +437,11 @@ export interface EsquemaResetAlfa {
     borrar_mis_datos: {
       Args: Record<string, never>;
       Returns: undefined;
+    };
+    /** Rol del usuario actual. La interfaz lo usa solo para decidir que pinta. */
+    mi_rol: {
+      Args: Record<string, never>;
+      Returns: string;
     };
 
     // Motor de rachas (migracion 0011). Toda la escritura de rachas pasa por
