@@ -59,33 +59,35 @@ export default async function AdminArticulosPage() {
       ) : (
         <ul className="mt-8 divide-y divide-mg-negro-borde overflow-hidden rounded-lg border border-mg-negro-borde">
           {lista.map((a) => (
-            <li
-              key={a.id}
-              className="flex flex-wrap items-center gap-x-4 gap-y-2 bg-mg-negro-elevado px-5 py-4 transition-colors hover:bg-mg-negro-alto"
-            >
-              <div className="min-w-0 flex-1">
-                <Link href={`/admin/${a.id}`} className="block truncate text-mg-blanco">
-                  {a.titulo}
-                </Link>
-                <p className="mt-1 truncate text-xs text-mg-gris-tenue">
-                  /{a.slug} · {a.categoria}
-                </p>
-              </div>
-
-              <span
-                className={`shrink-0 rounded border px-2 py-0.5 text-[10px] tracking-widest uppercase ${
-                  ESTILO_ESTADO[a.estado]
-                }`}
+            <li key={a.id} className="relative">
+              <Link
+                href={`/admin/${a.id}`}
+                className="flex flex-wrap items-center gap-x-4 gap-y-2 bg-mg-negro-elevado px-5 py-4 transition-colors hover:bg-mg-negro-alto"
               >
-                {a.estado}
-              </span>
+                <div className="min-w-0 flex-1">
+                  <span className="block truncate text-mg-blanco">
+                    {a.titulo}
+                  </span>
+                  <p className="mt-1 truncate text-xs text-mg-gris-tenue">
+                    /{a.slug} · {a.categoria}
+                  </p>
+                </div>
+
+                <span
+                  className={`shrink-0 rounded border px-2 py-0.5 text-[10px] tracking-widest uppercase ${
+                    ESTILO_ESTADO[a.estado]
+                  }`}
+                >
+                  {a.estado}
+                </span>
+              </Link>
 
               {a.estado === 'publicado' && (
                 <a
                   href={`/articulos/${a.slug}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="shrink-0 text-xs text-mg-gris-tenue hover:text-mg-blanco"
+                  className="absolute right-5 top-1/2 z-10 -translate-y-1/2 shrink-0 text-xs text-mg-gris-tenue hover:text-mg-blanco"
                 >
                   Ver ↗
                 </a>
