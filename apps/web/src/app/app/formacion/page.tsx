@@ -34,27 +34,38 @@ export default async function FormacionPage() {
   const premium = (cursos ?? []).filter((c) => c.tipo === 'premium');
 
   return (
-    <div className="mx-auto max-w-md px-5 py-10">
+    <div className="mx-auto max-w-md px-5 py-6">
       <header>
-        <p className="mg-kicker">Programa</p>
-        <h1 className="mt-2 text-3xl">Formación</h1>
+        <p className="font-titular text-xs font-semibold tracking-[0.2em] text-ra-rojo uppercase">
+          Programa
+        </p>
+        <h1 className="mt-2 font-titular text-3xl font-bold text-ra-negro uppercase">
+          Formación
+        </h1>
       </header>
 
-      <section className="mt-9">
-        <h2 className="mg-rule text-lg">Gratis</h2>
-        <div className="mt-6 grid gap-3">
+      <section className="mt-8">
+        <h2 className="font-titular text-lg font-bold tracking-wider text-ra-negro uppercase after:mt-2 after:block after:h-[3px] after:w-11 after:bg-ra-rojo">
+          Gratis
+        </h2>
+        <div className="mt-5 grid gap-3">
           {gratis.length === 0 ? (
-            <p className="text-sm text-mg-gris-tenue">Todavía no hay contenido disponible.</p>
+            <p className="text-sm text-ra-texto-tenue">Todavía no hay contenido disponible.</p>
           ) : (
             gratis.map((c) => (
               <Link
                 key={c.id}
                 href={`/app/formacion/${c.slug}`}
-                className="mg-card mg-card-link block px-5 py-4"
+                className="ra-card block px-5 py-4 transition-shadow hover:shadow-md"
               >
-                <h3 className="text-base text-mg-blanco">{c.titulo}</h3>
+                <div className="flex items-center gap-3">
+                  <span className="ra-badge">Gratis</span>
+                  <h3 className="font-titular text-sm font-bold tracking-wider text-ra-negro uppercase">
+                    {c.titulo}
+                  </h3>
+                </div>
                 {c.descripcion !== null && (
-                  <p className="mt-1 line-clamp-2 text-sm text-mg-gris-texto">{c.descripcion}</p>
+                  <p className="mt-2 line-clamp-2 text-sm text-ra-texto-sec">{c.descripcion}</p>
                 )}
               </Link>
             ))
@@ -62,9 +73,11 @@ export default async function FormacionPage() {
         </div>
       </section>
 
-      <section className="mt-12">
-        <h2 className="mg-rule text-lg">Premium</h2>
-        <div className="mt-6 grid gap-3">
+      <section className="mt-10">
+        <h2 className="font-titular text-lg font-bold tracking-wider text-ra-negro uppercase after:mt-2 after:block after:h-[3px] after:w-11 after:bg-ra-rojo">
+          Premium
+        </h2>
+        <div className="mt-5 grid gap-3">
           {premium.map((c) => {
             const abierto = c.product_id !== null && desbloqueados.has(c.product_id);
 
@@ -72,27 +85,31 @@ export default async function FormacionPage() {
               <Link
                 key={c.id}
                 href={`/app/formacion/${c.slug}`}
-                className="mg-card mg-card-link block px-5 py-4"
+                className="ra-card block px-5 py-4 transition-shadow hover:shadow-md"
               >
-                <h3 className="text-base text-mg-blanco">{c.titulo}</h3>
+                <h3 className="font-titular text-sm font-bold tracking-wider text-ra-negro uppercase">
+                  {c.titulo}
+                </h3>
                 {c.descripcion !== null && (
-                  <p className="mt-1 line-clamp-2 text-sm text-mg-gris-texto">{c.descripcion}</p>
+                  <p className="mt-2 line-clamp-2 text-sm text-ra-texto-sec">{c.descripcion}</p>
                 )}
               </Link>
             ) : (
-              <div key={c.id} className="mg-card relative px-5 py-4 opacity-70">
+              <div key={c.id} className="ra-card relative px-5 py-4 opacity-70">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <h3 className="text-base text-mg-gris-texto">{c.titulo}</h3>
+                    <h3 className="font-titular text-sm font-bold tracking-wider text-ra-texto-tenue uppercase">
+                      {c.titulo}
+                    </h3>
                     {c.descripcion !== null && (
-                      <p className="mt-1 line-clamp-2 text-sm text-mg-gris-tenue">
+                      <p className="mt-1 line-clamp-2 text-sm text-ra-texto-tenue">
                         {c.descripcion}
                       </p>
                     )}
                   </div>
                   <span
                     aria-label="Bloqueado"
-                    className="shrink-0 rounded border border-mg-negro-borde px-2 py-1 text-[10px] tracking-widest text-mg-gris-tenue uppercase"
+                    className="shrink-0 rounded border border-ra-borde px-2 py-1 text-[10px] font-semibold tracking-widest text-ra-texto-tenue uppercase"
                   >
                     Bloqueado
                   </span>
@@ -101,7 +118,7 @@ export default async function FormacionPage() {
                 {c.product_id !== null && (
                   <Link
                     href={`/producto/${c.product_id}`}
-                    className="mt-3 inline-block text-sm text-mg-rojo-claro underline underline-offset-2"
+                    className="mt-3 inline-block text-sm font-medium text-ra-rojo underline underline-offset-2"
                   >
                     Ver cómo conseguirlo
                   </Link>

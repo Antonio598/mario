@@ -14,6 +14,8 @@ const DIAS_SEMANA = ['L', 'M', 'X', 'J', 'V', 'S', 'D'] as const;
  *
  * "Sin registro" es un estado con entidad propia, no un error: un día sin
  * marcar NO rompe la racha.
+ *
+ * Reset Alfa — tema claro.
  */
 export function Calendario({ dias }: { dias: DiaCalendario[] }) {
   const hoy = new Date();
@@ -27,8 +29,8 @@ export function Calendario({ dias }: { dias: DiaCalendario[] }) {
   const desplazamiento = diaSemanaLunes(primerDiaISO);
 
   return (
-    <section>
-      <h2 className="font-titular text-lg tracking-wider uppercase">
+    <section className="ra-card px-4 py-5">
+      <h2 className="font-titular text-lg font-bold tracking-wider text-ra-negro uppercase">
         {nombreMes(mes)} {anio}
       </h2>
 
@@ -37,7 +39,7 @@ export function Calendario({ dias }: { dias: DiaCalendario[] }) {
           <div
             key={`${d}-${i}`}
             aria-hidden="true"
-            className="pb-1 text-center text-[11px] text-mg-gris-apagado"
+            className="pb-1 text-center text-[11px] font-semibold text-ra-texto-tenue"
           >
             {d}
           </div>
@@ -54,14 +56,14 @@ export function Calendario({ dias }: { dias: DiaCalendario[] }) {
           const esFuturo = new Date(iso) > hoy;
 
           const base =
-            'flex aspect-square items-center justify-center rounded-md border text-sm tabular-nums';
+            'flex aspect-square items-center justify-center rounded-lg border text-sm tabular-nums font-medium';
 
           if (registro?.estado === 'en_racha') {
             return (
               <div
                 key={iso}
                 title={`${dia} · día completado`}
-                className={`${base} border-mg-exito bg-mg-exito/20 font-semibold text-mg-exito`}
+                className={`${base} border-green-200 bg-green-50 font-semibold text-ra-exito`}
               >
                 {dia}
               </div>
@@ -73,7 +75,7 @@ export function Calendario({ dias }: { dias: DiaCalendario[] }) {
               <div
                 key={iso}
                 title={`${dia} · recaída registrada`}
-                className={`${base} relative border-mg-recaida bg-mg-recaida/15 font-semibold text-mg-recaida`}
+                className={`${base} relative border-red-200 bg-red-50 font-semibold text-ra-rojo`}
               >
                 {dia}
                 {/* Aspa: distingue el estado sin depender del color. */}
@@ -91,8 +93,8 @@ export function Calendario({ dias }: { dias: DiaCalendario[] }) {
             <div
               key={iso}
               title={`${dia} · sin registro`}
-              className={`${base} border-mg-negro-borde-suave ${
-                esFuturo ? 'text-mg-gris-apagado/40' : 'text-mg-gris-apagado'
+              className={`${base} border-ra-borde-suave ${
+                esFuturo ? 'text-ra-texto-tenue/40' : 'text-ra-texto-sec'
               }`}
             >
               {dia}
@@ -101,17 +103,17 @@ export function Calendario({ dias }: { dias: DiaCalendario[] }) {
         })}
       </div>
 
-      <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-xs text-mg-gris-tenue">
+      <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-xs text-ra-texto-tenue">
         <li className="flex items-center gap-2">
-          <span className="h-3 w-3 rounded border border-mg-exito bg-mg-exito/20" />
+          <span className="h-3 w-3 rounded border border-green-200 bg-green-50" />
           Completado
         </li>
         <li className="flex items-center gap-2">
-          <span className="h-3 w-3 rounded border border-mg-recaida bg-mg-recaida/15" />
+          <span className="h-3 w-3 rounded border border-red-200 bg-red-50" />
           Recaída
         </li>
         <li className="flex items-center gap-2">
-          <span className="h-3 w-3 rounded border border-mg-negro-borde-suave" />
+          <span className="h-3 w-3 rounded border border-ra-borde-suave" />
           Sin registro
         </li>
       </ul>

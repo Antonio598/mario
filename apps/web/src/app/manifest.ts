@@ -16,7 +16,7 @@ import type { MetadataRoute } from 'next';
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Reset Alfa · Modo Guerrero',
+    name: 'Reset Alfa · Disciplina, Enfoque, Libertad',
     short_name: 'Reset Alfa',
     description:
       'Seguimiento de hábitos y disciplina. Lleva la cuenta de tu racha, registra tus recaídas y detecta tus patrones.',
@@ -24,8 +24,8 @@ export default function manifest(): MetadataRoute.Manifest {
     scope: '/',
     display: 'standalone',
     orientation: 'portrait',
-    background_color: '#0A0A0A',
-    theme_color: '#0A0A0A',
+    background_color: '#F5F5F5',
+    theme_color: '#FFFFFF',
     lang: 'es',
     categories: ['lifestyle', 'productivity', 'health'],
     icons: [

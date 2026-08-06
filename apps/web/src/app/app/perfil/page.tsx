@@ -24,29 +24,37 @@ export default async function PerfilPage() {
   const consienteSensibles = consentimientos?.[0]?.concedido ?? false;
 
   return (
-    <div className="mx-auto max-w-md px-5 py-10">
+    <div className="mx-auto max-w-md px-5 py-6">
       <header>
-        <p className="mg-kicker">Cuenta</p>
-        <h1 className="mt-2 text-3xl">{perfil?.nombre ?? 'Perfil'}</h1>
+        <p className="font-titular text-xs font-semibold tracking-[0.2em] text-ra-rojo uppercase">
+          Cuenta
+        </p>
+        <h1 className="mt-2 font-titular text-3xl font-bold text-ra-negro uppercase">
+          {perfil?.nombre ?? 'Perfil'}
+        </h1>
         {user?.email !== undefined && (
-          <p className="mt-1 text-sm text-mg-gris-tenue">{user.email}</p>
+          <p className="mt-1 text-sm text-ra-texto-tenue">{user.email}</p>
         )}
       </header>
 
-      <dl className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-mg-negro-borde bg-mg-negro-borde">
-        <div className="bg-mg-negro-elevado px-4 py-4 text-center">
-          <dt className="text-[11px] tracking-widest text-mg-gris-tenue uppercase">Récord</dt>
-          <dd className="mt-1 font-titular text-2xl tabular-nums">
+      <div className="mt-6 grid grid-cols-2 gap-3">
+        <div className="ra-card px-4 py-3.5 text-center">
+          <p className="text-[10px] font-semibold tracking-[0.2em] text-ra-texto-tenue uppercase">
+            Récord
+          </p>
+          <p className="mt-1 font-titular text-2xl font-bold tabular-nums text-ra-negro">
             {perfil?.record_personal ?? 0}
-          </dd>
+          </p>
         </div>
-        <div className="bg-mg-negro-elevado px-4 py-4 text-center">
-          <dt className="text-[11px] tracking-widest text-mg-gris-tenue uppercase">
+        <div className="ra-card px-4 py-3.5 text-center">
+          <p className="text-[10px] font-semibold tracking-[0.2em] text-ra-texto-tenue uppercase">
             Días totales
-          </dt>
-          <dd className="mt-1 font-titular text-2xl tabular-nums">{perfil?.dias_totales ?? 0}</dd>
+          </p>
+          <p className="mt-1 font-titular text-2xl font-bold tabular-nums text-ra-negro">
+            {perfil?.dias_totales ?? 0}
+          </p>
         </div>
-      </dl>
+      </div>
 
       <AccionesCuenta
         consienteSensibles={consienteSensibles}
@@ -57,8 +65,8 @@ export default async function PerfilPage() {
         Recursos de ayuda profesional. Requisito del proyecto: protege
         legalmente al cliente y es lo correcto. Discreto, no destacado.
       */}
-      <section className="mt-12 border-t border-mg-negro-borde pt-6">
-        <h2 className="font-titular text-sm tracking-widest text-mg-gris-texto uppercase">
+      <section className="mt-10 border-t border-ra-borde pt-6">
+        <h2 className="font-titular text-sm font-semibold tracking-widest text-ra-texto-sec uppercase">
           Ayuda profesional
         </h2>
         <ul className="mt-4 space-y-3 text-sm">
@@ -68,16 +76,16 @@ export default async function PerfilPage() {
                 href={r.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-mg-rojo-claro underline underline-offset-2"
+                className="font-medium text-ra-rojo underline underline-offset-2"
               >
                 {r.nombre}
               </a>
-              {r.telefono !== null && <span className="text-mg-gris-tenue"> · {r.telefono}</span>}
-              <p className="text-xs text-mg-gris-tenue">{r.descripcion}</p>
+              {r.telefono !== null && <span className="text-ra-texto-tenue"> · {r.telefono}</span>}
+              <p className="text-xs text-ra-texto-tenue">{r.descripcion}</p>
             </li>
           ))}
         </ul>
-        <p className="mt-5 text-xs leading-relaxed text-mg-gris-apagado">
+        <p className="mt-5 text-xs leading-relaxed text-ra-texto-tenue">
           {AVISO_NO_TERAPEUTICO}
         </p>
       </section>

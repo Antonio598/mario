@@ -108,12 +108,12 @@ export function AccionesCuenta({ consienteSensibles, timezone }: Props) {
   }
 
   return (
-    <div className="mt-8 space-y-3">
-      <div className="mg-card px-5 py-4">
+    <div className="mt-6 space-y-3">
+      <div className="ra-card px-5 py-4">
         <label className="flex cursor-pointer items-start justify-between gap-4">
           <span>
-            <span className="text-sm text-mg-blanco">Guardar el detalle de mis recaídas</span>
-            <span className="mt-1 block text-xs text-mg-gris-tenue">
+            <span className="text-sm font-medium text-ra-negro">Guardar el detalle de mis recaídas</span>
+            <span className="mt-1 block text-xs text-ra-texto-tenue">
               Incluye información sobre tu vida sexual. Sin esto se registra el día, pero no las
               respuestas del protocolo.
             </span>
@@ -128,20 +128,20 @@ export function AccionesCuenta({ consienteSensibles, timezone }: Props) {
         </label>
       </div>
 
-      <div className="mg-card px-5 py-4 text-sm text-mg-gris-texto">
-        Zona horaria: <span className="text-mg-blanco">{timezone}</span>
-        <p className="mt-1 text-xs text-mg-gris-tenue">
+      <div className="ra-card px-5 py-4 text-sm text-ra-texto-sec">
+        Zona horaria: <span className="font-medium text-ra-negro">{timezone}</span>
+        <p className="mt-1 text-xs text-ra-texto-tenue">
           Determina cuándo empieza tu día para el check-in.
         </p>
       </div>
 
-      {aviso !== null && <p className="text-sm text-mg-rojo-claro">{aviso}</p>}
+      {aviso !== null && <p className="text-sm text-ra-rojo">{aviso}</p>}
 
       <button
         type="button"
         onClick={() => void exportar()}
         disabled={ocupado}
-        className="min-h-[48px] w-full rounded-md border border-mg-negro-borde px-5 text-sm disabled:opacity-60"
+        className="min-h-[48px] w-full rounded-xl border border-ra-borde px-5 text-sm font-medium text-ra-texto-sec transition-colors hover:border-ra-rojo hover:text-ra-rojo disabled:opacity-60"
       >
         Exportar mis datos
       </button>
@@ -149,7 +149,7 @@ export function AccionesCuenta({ consienteSensibles, timezone }: Props) {
       <button
         type="button"
         onClick={() => void salir()}
-        className="min-h-[48px] w-full rounded-md border border-mg-negro-borde px-5 text-sm"
+        className="min-h-[48px] w-full rounded-xl border border-ra-borde px-5 text-sm font-medium text-ra-texto-sec transition-colors hover:border-ra-rojo hover:text-ra-rojo"
       >
         Cerrar sesión
       </button>
@@ -158,7 +158,7 @@ export function AccionesCuenta({ consienteSensibles, timezone }: Props) {
         type="button"
         onClick={() => void borrarCuenta()}
         disabled={ocupado}
-        className="min-h-[48px] w-full rounded-md border border-mg-rojo/40 px-5 text-sm text-mg-rojo-claro disabled:opacity-60"
+        className="min-h-[48px] w-full rounded-xl border border-red-200 px-5 text-sm font-medium text-ra-rojo disabled:opacity-60"
       >
         Eliminar mis datos
       </button>

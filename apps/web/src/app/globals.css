@@ -29,6 +29,22 @@
   --color-mg-sin-registro: #2e2e2e;
   --color-mg-aviso: #e08a1e;
 
+  /* ── Tokens Reset Alfa · tema claro para /app ──────────────────────── */
+  --color-ra-fondo: #f5f5f5;
+  --color-ra-superficie: #ffffff;
+  --color-ra-borde: #e8e8e8;
+  --color-ra-borde-suave: #f0f0f0;
+  --color-ra-texto: #1a1a1a;
+  --color-ra-texto-sec: #555555;
+  --color-ra-texto-tenue: #888888;
+  --color-ra-rojo: #d32f2f;
+  --color-ra-rojo-oscuro: #9a0007;
+  --color-ra-rojo-claro: #ef5350;
+  --color-ra-exito: #2e7d32;
+  --color-ra-negro: #1a1a1a;
+  --color-ra-sombra: rgba(0, 0, 0, 0.06);
+  --color-ra-sombra-md: rgba(0, 0, 0, 0.10);
+
   --font-titular: var(--font-oswald), 'Arial Narrow', sans-serif;
   --font-cuerpo: var(--font-inter), system-ui, sans-serif;
 }
@@ -522,4 +538,41 @@ h3 {
   height: 2px;
   background-color: var(--color-mg-rojo);
   animation: mg-subrayar 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ==========================================================================
+   Reset Alfa · Tema claro para la PWA (/app)
+   --------------------------------------------------------------------------
+   Estos estilos solo se activan dentro de .ra-app, que envuelve la seccion
+   /app. El resto de la web (articulos, landing, admin) sigue en oscuro.
+   ========================================================================== */
+
+/** Tarjeta clara con sombra suave. */
+.ra-card {
+  background-color: var(--color-ra-superficie);
+  border: 1px solid var(--color-ra-borde);
+  border-radius: 14px;
+  box-shadow: 0 2px 8px var(--color-ra-sombra);
+}
+
+/** Badge (etiqueta GRATIS, etc.). */
+.ra-badge {
+  display: inline-block;
+  background-color: var(--color-ra-rojo);
+  color: #fff;
+  font-family: var(--font-titular);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+/** Barra de navegacion inferior en tema claro. */
+.ra-nav-bottom {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-top: 1px solid var(--color-ra-borde);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }

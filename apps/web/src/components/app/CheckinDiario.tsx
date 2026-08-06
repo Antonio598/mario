@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import type { EstadoDiario } from '@/lib/app/tipos';
 
 /**
- * Check-in del día.
+ * Check-in del día — Reset Alfa tema claro.
  *
  * En la app nativa esto es un modal a pantalla completa al abrir. Aquí va
  * integrado en la pantalla de inicio: en web, un modal que aparece solo al
@@ -37,35 +37,35 @@ export function CheckinDiario({ estado }: { estado: EstadoDiario }) {
 
   if (!estado.necesita_checkin) {
     return (
-      <div className="mg-entrada rounded-lg border border-mg-exito/30 bg-mg-exito/10 px-5 py-4 text-center">
-        <p className="font-titular tracking-wider text-mg-exito uppercase">Hoy ya está registrado</p>
-        <p className="mt-1 text-sm text-mg-gris-texto">Nos vemos mañana.</p>
+      <div className="mg-entrada ra-card border-ra-exito/30 bg-green-50 px-5 py-4 text-center">
+        <p className="font-titular tracking-wider text-ra-exito uppercase">Hoy ya está registrado</p>
+        <p className="mt-1 text-sm text-ra-texto-sec">Nos vemos mañana.</p>
       </div>
     );
   }
 
   return (
-    <div className="mg-card px-5 py-6 text-center">
-      <h2 className="text-xl">¿Sigues en racha?</h2>
-      <p className="mt-2 text-sm text-mg-gris-texto">
+    <div className="ra-card px-5 py-6 text-center">
+      <h2 className="font-titular text-xl text-ra-negro uppercase">¿Sigues en racha?</h2>
+      <p className="mt-2 text-sm text-ra-texto-sec">
         Responde con la verdad. El contador solo sirve si es real.
       </p>
 
-      {error !== null && <p className="mt-4 text-sm text-mg-rojo-claro">{error}</p>}
+      {error !== null && <p className="mt-4 text-sm text-ra-rojo">{error}</p>}
 
       <div className="mt-6 grid gap-3">
         <button
           type="button"
           onClick={() => void confirmarRacha()}
           disabled={enviando}
-          className="mg-pulsable min-h-[52px] rounded-md bg-mg-rojo px-6 font-titular font-semibold tracking-wider text-mg-blanco-puro uppercase transition-colors hover:bg-mg-rojo-oscuro disabled:opacity-60"
+          className="mg-pulsable min-h-[52px] rounded-xl bg-ra-rojo px-6 font-titular font-semibold tracking-wider text-white uppercase transition-colors hover:bg-ra-rojo-oscuro disabled:opacity-60"
         >
           {enviando ? 'Guardando…' : 'Sí, sigo'}
         </button>
 
         <a
           href="/app/recaida"
-          className="mg-pulsable flex min-h-[52px] items-center justify-center rounded-md border border-mg-negro-borde px-6 font-titular font-semibold tracking-wider text-mg-gris-texto uppercase transition-colors hover:border-mg-gris-tenue hover:text-mg-blanco"
+          className="mg-pulsable flex min-h-[52px] items-center justify-center rounded-xl border border-ra-borde px-6 font-titular font-semibold tracking-wider text-ra-texto-sec uppercase transition-colors hover:border-ra-rojo hover:text-ra-rojo"
         >
           He recaído
         </a>

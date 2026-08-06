@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 220" role="img" aria-label="Reset Alfa">
+  <!--
+    Casco espartano de Reset Alfa.
+    Rojo y negro, inspirado en la estetica de guerrero espartano.
+    Optimizado para multiples tamanos, desde 24px hasta pantalla completa.
+  -->
+  <!-- Cresta del casco -->
+  <path
+    d="M100 8 C100 8 88 20 85 45 C82 70 80 90 78 105 C76 115 74 120 72 125
+       C80 118 90 112 100 108
+       C110 112 120 118 128 125
+       C126 120 124 115 122 105
+       C120 90 118 70 115 45
+       C112 20 100 8 100 8Z"
+    fill="#d32f2f"
+  />
+
+  <!-- Casco principal -->
+  <path
+    d="M40 100 C40 60 65 35 100 35 C135 35 160 60 160 100
+       L160 140 C160 155 155 165 145 172
+       L140 175 L140 155 C140 145 135 138 125 135
+       L115 132 L115 190 L100 200 L85 190 L85 132
+       L75 135 C65 138 60 145 60 155
+       L60 175 L55 172 C45 165 40 155 40 140 Z"
+    fill="#1a1a1a"
+  />
+
+  <!-- Apertura facial (zona de los ojos) -->
+  <path
+    d="M60 110 C60 95 75 82 100 82 C125 82 140 95 140 110
+       L140 125 C130 120 115 118 100 118
+       C85 118 70 120 60 125 Z"
+    fill="#d32f2f"
+    opacity="0.9"
+  />
+
+  <!-- Protector nasal -->
+  <path
+    d="M96 82 L96 132 L100 135 L104 132 L104 82"
+    fill="#1a1a1a"
+    stroke="#1a1a1a"
+    stroke-width="2"
+    stroke-linejoin="round"
+  />
+
+  <!-- Brillos sutiles -->
+  <path
+    d="M70 55 C75 50 85 42 100 40"
+    fill="none"
+    stroke="rgba(255,255,255,0.15)"
+    stroke-width="3"
+    stroke-linecap="round"
+  />
+</svg>

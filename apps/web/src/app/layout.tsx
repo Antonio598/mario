@@ -29,15 +29,15 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(publicEnv.siteUrl),
   title: {
-    default: 'Modo Guerrero · Disciplina, autocontrol y foco',
-    template: '%s · Modo Guerrero',
+    default: 'Reset Alfa · Disciplina, autocontrol y foco',
+    template: '%s · Reset Alfa',
   },
   description:
     'Habitos, disciplina y autocontrol. Articulos y formacion para construir constancia real y sostenerla.',
   openGraph: {
     type: 'website',
     locale: 'es_ES',
-    siteName: 'Modo Guerrero',
+    siteName: 'Reset Alfa',
   },
   /**
    * Staging nunca debe indexarse: competiria con produccion por las mismas
