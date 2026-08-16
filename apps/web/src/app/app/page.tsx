@@ -4,6 +4,7 @@ import { ContadorRacha } from '@/components/app/ContadorRacha';
 import { CheckinDiario } from '@/components/app/CheckinDiario';
 import { ModalArranque } from '@/components/app/ModalArranque';
 import { AjustarRacha } from '@/components/app/AjustarRacha';
+import { Logo } from '@/components/app/Logo';
 import type { EstadoDiario } from '@/lib/app/tipos';
 
 /**
@@ -75,6 +76,11 @@ export default async function AppInicioPage() {
       {estado.necesita_checkin && <ModalArranque estado={estado} />}
 
     <div className="mx-auto max-w-md px-5 py-6">
+      {/* Marca, discreta: el protagonista de esta pantalla es el contador. */}
+      <header className="mb-5 flex justify-center">
+        <Logo variante="app" alto={44} prioridad />
+      </header>
+
       {/* ── Tarjeta de racha ──────────────────────────────────────────── */}
       <ContadorRacha
         dias={estado.racha_actual}

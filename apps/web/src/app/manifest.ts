@@ -30,23 +30,26 @@ export default function manifest(): MetadataRoute.Manifest {
     categories: ['lifestyle', 'productivity', 'health'],
     icons: [
       {
-        src: '/icono.svg',
-        sizes: 'any',
-        type: 'image/svg+xml',
-        /**
-         * `maskable` deja que Android recorte el icono a la forma del sistema
-         * —círculo, cuadrado redondeado, gota— sin comerse el logotipo. El SVG
-         * reserva el 20 % de margen de seguridad en todo el perímetro.
-         */
-        purpose: 'maskable',
-      },
-      {
-        src: '/icono.svg',
-        sizes: 'any',
-        type: 'image/svg+xml',
+        src: '/logos/app.png',
+        sizes: '1080x1080',
+        type: 'image/png',
         purpose: 'any',
       },
+      {
+        /**
+         * `maskable` es un icono APARTE, no el mismo con otra etiqueta.
+         * Android recorta estos iconos a la forma del sistema —circulo,
+         * cuadrado redondeado, gota— y puede comerse hasta el 20 % del borde.
+         * El SVG reserva ese margen; el PNG de marca ocupa todo el lienzo y
+         * perderia parte del logotipo al recortarse.
+         */
+        src: '/icono.svg',
+        sizes: 'any',
+        type: 'image/svg+xml',
+        purpose: 'maskable',
+      },
     ],
+
     shortcuts: [
       {
         name: 'Mi racha',

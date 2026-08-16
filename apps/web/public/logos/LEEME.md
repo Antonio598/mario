@@ -1,16 +1,21 @@
 # Logos
 
-Sube aquí los dos logos y la app los usará automáticamente.
+Los dos logos ya estan puestos. La app los lee de aqui.
 
-| Fichero | Dónde aparece | Formato |
+| Fichero | Tamano | Donde aparece |
 |---|---|---|
-| `app.svg` (o `app.png`) | Icono de la app, pantalla de acceso, cabecera | Cuadrado. SVG preferible; si es PNG, 512×512 |
-| `programa.svg` (o `programa.png`) | Logotipo del nombre "Reset Alfa" en Formación y en la ficha del programa | Horizontal, fondo transparente |
+| `app.png` | 1080x1080 | Icono de la PWA, pantalla de acceso, cabecera de Inicio |
+| `programa.png` | 1080x607 | Tarjeta de acceso a Reset Alfa en Formacion |
 
-**Fondo transparente.** La app tiene modo claro y oscuro: un logo con fondo blanco
-se verá como un recuadro blanco sobre negro.
+## Para sustituirlos
 
-Si subes PNG en vez de SVG, cambia la extensión en
-`apps/web/src/components/app/Logo.tsx`.
+Deja los nuevos con el MISMO nombre y sobrescribe. Si cambian las proporciones,
+actualiza la constante `PROPORCION` de
+`apps/web/src/components/app/Logo.tsx`: pasar unas proporciones que no
+coinciden con la imagen la deforma y descuadra el hueco reservado.
 
-Mientras no existan, se muestra el texto "RESET ALFA" con la tipografía de marca.
+**Nombres sin espacios ni acentos.** En una URL obligan a codificarlos y es una
+fuente de fallos silenciosos.
+
+**Fondo transparente.** La app tiene modo oscuro por defecto: un logo con fondo
+blanco se veria como un recuadro blanco.

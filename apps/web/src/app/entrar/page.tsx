@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { FormularioAcceso } from '@/components/app/FormularioAcceso';
+import { Logo } from '@/components/app/Logo';
 
 export const dynamic = 'force-dynamic';
 
@@ -37,10 +38,10 @@ export default async function EntrarPage({
 
   return (
     <main className="mx-auto flex min-h-[100dvh] max-w-md flex-col justify-center px-5 py-12">
-      <Link href="/" className="mg-kicker">
-        Modo Guerrero
+      <Link href="/" className="inline-block">
+        <Logo variante="app" alto={72} prioridad />
       </Link>
-      <h1 className="mt-3 text-4xl">Entra</h1>
+      <h1 className="mt-6 text-4xl">Entra</h1>
       <p className="mt-3 text-mg-gris-texto">Tu racha te está esperando.</p>
 
       <FormularioAcceso destino={destino} />

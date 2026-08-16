@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { Logo } from '@/components/app/Logo';
 
 export const dynamic = 'force-dynamic';
 
@@ -150,9 +151,10 @@ export default async function FormacionPage() {
             <p className="font-titular text-[11px] font-semibold tracking-[0.25em] text-ra-rojo uppercase">
               Programa completo
             </p>
-            <h3 className="mt-3 font-titular text-2xl font-bold text-ra-texto">
-              Desbloquea Reset Alfa
-            </h3>
+
+            <div className="mt-4 flex justify-center">
+              <Logo variante="programa" alto={56} />
+            </div>
             <p className="mt-3 text-sm text-ra-texto-sec">
               Desencadenado, Transmutación Sexual, Liderazgo y el archivo completo de mentorías.
             </p>
