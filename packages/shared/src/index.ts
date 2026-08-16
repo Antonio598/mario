@@ -30,6 +30,5 @@ export {
 export {
   TIMEZONE_POR_DEFECTO,
   HITOS_RACHA,
-  RECURSOS_AYUDA,
   AVISO_NO_TERAPEUTICO,
 } from './constants/index';

@@ -4,7 +4,6 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { RECURSOS_AYUDA } from '@reset-alfa/shared';
 import type { RespuestasRecaida } from '@/lib/app/tipos';
 
 type Tipo = 'texto' | 'hora' | 'si_no';
@@ -84,7 +83,13 @@ const PREGUNTAS: readonly Pregunta[] = [
   },
 ];
 
-export function FormularioRecaida({ consiente }: { consiente: boolean }) {
+interface PropsFormulario {
+  consiente: boolean;
+  /** Se invoca al cerrar. Permite usarlo como pantalla o dentro del modal. */
+  onTerminar?: () => void;
+}
+
+export function FormularioRecaida({ consiente, onTerminar }: PropsFormulario) {
   const router = useRouter();
   const [paso, setPaso] = useState(0);
   const [respuestas, setRespuestas] = useState<RespuestasRecaida>({});
@@ -167,38 +172,13 @@ export function FormularioRecaida({ consiente }: { consiente: boolean }) {
 
         <button
           type="button"
-          onClick={() => router.push('/app')}
+          onClick={() => (onTerminar ? onTerminar() : router.push('/app'))}
           className="mt-9 min-h-[52px] w-full rounded-md bg-mg-rojo px-6 font-titular font-semibold tracking-wider text-mg-blanco-puro uppercase"
         >
           Volver
         </button>
 
-        {/*
-          Enlace discreto a ayuda profesional. Requisito del proyecto: protege
-          legalmente y es lo correcto. Discreto y no destacado a propósito: no
-          se trata de sugerir que cualquier recaída es un problema clínico.
-        */}
-        <details className="mt-10 text-sm">
-          <summary className="cursor-pointer text-mg-gris-tenue hover:text-mg-gris-texto">
-            Si necesitas hablar con alguien
-          </summary>
-          <ul className="mt-4 space-y-3 text-mg-gris-texto">
-            {RECURSOS_AYUDA.map((r) => (
-              <li key={r.nombre}>
-                <a
-                  href={r.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-mg-rojo-claro underline underline-offset-2"
-                >
-                  {r.nombre}
-                </a>
-                {r.telefono !== null && <span className="text-mg-gris-tenue"> · {r.telefono}</span>}
-                <p className="text-xs text-mg-gris-tenue">{r.descripcion}</p>
-              </li>
-            ))}
-          </ul>
-        </details>
+
       </div>
     );
   }

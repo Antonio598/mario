@@ -35,6 +35,12 @@ const nextConfig: NextConfig = {
 
   images: {
     formats: ['image/avif', 'image/webp'],
+    /**
+     * Portadas de los libros, servidas desde el WordPress de la marca.
+     * Next exige declarar los dominios externos: sin esta lista, cualquiera
+     * podria usar nuestro optimizador de imagenes como proxy gratuito.
+     */
+    remotePatterns: [{ protocol: 'https', hostname: 'modoguerrero.es' }],
   },
 
   async headers() {

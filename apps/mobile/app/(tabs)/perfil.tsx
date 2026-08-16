@@ -1,10 +1,9 @@
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, Alert, Linking, Pressable, ScrollView, Share, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, ScrollView, Share, Text, View } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import {
   AVISO_NO_TERAPEUTICO,
   HITOS_RACHA,
-  RECURSOS_AYUDA,
   cursoDesbloqueado,
 } from '@reset-alfa/shared';
 import { supabase } from '../../src/lib/supabase';
@@ -103,6 +102,11 @@ export default function PerfilScreen() {
     );
   }
 
+  async function cerrarSesion() {
+    await supabase.auth.signOut();
+    router.replace('/(auth)/sign-in');
+  }
+
   if (cargando && estado === null) {
     return (
       <View style={[theme.pantalla, { justifyContent: 'center' }]}>
@@ -189,50 +193,48 @@ export default function PerfilScreen() {
         <Text style={[theme.textoTenue, { marginTop: spacing.xs, fontSize: fontSize.xs }]}>
           Una copia completa en formato legible por maquina (arts. 15 y 20 RGPD).
         </Text>
-
-        <View style={{ marginTop: spacing.lg }}>
-          <Boton texto="Eliminar cuenta" onPress={eliminarCuenta} destructivo />
-          <Text style={[theme.textoTenue, { marginTop: spacing.xs, fontSize: fontSize.xs }]}>
-            Borrado real e inmediato. No conservamos una copia desactivada.
-          </Text>
-        </View>
       </Seccion>
 
-      <Seccion titulo="Ayuda">
-        {RECURSOS_AYUDA.map((r) => (
-          <Pressable
-            key={r.nombre}
-            onPress={() => void Linking.openURL(r.url)}
-            accessibilityRole="link"
-            style={{ marginBottom: spacing.md }}
-          >
-            <Text style={{ color: colors.grisTexto, fontSize: fontSize.sm }}>
-              {r.nombre}
-              {r.telefono !== null ? ` · ${r.telefono}` : ''}
-            </Text>
-            <Text style={{ color: colors.grisTenue, fontSize: fontSize.xs }}>{r.descripcion}</Text>
-          </Pressable>
-        ))}
-        <Text style={[theme.textoTenue, { fontSize: fontSize.xs }]}>{AVISO_NO_TERAPEUTICO}</Text>
+      <Seccion titulo="Cuenta">
+        <Boton texto="Cerrar sesion" onPress={() => void cerrarSesion()} deshabilitado={trabajando} />
+        <View style={{ height: spacing.sm }} />
+        <Boton
+          texto="Eliminar mis datos"
+          onPress={() => eliminarCuenta()}
+          deshabilitado={trabajando}
+          destructivo
+        />
+        <Text style={[theme.textoTenue, { marginTop: spacing.sm, fontSize: fontSize.xs }]}>
+          {AVISO_NO_TERAPEUTICO}
+        </Text>
       </Seccion>
-
-      <Boton
-        texto="Cerrar sesion"
-        onPress={() => {
-          void supabase.auth.signOut();
-        }}
-      />
     </ScrollView>
   );
 }
 
+/**
+ * Bloque de ajustes con titulo.
+ *
+ * Separa visualmente grupos de opciones sin recurrir a mas jerarquia de
+ * navegacion: en una pantalla de perfil, cada nivel extra es una pantalla mas
+ * que atravesar para cambiar una casilla.
+ */
 function Seccion({ titulo, children }: { titulo: string; children: React.ReactNode }) {
   return (
-    <View style={{ marginBottom: spacing['2xl'] }}>
-      <Text style={[theme.titulo, { fontSize: fontSize.lg, marginBottom: spacing.md }]}>
+    <View style={{ marginTop: spacing.xl }}>
+      <Text
+        style={{
+          color: colors.grisTenue,
+          fontSize: fontSize.xs,
+          fontWeight: '700',
+          letterSpacing: 1.5,
+          textTransform: 'uppercase',
+          marginBottom: spacing.md,
+        }}
+      >
         {titulo}
       </Text>
-      {children}
+      <View style={{ borderRadius: radius.md, overflow: 'hidden' }}>{children}</View>
     </View>
   );
 }

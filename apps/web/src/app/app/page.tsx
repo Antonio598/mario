@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { ContadorRacha } from '@/components/app/ContadorRacha';
 import { CheckinDiario } from '@/components/app/CheckinDiario';
+import { ModalArranque } from '@/components/app/ModalArranque';
+import { AjustarRacha } from '@/components/app/AjustarRacha';
 import type { EstadoDiario } from '@/lib/app/tipos';
 
 /**
@@ -65,7 +67,13 @@ export default async function AppInicioPage() {
   const masterclasses = cursos ?? [];
   const mensaje = mensajeDelDia();
 
+  // El modal cubre la pantalla mientras falte el check-in del dia. Es una
+  // unica pregunta diaria y responderla es el producto: por eso no tiene boton
+  // de cerrar.
   return (
+    <>
+      {estado.necesita_checkin && <ModalArranque estado={estado} />}
+
     <div className="mx-auto max-w-md px-5 py-6">
       {/* ── Tarjeta de racha ──────────────────────────────────────────── */}
       <ContadorRacha
@@ -73,6 +81,9 @@ export default async function AppInicioPage() {
         record={estado.record_personal}
         diasTotales={estado.dias_totales}
       />
+
+      {/* ── Ajuste manual de la racha ─────────────────────────────────── */}
+      <AjustarRacha diasActuales={estado.racha_actual} />
 
       {/* ── Check-in diario ───────────────────────────────────────────── */}
       <div className="mt-5">
@@ -215,5 +226,6 @@ export default async function AppInicioPage() {
         </div>
       </section>
     </div>
+    </>
   );
 }

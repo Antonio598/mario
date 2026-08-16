@@ -81,17 +81,7 @@ export function Footer() {
         <div className="mt-10 border-t border-mg-negro-borde pt-6">
           <p className="text-xs leading-relaxed text-mg-gris-apagado">
             Modo Guerrero es un proyecto de hábitos y disciplina. No es un tratamiento médico ni
-            psicológico y no sustituye la atención de un profesional. Si estás pasando un mal
-            momento, el{' '}
-            <a
-              href="https://telefonodelaesperanza.org"
-              rel="noopener noreferrer"
-              target="_blank"
-              className="underline hover:text-mg-gris-texto"
-            >
-              Teléfono de la Esperanza
-            </a>{' '}
-            atiende gratis las 24 horas.
+            psicológico y no sustituye la atención de un profesional.
           </p>
           <p className="mt-4 text-xs text-mg-gris-apagado">© {anio} Modo Guerrero</p>
         </div>

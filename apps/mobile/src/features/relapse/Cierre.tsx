@@ -1,5 +1,5 @@
-import { Linking, Pressable, ScrollView, Text, View } from 'react-native';
-import { AVISO_NO_TERAPEUTICO, RECURSOS_AYUDA } from '@reset-alfa/shared';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+import { AVISO_NO_TERAPEUTICO } from '@reset-alfa/shared';
 import { colors, fontSize, spacing, theme } from '../../theme';
 
 interface Props {
@@ -63,31 +63,9 @@ export function Cierre({ rachaAnterior, detalleGuardado, onCerrar }: Props) {
         <Text style={theme.textoBoton}>Volver al inicio</Text>
       </Pressable>
 
-      {/* Recursos de ayuda. Discretos, nunca ausentes. */}
-      <View style={{ marginTop: spacing['2xl'], paddingTop: spacing.lg, borderTopWidth: 1, borderTopColor: colors.negroBorde }}>
-        <Text style={theme.textoTenue}>
-          Si esto te desborda, hablarlo con un profesional ayuda:
-        </Text>
-
-        {RECURSOS_AYUDA.map((r) => (
-          <Pressable
-            key={r.nombre}
-            onPress={() => void Linking.openURL(r.url)}
-            accessibilityRole="link"
-            style={{ marginTop: spacing.md }}
-          >
-            <Text style={{ color: colors.grisTexto, fontSize: fontSize.sm }}>
-              {r.nombre}
-              {r.telefono !== null ? ` · ${r.telefono}` : ''}
-            </Text>
-            <Text style={{ color: colors.grisTenue, fontSize: fontSize.xs }}>{r.descripcion}</Text>
-          </Pressable>
-        ))}
-
-        <Text style={[theme.textoTenue, { marginTop: spacing.lg, fontSize: fontSize.xs }]}>
-          {AVISO_NO_TERAPEUTICO}
-        </Text>
-      </View>
+      <Text style={[theme.textoTenue, { marginTop: spacing.xl, fontSize: fontSize.xs }]}>
+        {AVISO_NO_TERAPEUTICO}
+      </Text>
     </ScrollView>
   );
 }

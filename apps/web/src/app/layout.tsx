@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Oswald, Inter } from 'next/font/google';
 import { ConsentBanner } from '@/components/ConsentBanner';
 import { publicEnv } from '@/lib/env';
+import { SCRIPT_TEMA } from '@/components/app/InterruptorTema';
 import './globals.css';
 
 /**
@@ -84,6 +85,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="es" className={`${oswald.variable} ${inter.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: CONSENT_DEFAULTS }} />
+        {/*
+          Fija el tema antes del primer pintado. Un componente de React se
+          hidrata despues, y para entonces el usuario ya habria visto un
+          fogonazo blanco. En una app que se abre de noche, ese fogonazo es lo
+          que hace que se cierre.
+        */}
+        <script dangerouslySetInnerHTML={{ __html: SCRIPT_TEMA }} />
       </head>
       <body className="min-h-screen bg-mg-negro text-mg-blanco antialiased">
         {children}

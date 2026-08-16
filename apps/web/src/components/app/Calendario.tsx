@@ -1,5 +1,9 @@
+'use client';
+
+import { useState } from 'react';
 import { diaSemanaLunes, diasDelMes, nombreMes } from '@reset-alfa/shared';
 import type { DiaCalendario } from '@/lib/app/tipos';
+import { DetalleRecaida } from './DetalleRecaida';
 
 const DIAS_SEMANA = ['L', 'M', 'X', 'J', 'V', 'S', 'D'] as const;
 
@@ -18,6 +22,9 @@ const DIAS_SEMANA = ['L', 'M', 'X', 'J', 'V', 'S', 'D'] as const;
  * Reset Alfa — tema claro.
  */
 export function Calendario({ dias }: { dias: DiaCalendario[] }) {
+  // Fecha de la recaida cuya ficha esta abierta, o null.
+  const [abierta, setAbierta] = useState<string | null>(null);
+
   const hoy = new Date();
   const anio = hoy.getFullYear();
   const mes = hoy.getMonth() + 1;
@@ -71,11 +78,17 @@ export function Calendario({ dias }: { dias: DiaCalendario[] }) {
           }
 
           if (registro?.estado === 'recaida') {
+            // Boton y no div: tocar un dia de recaida abre su ficha, y un
+            // elemento pulsable debe serlo tambien para el teclado y para un
+            // lector de pantalla.
             return (
-              <div
+              <button
+                type="button"
                 key={iso}
-                title={`${dia} · recaída registrada`}
-                className={`${base} relative border-red-200 bg-red-50 font-semibold text-ra-rojo`}
+                onClick={() => setAbierta(iso)}
+                title={`${dia} · recaída registrada. Ver detalle`}
+                aria-label={`Ver el detalle de la recaída del día ${dia}`}
+                className={`${base} mg-pulsable relative border-red-200 bg-red-50 font-semibold text-ra-rojo`}
               >
                 {dia}
                 {/* Aspa: distingue el estado sin depender del color. */}
@@ -85,7 +98,7 @@ export function Calendario({ dias }: { dias: DiaCalendario[] }) {
                 >
                   ✕
                 </span>
-              </div>
+              </button>
             );
           }
 
@@ -117,6 +130,10 @@ export function Calendario({ dias }: { dias: DiaCalendario[] }) {
           Sin registro
         </li>
       </ul>
+
+      {abierta !== null && (
+        <DetalleRecaida fecha={abierta} onCerrar={() => setAbierta(null)} />
+      )}
     </section>
   );
 }

@@ -314,6 +314,10 @@ export interface EsquemaResetAlfa {
         tipo: CourseTipo;
         product_id: string | null;
         imagen_url: string | null;
+        /** Ficha del curso en modoguerrero.es. La app no aloja el video. */
+        url_externa: string | null;
+        /** PDF del protocolo asociado, si lo tiene. */
+        url_protocolo: string | null;
         orden: number;
         publicado: boolean;
         created_at: string;
@@ -470,6 +474,20 @@ export interface EsquemaResetAlfa {
     };
     calendario_mes: {
       Args: { p_anio: number; p_mes: number };
+      Returns: Json;
+    };
+    /**
+     * Ajuste manual de la racha. Quien lleva meses sin porno no empieza en
+     * cero al instalar la app: sin esto, el primer contacto con el producto es
+     * perder su progreso real.
+     */
+    ajustar_racha: {
+      Args: { p_dias: number };
+      Returns: Json;
+    };
+    /** Detalle de la recaida de un dia, para abrirlo desde el calendario. */
+    detalle_recaida: {
+      Args: { p_fecha: string };
       Returns: Json;
     };
 

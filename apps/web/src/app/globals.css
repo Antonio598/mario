@@ -576,3 +576,50 @@ h3 {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
+
+/* ==========================================================================
+   Modo oscuro
+   --------------------------------------------------------------------------
+   Los tokens `ra-` de @theme definen el tema CLARO. Aqui se redefinen las
+   mismas variables cuando el documento lleva data-theme="dark", asi que todas
+   las clases de Tailwind que ya los usan cambian solas: no hay que anadir
+   `dark:` a un solo componente.
+
+   OSCURO POR DEFECTO. Es una app que se abre de noche y a primera hora, que es
+   justo cuando una pantalla blanca deslumbra. El interruptor esta en Perfil
+   para quien prefiera el claro.
+   ========================================================================== */
+
+:root[data-theme='dark'] {
+  --color-ra-fondo: #0a0a0a;
+  --color-ra-superficie: #141414;
+  --color-ra-borde: #252525;
+  --color-ra-borde-suave: #1a1a1a;
+  --color-ra-texto: #f7f7f7;
+  --color-ra-texto-sec: #b4b4b4;
+  --color-ra-texto-tenue: #7a7a7a;
+  --color-ra-negro: #f7f7f7; /* invertido: era el color del texto principal */
+  --color-ra-rojo: #ef4444; /* un punto mas claro: sobre negro, el #d32f2f pierde contraste */
+  --color-ra-exito: #4ade80;
+
+  /* Sobre fondo negro una sombra oscura no se ve. La profundidad la da el
+     borde, asi que las sombras se anulan. */
+  --color-ra-sombra: rgba(0, 0, 0, 0);
+  --color-ra-sombra-md: rgba(0, 0, 0, 0.4);
+
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+/* La transicion solo en fondo y color: animar `all` provocaria que cada borde
+   y cada sombra se recalculen a la vez en el cambio de tema. */
+:root[data-theme] body,
+:root[data-theme] .ra-card {
+  transition:
+    background-color 220ms ease,
+    color 220ms ease,
+    border-color 220ms ease;
+}
