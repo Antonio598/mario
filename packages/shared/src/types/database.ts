@@ -490,6 +490,15 @@ export interface EsquemaResetAlfa {
       Args: { p_fecha: string };
       Returns: Json;
     };
+    /**
+     * Historial de recaidas con la longitud de la racha que se rompio cada
+     * dia. Se calcula desde `streaks`, no se guarda aparte: duplicar ese dato
+     * obligaria a mantenerlo sincronizado.
+     */
+    historial_recaidas: {
+      Args: { p_limite?: number };
+      Returns: Json;
+    };
 
     // --- Retencion (migracion 0013) ---
     // patrones_recaidas es SECURITY INVOKER: pasa por la RLS, asi que solo

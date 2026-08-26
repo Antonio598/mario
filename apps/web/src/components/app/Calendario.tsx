@@ -1,52 +1,116 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { diaSemanaLunes, diasDelMes, nombreMes } from '@reset-alfa/shared';
-import type { DiaCalendario } from '@/lib/app/tipos';
+import { createClient } from '@/lib/supabase/client';
 import { DetalleRecaida } from './DetalleRecaida';
+import type { DiaCalendario } from '@/lib/app/tipos';
 
-const DIAS_SEMANA = ['L', 'M', 'X', 'J', 'V', 'S', 'D'] as const;
+const DIAS_SEMANA = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'] as const;
+
+interface Props {
+  /** Días del mes actual, ya cargados en el servidor para el primer pintado. */
+  diasIniciales: DiaCalendario[];
+  anioInicial: number;
+  mesInicial: number;
+}
 
 /**
  * Vista mensual con tres estados: completado, recaída y sin registro.
  *
  * ACCESIBILIDAD: los estados NO se distinguen solo por color. Cada celda lleva
- * además una forma —relleno macizo, aspa, hueco— y un `title` legible. Cerca
- * del 8 % de los hombres tiene alguna deficiencia en la visión del rojo y el
- * verde, y esta app es para hombres: un calendario que solo se lee por color
- * sería ilegible para uno de cada doce usuarios.
+ * un icono propio —✓, ✕, ○— y una etiqueta legible. Cerca del 8 % de los
+ * hombres tiene alguna deficiencia en la visión del rojo y el verde, y esta app
+ * es para hombres: un calendario que solo se lee por color sería ilegible para
+ * uno de cada doce usuarios.
  *
  * "Sin registro" es un estado con entidad propia, no un error: un día sin
  * marcar NO rompe la racha.
- *
- * Reset Alfa — tema claro.
  */
-export function Calendario({ dias }: { dias: DiaCalendario[] }) {
-  // Fecha de la recaida cuya ficha esta abierta, o null.
+export function Calendario({ diasIniciales, anioInicial, mesInicial }: Props) {
+  const [anio, setAnio] = useState(anioInicial);
+  const [mes, setMes] = useState(mesInicial);
+  const [dias, setDias] = useState(diasIniciales);
+  const [cargando, setCargando] = useState(false);
   const [abierta, setAbierta] = useState<string | null>(null);
 
-  const hoy = new Date();
-  const anio = hoy.getFullYear();
-  const mes = hoy.getMonth() + 1;
+  // El mes inicial ya viene del servidor: solo se pide al cambiar de mes, para
+  // no repetir en el cliente la consulta que ya trajo el primer pintado.
+  useEffect(() => {
+    if (anio === anioInicial && mes === mesInicial) {
+      setDias(diasIniciales);
+      return;
+    }
 
+    let vivo = true;
+    setCargando(true);
+
+    void (async () => {
+      const supabase = createClient();
+      const { data } = await supabase.rpc('calendario_mes', { p_anio: anio, p_mes: mes });
+      if (!vivo) return;
+      setDias((data ?? []) as unknown as DiaCalendario[]);
+      setCargando(false);
+    })();
+
+    return () => {
+      vivo = false;
+    };
+  }, [anio, mes, anioInicial, mesInicial, diasIniciales]);
+
+  function moverMes(delta: number) {
+    const d = new Date(anio, mes - 1 + delta, 1);
+    setAnio(d.getFullYear());
+    setMes(d.getMonth() + 1);
+  }
+
+  const hoy = new Date();
   const porFecha = new Map(dias.map((d) => [d.fecha, d]));
   const total = diasDelMes(anio, mes);
   const primerDiaISO = `${anio}-${String(mes).padStart(2, '0')}-01`;
   // Huecos antes del día 1 para que caiga en su columna de la semana.
   const desplazamiento = diaSemanaLunes(primerDiaISO);
 
-  return (
-    <section className="ra-card px-4 py-5">
-      <h2 className="font-titular text-lg font-bold tracking-wider text-ra-negro uppercase">
-        {nombreMes(mes)} {anio}
-      </h2>
+  // No se navega al futuro: un mes que aún no ha llegado siempre estará vacío.
+  const esMesActual = anio === hoy.getFullYear() && mes === hoy.getMonth() + 1;
 
-      <div className="mg-aparecer mt-4 grid grid-cols-7 gap-1.5">
-        {DIAS_SEMANA.map((d, i) => (
+  return (
+    <section>
+      <div className="flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => moverMes(-1)}
+          aria-label="Mes anterior"
+          className="mg-pulsable min-h-[44px] px-3 text-xl text-ra-rojo"
+        >
+          ‹
+        </button>
+
+        <h2 className="font-titular text-base font-bold tracking-wider text-ra-texto uppercase">
+          {nombreMes(mes)} {anio}
+        </h2>
+
+        <button
+          type="button"
+          onClick={() => moverMes(1)}
+          disabled={esMesActual}
+          aria-label="Mes siguiente"
+          className="mg-pulsable min-h-[44px] px-3 text-xl text-ra-rojo disabled:opacity-25"
+        >
+          ›
+        </button>
+      </div>
+
+      <div
+        className={`mt-3 grid grid-cols-7 gap-1.5 transition-opacity ${
+          cargando ? 'opacity-40' : 'opacity-100'
+        }`}
+      >
+        {DIAS_SEMANA.map((d) => (
           <div
-            key={`${d}-${i}`}
+            key={d}
             aria-hidden="true"
-            className="pb-1 text-center text-[11px] font-semibold text-ra-texto-tenue"
+            className="pb-1 text-center text-[10px] font-semibold tracking-wider text-ra-texto-tenue"
           >
             {d}
           </div>
@@ -63,39 +127,38 @@ export function Calendario({ dias }: { dias: DiaCalendario[] }) {
           const esFuturo = new Date(iso) > hoy;
 
           const base =
-            'flex aspect-square items-center justify-center rounded-lg border text-sm tabular-nums font-medium';
+            'flex aspect-square flex-col items-center justify-center rounded-lg text-xs tabular-nums';
 
           if (registro?.estado === 'en_racha') {
             return (
               <div
                 key={iso}
                 title={`${dia} · día completado`}
-                className={`${base} border-green-200 bg-green-50 font-semibold text-ra-exito`}
+                className={`${base} font-semibold text-ra-texto`}
               >
                 {dia}
+                <span aria-hidden="true" className="text-[13px] leading-none text-ra-exito">
+                  ✓
+                </span>
               </div>
             );
           }
 
           if (registro?.estado === 'recaida') {
-            // Boton y no div: tocar un dia de recaida abre su ficha, y un
-            // elemento pulsable debe serlo tambien para el teclado y para un
+            // Botón y no div: tocar un día de recaída abre su ficha, y un
+            // elemento pulsable debe serlo también para el teclado y para un
             // lector de pantalla.
             return (
               <button
                 type="button"
                 key={iso}
                 onClick={() => setAbierta(iso)}
-                title={`${dia} · recaída registrada. Ver detalle`}
+                title={`${dia} · recaída. Ver detalle`}
                 aria-label={`Ver el detalle de la recaída del día ${dia}`}
-                className={`${base} mg-pulsable relative border-red-200 bg-red-50 font-semibold text-ra-rojo`}
+                className={`${base} mg-pulsable font-semibold text-ra-rojo`}
               >
                 {dia}
-                {/* Aspa: distingue el estado sin depender del color. */}
-                <span
-                  aria-hidden="true"
-                  className="absolute right-1 top-0.5 text-[10px] leading-none"
-                >
+                <span aria-hidden="true" className="text-[13px] leading-none">
                   ✕
                 </span>
               </button>
@@ -106,29 +169,31 @@ export function Calendario({ dias }: { dias: DiaCalendario[] }) {
             <div
               key={iso}
               title={`${dia} · sin registro`}
-              className={`${base} border-ra-borde-suave ${
-                esFuturo ? 'text-ra-texto-tenue/40' : 'text-ra-texto-sec'
-              }`}
+              className={`${base} ${esFuturo ? 'text-ra-texto-tenue/40' : 'text-ra-texto-tenue'}`}
             >
               {dia}
+              <span aria-hidden="true" className="text-[13px] leading-none opacity-40">
+                ○
+              </span>
             </div>
           );
         })}
       </div>
 
-      <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-xs text-ra-texto-tenue">
-        <li className="flex items-center gap-2">
-          <span className="h-3 w-3 rounded border border-green-200 bg-green-50" />
-          Completado
-        </li>
-        <li className="flex items-center gap-2">
-          <span className="h-3 w-3 rounded border border-red-200 bg-red-50" />
-          Recaída
-        </li>
-        <li className="flex items-center gap-2">
-          <span className="h-3 w-3 rounded border border-ra-borde-suave" />
-          Sin registro
-        </li>
+      <ul className="mt-6 space-y-2 text-xs">
+        {[
+          { i: '✓', c: 'text-ra-exito', t: 'Día completado', s: 'Sin porno' },
+          { i: '✕', c: 'text-ra-rojo', t: 'Recaída', s: 'Aprende y sigue' },
+          { i: '○', c: 'text-ra-texto-tenue', t: 'Sin registro', s: 'Registra tu día' },
+        ].map((l) => (
+          <li key={l.t} className="flex items-center gap-3">
+            <span aria-hidden="true" className={`w-4 text-center ${l.c}`}>
+              {l.i}
+            </span>
+            <span className="text-ra-texto">{l.t}</span>
+            <span className="text-ra-texto-tenue">· {l.s}</span>
+          </li>
+        ))}
       </ul>
 
       {abierta !== null && (
