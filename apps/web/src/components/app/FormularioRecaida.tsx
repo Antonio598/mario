@@ -17,67 +17,84 @@ interface Pregunta {
 }
 
 /**
- * Las ocho preguntas del protocolo, en el orden del método.
+ * Las nueve preguntas de la Plantilla post-recaída, en el orden del método.
+ *
+ * El texto de cada `titulo` reproduce el de la plantilla en papel. Que
+ * coincidan importa: el usuario que ya trabaja con el cuaderno reconoce las
+ * mismas preguntas, y el registro digital y el de papel siguen siendo
+ * comparables.
+ *
+ * La plantilla pide "lugar exacto Y hora" en una sola línea; aquí van en dos
+ * pantallas porque la hora usa un selector propio y mezclarla con texto libre
+ * daría respuestas inconsistentes, imposibles de agregar para el análisis de
+ * patrones.
  *
  * TODAS SON OMITIBLES. Es minimización del RGPD —son datos de categoría
  * especial— y también sentido común: quien acaba de recaer no siempre puede
  * responderlo todo, y un formulario que bloquea es un formulario que se cierra.
  *
- * El tono interroga los hechos, nunca a la persona. Nada de "por qué has
- * fallado": eso convierte el registro en un castigo y hace que se deje de usar.
+ * El tono interroga los hechos, nunca a la persona: eso es lo que evita que el
+ * registro se convierta en un castigo y se deje de usar.
  */
 const PREGUNTAS: readonly Pregunta[] = [
   {
     campo: 'lugar',
     tipo: 'texto',
-    titulo: '¿Dónde ha pasado?',
-    ayuda: 'El sitio exacto. Cuanto más concreto, más fácil será cambiarlo.',
+    titulo: 'Lugar exacto de la recaída',
+    ayuda: 'Cuanto más concreto, más fácil será cambiarlo.',
     placeholder: 'Mi habitación, en la cama',
   },
   {
     campo: 'hora',
     tipo: 'hora',
-    titulo: '¿A qué hora?',
+    titulo: 'Hora de la recaída',
     ayuda: 'Los patrones aparecen solos cuando acumulas varios registros.',
   },
   {
     campo: 'trigger',
     tipo: 'texto',
-    titulo: '¿Qué lo ha disparado?',
+    titulo: 'Trigger o disparador',
     ayuda: 'El momento exacto en que algo cambió: un pensamiento, una imagen, un estado.',
     placeholder: 'Aburrimiento mirando el móvil sin rumbo',
   },
   {
     campo: 'accion_correctiva',
     tipo: 'texto',
-    titulo: '¿Qué puedes hacer hoy para eliminar ese disparador?',
+    titulo: 'Acción que puedo aplicar ahora para eliminar el trigger',
     ayuda: 'Una acción concreta y pequeña. No un propósito.',
     placeholder: 'Dejar el móvil cargando en la cocina por la noche',
   },
   {
     campo: 'ejecuto_pad',
     tipo: 'si_no',
-    titulo: '¿Ejecutaste tu P.A.D?',
+    titulo: '¿Ejecuté mi P.A.D?',
     ayuda: 'Tu Protocolo Anti-Deseo.',
   },
   {
     campo: 'motivo_fallo',
     tipo: 'texto',
-    titulo: '¿Qué falló?',
-    ayuda: 'Si no lo ejecutaste, qué te lo impidió. Si lo ejecutaste, dónde se rompió.',
+    titulo: 'Si lo ejecutaste, ¿por qué falló? Si no, ¿por qué no lo ejecutaste?',
+    ayuda: 'Los hechos, sin juicio. Es información, no una falta.',
     placeholder: 'No me acordé en el momento',
   },
   {
     campo: 'ajuste_pad',
     tipo: 'texto',
-    titulo: '¿Qué cambias en tu P.A.D?',
+    titulo: '¿Qué debo cambiar en mi P.A.D para hacerlo 100 % efectivo?',
     ayuda: 'Un ajuste concreto para la próxima vez.',
     placeholder: 'Añadir un paso antes: levantarme y salir de la habitación',
   },
   {
+    campo: 'contexto_ambiental',
+    tipo: 'texto',
+    titulo: 'Contexto ambiental',
+    ayuda: 'Solo o acompañado, dentro o fuera, con o sin pantallas.',
+    placeholder: 'Solo en casa, de noche, sin nada planificado',
+  },
+  {
     campo: 'contexto_emocional',
     tipo: 'texto',
-    titulo: '¿Cómo estabas?',
+    titulo: 'Contexto psicológico y emocional',
     ayuda: 'Cansancio, estrés, soledad, euforia. Lo que hubiera.',
     placeholder: 'Cansado y con la sensación de haber perdido el día',
   },

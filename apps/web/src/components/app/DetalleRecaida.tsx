@@ -41,18 +41,18 @@ export function DetalleRecaida({ fecha, onCerrar }: { fecha: string; onCerrar: (
     datos === null
       ? []
       : [
-          { etiqueta: 'Dónde', valor: datos.lugar },
+          { etiqueta: 'Lugar exacto', valor: datos.lugar },
           { etiqueta: 'Hora', valor: datos.hora },
-          { etiqueta: 'Disparador', valor: datos.trigger },
-          { etiqueta: 'Acción correctiva', valor: datos.accion_correctiva },
+          { etiqueta: 'Trigger o disparador', valor: datos.trigger },
+          { etiqueta: 'Acción para eliminar el trigger', valor: datos.accion_correctiva },
           {
             etiqueta: '¿Ejecutó su P.A.D?',
             valor: datos.ejecuto_pad === null ? null : datos.ejecuto_pad ? 'Sí' : 'No',
           },
-          { etiqueta: 'Qué falló', valor: datos.motivo_fallo },
-          { etiqueta: 'Ajuste del P.A.D', valor: datos.ajuste_pad },
-          { etiqueta: 'Entorno', valor: datos.contexto_ambiental },
-          { etiqueta: 'Estado', valor: datos.contexto_emocional },
+          { etiqueta: 'Por qué falló o no se ejecutó', valor: datos.motivo_fallo },
+          { etiqueta: 'Cambio en el P.A.D', valor: datos.ajuste_pad },
+          { etiqueta: 'Contexto ambiental', valor: datos.contexto_ambiental },
+          { etiqueta: 'Contexto psicológico y emocional', valor: datos.contexto_emocional },
         ].filter((c) => c.valor !== null && c.valor !== '');
 
   return (
