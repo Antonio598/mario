@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { publicEnv } from '@/lib/env';
 import type { RespuestasRecaida } from '@/lib/app/tipos';
 
 type Tipo = 'texto' | 'hora' | 'si_no';
@@ -114,6 +115,56 @@ export function FormularioRecaida({ consiente, onTerminar }: PropsFormulario) {
   const [error, setError] = useState<string | null>(null);
   const [hecho, setHecho] = useState(false);
 
+  // El consentimiento puede concederse aquí mismo, así que el valor que llega
+  // por props es solo el punto de partida.
+  const [tieneConsentimiento, setTieneConsentimiento] = useState(consiente);
+
+  /**
+   * Activa el consentimiento del art. 9 sin salir de la pantalla.
+   *
+   * La casilla del registro es opcional y arranca desmarcada —tiene que serlo:
+   * una casilla premarcada no es consentimiento válido—, así que la mayoría de
+   * usuarios llegan aquí sin haberla marcado. Mandarlos a Perfil para volver
+   * después es garantizar que no vuelven, y con ello se pierde justo el
+   * registro que más información aporta.
+   *
+   * Concederlo aquí es igual de válido, y probablemente mejor: es explícito,
+   * específico y se da en el momento en que el usuario entiende para qué sirve.
+   */
+  async function activarConsentimiento() {
+    setEnviando(true);
+    setError(null);
+
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user === null) {
+      setEnviando(false);
+      setError('Tu sesión ha caducado. Vuelve a entrar.');
+      return;
+    }
+
+    // Se INSERTA una fila nueva; el historial completo es la prueba que exige
+    // el art. 7.1 RGPD.
+    const { error: err } = await supabase.from('consents').insert({
+      user_id: user.id,
+      tipo: 'datos_sensibles',
+      concedido: true,
+      version_politica: publicEnv.privacyPolicyVersion,
+      origen: 'web',
+    });
+
+    setEnviando(false);
+
+    if (err) {
+      setError('No hemos podido guardar tu decisión. Inténtalo de nuevo.');
+      return;
+    }
+    setTieneConsentimiento(true);
+  }
+
   async function enviar(datos: RespuestasRecaida) {
     setEnviando(true);
     setError(null);
@@ -141,30 +192,51 @@ export function FormularioRecaida({ consiente, onTerminar }: PropsFormulario) {
   }
 
   /* ------------------------------------------------------------------ */
-  /* Sin consentimiento: se registra la recaída y se salta el formulario */
+  /* Sin consentimiento todavía: se ofrece darlo aquí mismo              */
   /* ------------------------------------------------------------------ */
-  if (!consiente && !hecho) {
+  if (!tieneConsentimiento && !hecho) {
     return (
-      <div className="mx-auto max-w-md px-5 py-16">
-        <h1 className="text-2xl">Registrar la recaída</h1>
-        <p className="mt-4 text-mg-gris-texto">
-          El detalle del protocolo incluye información sobre tu vida sexual. Para guardarlo
-          necesitamos tu consentimiento explícito, y no lo has dado.
-        </p>
-        <p className="mt-3 text-mg-gris-texto">
-          Podemos registrar el día igualmente y no guardar nada más. Puedes activarlo cuando
-          quieras desde Perfil.
+      <div className="mx-auto flex min-h-[100dvh] max-w-md flex-col justify-center px-5 py-10">
+        <p className="font-titular text-[11px] font-semibold tracking-[0.25em] text-ra-rojo uppercase">
+          Protocolo post-recaída
         </p>
 
-        {error !== null && <p className="mt-4 text-sm text-mg-rojo-claro">{error}</p>}
+        <h1 className="mt-3 font-titular text-3xl font-bold text-ra-texto">
+          Antes de empezar
+        </h1>
 
+        <p className="mt-4 text-sm leading-relaxed text-ra-texto-sec">
+          El protocolo te va a preguntar dónde, cuándo y en qué estado ocurrió. Esa
+          información describe aspectos de tu vida sexual, así que la ley exige tu permiso
+          explícito para guardarla.
+        </p>
+
+        <p className="mt-3 text-sm leading-relaxed text-ra-texto-sec">
+          Solo la ves tú. Puedes exportarla o borrarla cuando quieras desde Perfil.
+        </p>
+
+        {error !== null && <p className="mt-4 text-sm text-ra-rojo">{error}</p>}
+
+        <button
+          type="button"
+          onClick={() => void activarConsentimiento()}
+          disabled={enviando}
+          className="mg-pulsable mt-8 min-h-[56px] w-full rounded-lg bg-ra-rojo px-6 font-titular text-base font-bold tracking-wider text-white uppercase disabled:opacity-60"
+        >
+          {enviando ? 'Un momento…' : 'Acepto, empezar el protocolo'}
+        </button>
+
+        {/*
+          Salida sin consentir. El art. 7.4 RGPD exige que negarse no impida
+          usar el servicio: el día se registra igual, solo que sin detalle.
+        */}
         <button
           type="button"
           onClick={() => void enviar({})}
           disabled={enviando}
-          className="mt-8 min-h-[52px] w-full rounded-md bg-mg-rojo px-6 font-titular font-semibold tracking-wider text-mg-blanco-puro uppercase disabled:opacity-60"
+          className="mg-pulsable mt-3 min-h-[52px] w-full rounded-lg border border-ra-borde px-6 text-sm font-semibold text-ra-texto-sec disabled:opacity-60"
         >
-          {enviando ? 'Guardando…' : 'Registrar solo el día'}
+          Registrar solo el día, sin detalle
         </button>
       </div>
     );
