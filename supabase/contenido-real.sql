@@ -29,6 +29,19 @@ comment on column reset_alfa.courses.url_protocolo is
   'PDF descargable del protocolo asociado, si lo tiene.';
 
 
+alter table reset_alfa.products
+  add column if not exists mostrar_precio boolean not null default true;
+alter table reset_alfa.products
+  add column if not exists cta_texto text;
+
+comment on column reset_alfa.products.mostrar_precio is
+  'false cuando el producto no se vende directo, sino por llamada de admision. '
+  'La interfaz oculta el precio pero el dato sigue guardado, para poder volver '
+  'a venderlo directo sin recuperarlo de ningun sitio.';
+comment on column reset_alfa.products.cta_texto is
+  'Texto del boton. Nulo usa el de por defecto segun el tipo de producto.';
+
+
 -- =============================================================================
 -- 2 - AUTOR Y CATEGORIAS  (necesarios para los articulos de la web)
 -- =============================================================================
@@ -143,32 +156,28 @@ on conflict (slug) do update set
 -- 1497 USD. `precio_cents` guarda centavos: 149700.
 -- =============================================================================
 
+-- El programa no se compra por enlace: se accede tras una llamada de admision.
+-- El precio se conserva en la tabla pero no se muestra, de modo que volver a
+-- venderlo directo sea cambiar un booleano y no recuperar el dato de otro sitio.
+--
+-- Efecto secundario util: sin precio ni enlace de pago dentro de la app, la
+-- guideline 3.1.1 de Apple sobre compras externas deja de aplicar.
 insert into reset_alfa.products
-  (id, slug, nombre, descripcion, tipo, precio_cents, moneda, url_web, orden)
+  (id, slug, nombre, descripcion, tipo, precio_cents, moneda, url_web, orden,
+   mostrar_precio, cta_texto)
 values
-  ('b0000000-0000-4000-8000-000000000003', 'programa-reset-alfa', 'Reset Alfa',
-   'El programa completo: Desencadenado, Transmutacion Sexual, Liderazgo y el '
-   'archivo de mentorias grabadas.',
+  ('b0000000-0000-4000-8000-000000000003', 'programa-reset-alfa',
+   'Programa Online de Liderazgo Reset Alfa',
+   'Desencadenado, Transmutacion Sexual, Liderazgo y el archivo completo de '
+   'mentorias grabadas.',
    'programa', 149700, 'USD',
-   'https://buy.stripe.com/aFa00i5ay8YC39dgYE5os2l', 1)
+   'https://marioruperezdc.youcanbook.me', 1,
+   false, 'Agendar llamada de admision')
 on conflict (slug) do update set
   nombre = excluded.nombre, descripcion = excluded.descripcion,
   precio_cents = excluded.precio_cents, moneda = excluded.moneda,
-  url_web = excluded.url_web, orden = excluded.orden, activo = true;
-
-
--- Mastermind: por invitacion, sin enlace de compra a proposito. Un boton de
--- pago a algo que no se puede comprar solo genera solicitudes que rechazar.
-insert into reset_alfa.products
-  (id, slug, nombre, descripcion, tipo, precio_cents, moneda, url_web, orden)
-values
-  ('b0000000-0000-4000-8000-000000000004', 'mastermind-modo-guerrero',
-   'Mastermind Modo Guerrero',
-   'Tu siguiente paso en la tribu: acceder al circulo interno del Modo Guerrero.',
-   'mastermind', 0, 'EUR', null, 5)
-on conflict (id) do update set
-  slug = excluded.slug, nombre = excluded.nombre,
-  descripcion = excluded.descripcion, url_web = excluded.url_web, activo = true;
+  url_web = excluded.url_web, orden = excluded.orden, activo = true,
+  mostrar_precio = excluded.mostrar_precio, cta_texto = excluded.cta_texto;
 
 
 -- =============================================================================
@@ -196,12 +205,7 @@ values
   ('mentorias-grabadas', 'Mentorias grabadas',
    'Archivo completo de sesiones de acompanamiento del programa.',
    'premium', 'b0000000-0000-4000-8000-000000000003', 13,
-   'https://modoguerrero.es/curso/mentorias-grabadas/'),
-
-  ('mastermind', 'Mastermind Modo Guerrero',
-   'Tu siguiente paso en la tribu: acceder al circulo interno del Modo Guerrero.',
-   'premium', 'b0000000-0000-4000-8000-000000000004', 20,
-   'https://modoguerrero.es/escuela')
+   'https://modoguerrero.es/curso/mentorias-grabadas/')
 
 on conflict (slug) do update set
   titulo = excluded.titulo, descripcion = excluded.descripcion,
@@ -266,12 +270,14 @@ on conflict (slug) do update set
 -- =============================================================================
 
 update reset_alfa.products set activo = false
- where slug in ('reto-21-dias', 'libro-modo-guerrero', 'mastermind-vip');
+ where slug in ('reto-21-dias', 'libro-modo-guerrero', 'mastermind-vip',
+                'mastermind-modo-guerrero');
 
 -- Los cursos si pueden borrarse: nadie compra un curso, se compra el producto.
 delete from reset_alfa.courses
  where slug in ('potencia-sexual', 'reset', 'largas-rachas', 'identidad-alfa',
-                'fase-i-desencadenado', 'fase-ii-transmutacion', 'fase-iii-liderazgo');
+                'fase-i-desencadenado', 'fase-ii-transmutacion',
+                'fase-iii-liderazgo', 'mastermind');
 
 
 -- =============================================================================
@@ -512,7 +518,7 @@ begin
 
   raise notice '';
   raise notice 'Masterclasses y protocolos : %  (esperado 6)', v_g;
-  raise notice 'Cursos premium             : %  (esperado 5)', v_p;
+  raise notice 'Cursos premium             : %  (esperado 4)', v_p;
   raise notice 'Libros activos             : %  (esperado 3)', v_l;
   raise notice 'Programa activo            : %  (esperado 1)', v_prog;
   raise notice 'Articulos publicados       : %  (esperado 3)', v_art;

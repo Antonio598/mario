@@ -33,8 +33,7 @@ export default async function FormacionPage() {
 
   const lista = cursos ?? [];
   const gratis = lista.filter((c) => c.tipo === 'gratis');
-  const premium = lista.filter((c) => c.tipo === 'premium' && c.slug !== 'mastermind');
-  const mastermind = lista.find((c) => c.slug === 'mastermind') ?? null;
+  const premium = lista.filter((c) => c.tipo === 'premium');
 
   const tieneAcceso = programa !== null && desbloqueados.has(programa.id);
 
@@ -113,23 +112,33 @@ export default async function FormacionPage() {
       </div>
 
       {/*
-        Mastermind: por invitación, sin botón de compra a propósito. Poner un
-        botón de pago a algo que no se puede comprar solo genera solicitudes que
-        luego hay que rechazar.
+        Destacado del programa. Antes decía "Mastermind"; el nombre real del
+        producto es Programa Online de Liderazgo Reset Alfa.
+
+        No lleva precio ni enlace de pago: el acceso pasa por una llamada de
+        admisión. Efecto secundario útil, y no menor: sin precio ni compra
+        externa dentro de la app, la guideline 3.1.1 de Apple deja de aplicar.
       */}
-      {mastermind !== null && (
-        <div className="mt-4 rounded-xl bg-ra-rojo px-5 py-5 text-center text-white">
-          <p className="font-titular text-sm font-bold tracking-[0.15em] uppercase">
-            Mastermind
+      {programa !== null && !tieneAcceso && (
+        <div className="mt-4 rounded-xl bg-ra-rojo px-5 py-6 text-center text-white">
+          <p className="font-titular text-sm font-bold tracking-[0.12em] uppercase">
+            Programa Online de
             <br />
-            Modo Guerrero
+            Liderazgo Reset Alfa
           </p>
-          <p className="mt-2 text-xs leading-relaxed text-white/85">
-            Tu siguiente paso en la tribu: acceder al círculo interno del Modo Guerrero.
-          </p>
-          <span className="mt-4 inline-flex items-center gap-2 rounded-md bg-white/15 px-4 py-2 text-[11px] font-semibold tracking-wider uppercase">
-            <span aria-hidden="true">🔒</span> Acceso por invitación
-          </span>
+
+          {programa.descripcion !== null && (
+            <p className="mt-3 text-xs leading-relaxed text-white/85">{programa.descripcion}</p>
+          )}
+
+          <a
+            href={programa.url_web ?? '#'}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mg-pulsable mt-5 inline-flex min-h-[48px] items-center justify-center rounded-md bg-white px-5 text-xs font-bold tracking-wider text-ra-rojo uppercase"
+          >
+            {programa.cta_texto ?? 'Agendar llamada de admisión'}
+          </a>
         </div>
       )}
 
@@ -178,17 +187,25 @@ export default async function FormacionPage() {
             <Logo variante="programa" alto={52} />
           </div>
 
-          <p className="mt-4 text-sm text-ra-texto-sec">
-            Desencadenado, Transmutación Sexual, Liderazgo y el archivo completo de mentorías.
-          </p>
+          {programa.descripcion !== null && (
+            <p className="mt-4 text-sm text-ra-texto-sec">{programa.descripcion}</p>
+          )}
 
-          <p className="mt-5 font-titular text-3xl font-bold text-ra-texto">
-            {new Intl.NumberFormat('es-ES', {
-              style: 'currency',
-              currency: programa.moneda,
-              maximumFractionDigits: 0,
-            }).format(programa.precio_cents / 100)}
-          </p>
+          {/*
+            El precio solo se pinta si `mostrar_precio` es true. Ahora mismo no
+            lo es: el programa se vende por llamada, no por enlace. El dato
+            sigue en la tabla para poder volver a venderlo directo cambiando un
+            booleano.
+          */}
+          {programa.mostrar_precio && (
+            <p className="mt-5 font-titular text-3xl font-bold text-ra-texto">
+              {new Intl.NumberFormat('es-ES', {
+                style: 'currency',
+                currency: programa.moneda,
+                maximumFractionDigits: 0,
+              }).format(programa.precio_cents / 100)}
+            </p>
+          )}
 
           <a
             href={programa.url_web ?? '#'}
@@ -196,7 +213,7 @@ export default async function FormacionPage() {
             rel="noopener noreferrer"
             className="mg-pulsable mt-5 flex min-h-[56px] items-center justify-center rounded-lg bg-ra-rojo px-6 font-titular text-base font-bold tracking-wider text-white uppercase"
           >
-            Acceder a Reset Alfa
+            {programa.cta_texto ?? 'Agendar llamada de admisión'}
           </a>
 
           {/*

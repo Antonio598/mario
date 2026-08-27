@@ -50,17 +50,25 @@ export default async function TiendaPage() {
             <p className="mt-4 text-sm text-ra-texto-sec">{p.descripcion}</p>
           )}
 
-          <p className="mt-4 font-titular text-3xl font-bold text-ra-texto">
-            {precio(p.precio_cents, p.moneda)}
-          </p>
+          {/*
+            El precio solo aparece si `mostrar_precio` es true. El programa se
+            vende por llamada de admisión, no por enlace, así que ahora no lo
+            es. El dato sigue en la tabla: volver a venderlo directo es cambiar
+            un booleano.
+          */}
+          {p.mostrar_precio && (
+            <p className="mt-4 font-titular text-3xl font-bold text-ra-texto">
+              {precio(p.precio_cents, p.moneda)}
+            </p>
+          )}
 
           <a
             href={p.url_web ?? '#'}
             target="_blank"
             rel="noopener noreferrer"
-            className="mg-pulsable mt-4 flex min-h-[52px] items-center justify-center rounded-lg bg-ra-rojo px-6 font-titular text-sm font-bold tracking-wider text-white uppercase"
+            className="mg-pulsable mt-5 flex min-h-[52px] items-center justify-center rounded-lg bg-ra-rojo px-6 font-titular text-sm font-bold tracking-wider text-white uppercase"
           >
-            Acceder a Reset Alfa
+            {p.cta_texto ?? 'Acceder a Reset Alfa'}
           </a>
         </section>
       ))}

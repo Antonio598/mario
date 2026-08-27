@@ -243,6 +243,14 @@ export interface EsquemaResetAlfa {
         stripe_price_id: string | null;
         url_web: string | null;
         imagen_url: string | null;
+        /**
+         * false cuando el producto no se vende directo, sino tras una llamada
+         * de admision. El precio sigue guardado para poder volver a venderlo
+         * sin recuperarlo de ningun sitio.
+         */
+        mostrar_precio: boolean;
+        /** Texto del boton. Nulo usa el de por defecto segun el tipo. */
+        cta_texto: string | null;
         activo: boolean;
         orden: number;
         created_at: string;
