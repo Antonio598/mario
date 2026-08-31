@@ -27,6 +27,20 @@ function requerida(valor: string | undefined, nombre: string): string {
 }
 
 /**
+ * Valor opcional con respaldo.
+ *
+ * `??` no sirve aqui: solo cubre undefined y null, y una variable declarada
+ * pero vacia en el panel de despliegue llega como cadena vacia. Eso es
+ * exactamente lo que paso con NEXT_PUBLIC_PRIVACY_POLICY_VERSION: se colaba
+ * un '' hasta la base, que rechazaba la fila de consentimiento y dejaba al
+ * usuario bloqueado en la puerta del protocolo post-recaida.
+ */
+function conRespaldo(valor: string | undefined, respaldo: string): string {
+  const limpio = valor?.trim() ?? '';
+  return limpio === '' ? respaldo : limpio;
+}
+
+/**
  * Esquema Postgres donde vive Reset Alfa.
  *
  *   `public`      Proyecto Supabase dedicado (instalacion normal).
@@ -38,8 +52,11 @@ function requerida(valor: string | undefined, nombre: string): string {
  * a PGRST_DB_SCHEMAS del servicio `rest`, o PostgREST no lo expondra.
  */
 function esquemaValido(valor: string | undefined): EsquemaSupabase {
-  if (valor === undefined || valor === '' || valor === 'public') return 'public';
-  if (valor === 'reset_alfa') return 'reset_alfa';
+  // Se recorta por lo mismo: un espacio de sobra pegado en el panel bastaria
+  // para tumbar el arranque, y el mensaje de error no lo dejaria ver.
+  const limpio = valor?.trim() ?? '';
+  if (limpio === '' || limpio === 'public') return 'public';
+  if (limpio === 'reset_alfa') return 'reset_alfa';
   throw new Error(
     `NEXT_PUBLIC_SUPABASE_SCHEMA no valido: "${valor}". Solo se admite public o reset_alfa.`,
   );
@@ -53,7 +70,10 @@ export const publicEnv = {
     'NEXT_PUBLIC_SUPABASE_ANON_KEY',
   ),
   supabaseSchema: esquemaValido(process.env.NEXT_PUBLIC_SUPABASE_SCHEMA),
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
-  privacyPolicyVersion: process.env.NEXT_PUBLIC_PRIVACY_POLICY_VERSION ?? '2026-07-30',
-  environment: process.env.NEXT_PUBLIC_ENVIRONMENT ?? 'development',
+  siteUrl: conRespaldo(process.env.NEXT_PUBLIC_SITE_URL, 'http://localhost:3000'),
+  privacyPolicyVersion: conRespaldo(
+    process.env.NEXT_PUBLIC_PRIVACY_POLICY_VERSION,
+    '2026-07-30',
+  ),
+  environment: conRespaldo(process.env.NEXT_PUBLIC_ENVIRONMENT, 'development'),
 } as const;

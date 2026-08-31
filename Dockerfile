@@ -63,7 +63,10 @@ ARG NEXT_PUBLIC_SUPABASE_URL
 ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
 ARG NEXT_PUBLIC_SITE_URL
 ARG NEXT_PUBLIC_SUPABASE_SCHEMA=public
-ARG NEXT_PUBLIC_PRIVACY_POLICY_VERSION
+# Con valor por defecto: un ARG declarado y no pasado se promueve a ENV como
+# cadena vacia, y esa cadena vacia llegaba hasta la base, que rechazaba la
+# fila de consentimiento del art. 9 y bloqueaba el protocolo post-recaida.
+ARG NEXT_PUBLIC_PRIVACY_POLICY_VERSION=2026-07-30
 ARG NEXT_PUBLIC_ENVIRONMENT=production
 ARG NEXT_PUBLIC_GA4_MEASUREMENT_ID
 ARG NEXT_PUBLIC_ADSENSE_CLIENT_ID
