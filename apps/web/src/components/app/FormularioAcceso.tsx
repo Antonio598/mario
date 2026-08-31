@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { registrarConsentimiento } from '@/lib/app/consentimiento';
 import { publicEnv } from '@/lib/env';
 
 type Modo = 'entrar' | 'registro';
@@ -72,15 +73,11 @@ export function FormularioAcceso({ destino }: { destino: string }) {
     // Se registran AMBAS decisiones, también la negativa: poder demostrar que
     // el usuario dijo que no es tan importante como que dijo que sí (art. 7.1).
     if (data.user !== null) {
-      await supabase.from('consents').insert([
-        {
-          user_id: data.user.id,
-          tipo: 'datos_sensibles',
-          concedido: aceptaSensibles,
-          version_politica: publicEnv.privacyPolicyVersion,
-          origen: 'web',
-        },
-      ]);
+      await registrarConsentimiento(supabase, {
+        userId: data.user.id,
+        tipo: 'datos_sensibles',
+        concedido: aceptaSensibles,
+      });
     }
 
     setEnviando(false);

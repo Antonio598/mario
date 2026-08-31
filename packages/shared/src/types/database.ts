@@ -450,6 +450,22 @@ export interface EsquemaResetAlfa {
       Args: Record<string, never>;
       Returns: undefined;
     };
+    /**
+     * Registro de una decision de consentimiento (arts. 7 y 9 RGPD).
+     *
+     * Es SECURITY DEFINER y crea el perfil si falta, asi que no depende de que
+     * `authenticated` conserve el INSERT sobre la tabla. El user_id no es
+     * parametro: sale de auth.uid(), de modo que nadie puede consentir por otro.
+     */
+    dar_consentimiento: {
+      Args: {
+        p_tipo: string;
+        p_concedido: boolean;
+        p_version: string;
+        p_origen?: string;
+      };
+      Returns: Json;
+    };
     /** Rol del usuario actual. La interfaz lo usa solo para decidir que pinta. */
     mi_rol: {
       Args: Record<string, never>;

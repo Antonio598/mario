@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { publicEnv } from '@/lib/env';
+import { registrarConsentimiento } from '@/lib/app/consentimiento';
 
 interface Props {
   consienteSensibles: boolean;
@@ -34,14 +35,26 @@ export function AccionesCuenta({ consienteSensibles, timezone }: Props) {
     if (user !== null) {
       // Se INSERTA una fila nueva; nunca se modifica la anterior. El historial
       // completo es la prueba que exige el art. 7.1.
-      await supabase.from('consents').insert({
-        user_id: user.id,
+      const res = await registrarConsentimiento(supabase, {
+        userId: user.id,
         tipo: 'datos_sensibles',
         concedido: nuevo,
-        version_politica: publicEnv.privacyPolicyVersion,
-        origen: 'web',
       });
+
+      if (!res.ok) {
+        setOcupado(false);
+        // El interruptor NO se mueve si no se pudo guardar: enseñar el
+        // consentimiento como concedido cuando no consta en la base es
+        // exactamente lo que el art. 7.1 obliga a poder demostrar.
+        setAviso(
+          res.detalle === undefined
+            ? 'No hemos podido guardar tu decisión. Inténtalo de nuevo.'
+            : `No hemos podido guardar tu decisión (${res.detalle}).`,
+        );
+        return;
+      }
       setConsiente(nuevo);
+      setAviso(null);
     }
     setOcupado(false);
     router.refresh();

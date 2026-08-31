@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { publicEnv } from '@/lib/env';
+import { registrarConsentimiento } from '@/lib/app/consentimiento';
 import type { RespuestasRecaida } from '@/lib/app/tipos';
 
 type Tipo = 'texto' | 'hora' | 'si_no';
@@ -113,6 +113,7 @@ export function FormularioRecaida({ consiente, onTerminar }: PropsFormulario) {
   const [respuestas, setRespuestas] = useState<RespuestasRecaida>({});
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [detalleError, setDetalleError] = useState<string | null>(null);
   const [hecho, setHecho] = useState(false);
 
   // El consentimiento puede concederse aquí mismo, así que el valor que llega
@@ -134,6 +135,7 @@ export function FormularioRecaida({ consiente, onTerminar }: PropsFormulario) {
   async function activarConsentimiento() {
     setEnviando(true);
     setError(null);
+    setDetalleError(null);
 
     const supabase = createClient();
     const {
@@ -146,20 +148,20 @@ export function FormularioRecaida({ consiente, onTerminar }: PropsFormulario) {
       return;
     }
 
-    // Se INSERTA una fila nueva; el historial completo es la prueba que exige
-    // el art. 7.1 RGPD.
-    const { error: err } = await supabase.from('consents').insert({
-      user_id: user.id,
+    const res = await registrarConsentimiento(supabase, {
+      userId: user.id,
       tipo: 'datos_sensibles',
       concedido: true,
-      version_politica: publicEnv.privacyPolicyVersion,
-      origen: 'web',
     });
 
     setEnviando(false);
 
-    if (err) {
+    if (!res.ok) {
       setError('No hemos podido guardar tu decisión. Inténtalo de nuevo.');
+      // El detalle tecnico se muestra en pequeño. Sin él, un fallo aquí es
+      // indistinguible de otro y hay que adivinarlo a ciegas; el usuario que
+      // reporta el problema puede leerlo tal cual.
+      setDetalleError(res.detalle ?? null);
       return;
     }
     setTieneConsentimiento(true);
@@ -215,7 +217,16 @@ export function FormularioRecaida({ consiente, onTerminar }: PropsFormulario) {
           Solo la ves tú. Puedes exportarla o borrarla cuando quieras desde Perfil.
         </p>
 
-        {error !== null && <p className="mt-4 text-sm text-ra-rojo">{error}</p>}
+        {error !== null && (
+          <div className="mt-4">
+            <p className="text-sm text-ra-rojo">{error}</p>
+            {detalleError !== null && (
+              <p className="mt-1 font-mono text-[11px] break-all text-ra-texto-tenue">
+                {detalleError}
+              </p>
+            )}
+          </div>
+        )}
 
         <button
           type="button"

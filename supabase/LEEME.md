@@ -9,8 +9,9 @@ Pega cada fichero en el SQL Editor de Supabase, **en este orden**:
 | 1 | `instalacion-esquema-aislado.sql` | Crea las 18 tablas bajo `reset_alfa`, sin tocar `public` |
 | 2 | `contenido-real.sql` | Masterclasses, protocolos, libros, programa y artículos |
 | 3 | `admin-editores.sql` | *(opcional)* Panel de administración. **Cambia el correo del final por el tuyo** |
+| 4 | `arreglo-consentimiento.sql` | RPC `dar_consentimiento`. Sin él, «Acepto, empezar el protocolo» puede fallar |
 
-Los tres son idempotentes: puedes reejecutarlos sin duplicar nada.
+Los cuatro son idempotentes: puedes reejecutarlos sin duplicar nada.
 
 **El SQL Editor envuelve cada ejecución en una transacción.** Si un fichero da
 un error en cualquier punto, deshace todo lo anterior y no queda nada. Por eso
