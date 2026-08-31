@@ -6,100 +6,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { registrarConsentimiento } from '@/lib/app/consentimiento';
 import type { RespuestasRecaida } from '@/lib/app/tipos';
-
-type Tipo = 'texto' | 'hora' | 'si_no';
-
-interface Pregunta {
-  campo: keyof RespuestasRecaida;
-  tipo: Tipo;
-  titulo: string;
-  ayuda: string;
-  placeholder?: string;
-}
-
-/**
- * Las nueve preguntas de la Plantilla post-recaída, en el orden del método.
- *
- * El texto de cada `titulo` reproduce el de la plantilla en papel. Que
- * coincidan importa: el usuario que ya trabaja con el cuaderno reconoce las
- * mismas preguntas, y el registro digital y el de papel siguen siendo
- * comparables.
- *
- * La plantilla pide "lugar exacto Y hora" en una sola línea; aquí van en dos
- * pantallas porque la hora usa un selector propio y mezclarla con texto libre
- * daría respuestas inconsistentes, imposibles de agregar para el análisis de
- * patrones.
- *
- * TODAS SON OMITIBLES. Es minimización del RGPD —son datos de categoría
- * especial— y también sentido común: quien acaba de recaer no siempre puede
- * responderlo todo, y un formulario que bloquea es un formulario que se cierra.
- *
- * El tono interroga los hechos, nunca a la persona: eso es lo que evita que el
- * registro se convierta en un castigo y se deje de usar.
- */
-const PREGUNTAS: readonly Pregunta[] = [
-  {
-    campo: 'lugar',
-    tipo: 'texto',
-    titulo: 'Lugar exacto de la recaída',
-    ayuda: 'Cuanto más concreto, más fácil será cambiarlo.',
-    placeholder: 'Mi habitación, en la cama',
-  },
-  {
-    campo: 'hora',
-    tipo: 'hora',
-    titulo: 'Hora de la recaída',
-    ayuda: 'Los patrones aparecen solos cuando acumulas varios registros.',
-  },
-  {
-    campo: 'trigger',
-    tipo: 'texto',
-    titulo: 'Trigger o disparador',
-    ayuda: 'El momento exacto en que algo cambió: un pensamiento, una imagen, un estado.',
-    placeholder: 'Aburrimiento mirando el móvil sin rumbo',
-  },
-  {
-    campo: 'accion_correctiva',
-    tipo: 'texto',
-    titulo: 'Acción que puedo aplicar ahora para eliminar el trigger',
-    ayuda: 'Una acción concreta y pequeña. No un propósito.',
-    placeholder: 'Dejar el móvil cargando en la cocina por la noche',
-  },
-  {
-    campo: 'ejecuto_pad',
-    tipo: 'si_no',
-    titulo: '¿Ejecuté mi P.A.D?',
-    ayuda: 'Tu Protocolo Anti-Deseo.',
-  },
-  {
-    campo: 'motivo_fallo',
-    tipo: 'texto',
-    titulo: 'Si lo ejecutaste, ¿por qué falló? Si no, ¿por qué no lo ejecutaste?',
-    ayuda: 'Los hechos, sin juicio. Es información, no una falta.',
-    placeholder: 'No me acordé en el momento',
-  },
-  {
-    campo: 'ajuste_pad',
-    tipo: 'texto',
-    titulo: '¿Qué debo cambiar en mi P.A.D para hacerlo 100 % efectivo?',
-    ayuda: 'Un ajuste concreto para la próxima vez.',
-    placeholder: 'Añadir un paso antes: levantarme y salir de la habitación',
-  },
-  {
-    campo: 'contexto_ambiental',
-    tipo: 'texto',
-    titulo: 'Contexto ambiental',
-    ayuda: 'Solo o acompañado, dentro o fuera, con o sin pantallas.',
-    placeholder: 'Solo en casa, de noche, sin nada planificado',
-  },
-  {
-    campo: 'contexto_emocional',
-    tipo: 'texto',
-    titulo: 'Contexto psicológico y emocional',
-    ayuda: 'Cansancio, estrés, soledad, euforia. Lo que hubiera.',
-    placeholder: 'Cansado y con la sensación de haber perdido el día',
-  },
-];
+import { PREGUNTAS } from '@/lib/app/preguntas-recaida';
 
 interface PropsFormulario {
   consiente: boolean;
@@ -172,7 +79,7 @@ export function FormularioRecaida({ consiente, onTerminar }: PropsFormulario) {
     setError(null);
 
     const supabase = createClient();
-    const { error: err } = await supabase.rpc('guardar_recaida', {
+    const { data, error: err } = await supabase.rpc('guardar_recaida', {
       p_lugar: datos.lugar ?? null,
       p_hora: datos.hora ?? null,
       p_trigger: datos.trigger ?? null,
@@ -191,6 +98,24 @@ export function FormularioRecaida({ consiente, onTerminar }: PropsFormulario) {
       return;
     }
     setHecho(true);
+
+    /*
+      Aviso por correo al equipo. Va DESPUES de guardar y sin `await`: el
+      registro ya esta en la base, y esperar a un servicio externo solo serviria
+      para dejar mirando una pantalla de carga a quien acaba de recaer.
+
+      Tampoco se comprueba el resultado. Si el correo falla, falla en el log del
+      servidor, no delante del usuario: el registro es lo que importa y ya
+      esta hecho.
+
+      El servidor vuelve a comprobar el consentimiento antes de enviar nada.
+    */
+    const resumen = (data ?? {}) as { racha_anterior?: number };
+    void fetch('/api/aviso-recaida', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...datos, racha_anterior: resumen.racha_anterior ?? null }),
+    }).catch(() => undefined);
   }
 
   /* ------------------------------------------------------------------ */
@@ -213,8 +138,16 @@ export function FormularioRecaida({ consiente, onTerminar }: PropsFormulario) {
           explícito para guardarla.
         </p>
 
+        {/*
+          Este parrafo dice la verdad completa a proposito. Las respuestas se
+          envian por correo al equipo de Modo Guerrero para el seguimiento, y un
+          consentimiento que oculta a quien van a llegar los datos no es valido:
+          el art. 13.1.e RGPD obliga a nombrar a los destinatarios ANTES.
+        */}
         <p className="mt-3 text-sm leading-relaxed text-ra-texto-sec">
-          Solo la ves tú. Puedes exportarla o borrarla cuando quieras desde Perfil.
+          Tus respuestas se guardan en tu historial y se envían al equipo de Modo Guerrero
+          para poder darte seguimiento. Nadie más las ve. Puedes exportarlas o borrarlas
+          cuando quieras desde Perfil.
         </p>
 
         {error !== null && (

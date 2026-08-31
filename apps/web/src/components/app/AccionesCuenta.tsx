@@ -127,8 +127,8 @@ export function AccionesCuenta({ consienteSensibles, timezone }: Props) {
           <span>
             <span className="text-sm font-medium text-ra-negro">Guardar el detalle de mis recaídas</span>
             <span className="mt-1 block text-xs text-ra-texto-tenue">
-              Incluye información sobre tu vida sexual. Sin esto se registra el día, pero no las
-              respuestas del protocolo.
+              Incluye información sobre tu vida sexual y se envía al equipo de Modo Guerrero para
+              tu seguimiento. Sin esto se registra el día, pero no las respuestas del protocolo.
             </span>
           </span>
           <input

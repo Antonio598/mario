@@ -80,6 +80,21 @@ export default function PrivacidadPage() {
         </section>
 
         <section>
+          <h2 className="text-xl text-mg-blanco">Quien mas los recibe</h2>
+          <p className="mt-2">
+            Cuando completas el protocolo posterior a una recaida, tus respuestas se envian por
+            correo al equipo de Modo Guerrero para poder darte seguimiento. Ese envio solo ocurre
+            si has dado el consentimiento explicito del art. 9: si lo niegas o lo retiras, se
+            registra el dia y no se envia nada.
+          </p>
+          <p className="mt-2">
+            El correo se entrega a traves de Resend (Resend, Inc.), que actua como encargado del
+            tratamiento. No se cede a nadie mas, no se usa con fines publicitarios y no se elabora
+            ningun perfil con ello.
+          </p>
+        </section>
+
+        <section>
           <h2 className="text-xl text-mg-blanco">Publicidad y cookies</h2>
           <p className="mt-2">
             {/* Se activa en la Fase 3, junto con el banner de consentimiento. */}
