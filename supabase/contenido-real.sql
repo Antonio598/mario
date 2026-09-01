@@ -217,7 +217,7 @@ on conflict (slug) do update set
 -- 6 - LIBROS
 --
 -- Los dos primeros se compran en Amazon. Un enlace a Amazon convierte mejor que
--- uno a tienda propia —la gente ya tiene la cuenta y el pago guardado— a cambio
+-- uno a tienda propia (la gente ya tiene la cuenta y el pago guardado) a cambio
 -- de su comision. Es decision de negocio, no tecnica.
 --
 -- El Cuaderno de Bitacora sigue en la tienda propia porque no esta en Amazon.
@@ -274,10 +274,24 @@ update reset_alfa.products set activo = false
                 'mastermind-modo-guerrero');
 
 -- Los cursos si pueden borrarse: nadie compra un curso, se compra el producto.
+--
+-- Se borra por lista blanca y no por lista negra. Con una lista negra hay que
+-- acordarse de anadir cada slug antiguo, y el que se olvide se queda para
+-- siempre en pantalla junto al nuevo, con su titulo viejo y sus enlaces viejos.
+-- Este fichero es la fuente de verdad del catalogo: lo que no esta aqui arriba
+-- no debe existir en la tabla.
 delete from reset_alfa.courses
- where slug in ('potencia-sexual', 'reset', 'largas-rachas', 'identidad-alfa',
-                'fase-i-desencadenado', 'fase-ii-transmutacion',
-                'fase-iii-liderazgo', 'mastermind');
+ where slug not in (
+   'masterclass-potencia-sexual',
+   'masterclass-reset',
+   'masterclass-dejar-el-porno',
+   'masterclass-identidad-alfa',
+   'masterclass-disfunciones-sexuales',
+   'protocolo-largas-rachas',
+   'desencadenado',
+   'transmutacion-sexual',
+   'liderazgo',
+   'mentorias-grabadas');
 
 
 -- =============================================================================
@@ -523,4 +537,12 @@ begin
   raise notice 'Programa activo            : %  (esperado 1)', v_prog;
   raise notice 'Articulos publicados       : %  (esperado 3)', v_art;
   raise notice '';
+
+  -- Si estos numeros no cuadran, lo normal es que este fichero no se haya
+  -- llegado a ejecutar y la app siga sirviendo el contenido de la primera
+  -- carga: titulos viejos, descripciones viejas y enlaces que no son los
+  -- definitivos.
+  if v_g <> 6 or v_p <> 4 then
+    raise notice 'AVISO: el catalogo no cuadra. Vuelve a ejecutar este fichero entero.';
+  end if;
 end $$;
