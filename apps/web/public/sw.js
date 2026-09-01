@@ -23,7 +23,7 @@
  * limpieza de las cachés viejas.
  */
 
-const VERSION = 'reset-alfa-v2';
+const VERSION = 'reset-alfa-v3';
 const CACHE_ESTATICOS = `${VERSION}-estaticos`;
 
 /** Mínimo para que la pantalla de sin conexión se vea con la marca puesta. */

@@ -173,7 +173,7 @@ export default async function TiendaPage() {
               <path d={b.d} />
             </svg>
             <p className="mt-1.5 text-[10px] font-semibold text-ra-texto">{b.t}</p>
-            <p className="text-[9px] leading-tight text-ra-texto-tenue">{b.s}</p>
+            <p className="text-[10px] leading-tight text-ra-texto-tenue">{b.s}</p>
           </li>
         ))}
       </ul>

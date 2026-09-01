@@ -53,8 +53,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="ra-app flex min-h-[100dvh] flex-col bg-ra-fondo">
       {/* Header con logo Reset Alfa */}
-      <header className="sticky top-0 z-50 border-b border-ra-borde bg-ra-superficie/90 backdrop-blur-xl backdrop-saturate-150">
-        <div className="mx-auto flex h-[60px] max-w-lg items-center justify-between px-5">
+      <header className="ra-cabecera sticky top-0 z-50 border-b border-ra-borde bg-ra-superficie/90 backdrop-blur-xl backdrop-saturate-150">
+        <div className="mx-auto flex h-[60px] max-w-md items-center justify-between px-5">
           <Link href="/app" className="flex items-center gap-2.5">
             <Image
               src="/casco-espartano.svg"
@@ -68,7 +68,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               <span className="font-titular text-lg font-bold tracking-[0.08em] text-ra-texto uppercase">
                 Reset<span className="text-ra-rojo"> Alfa</span>
               </span>
-              <p className="mt-0.5 text-[8px] font-semibold tracking-[0.22em] text-ra-texto-tenue uppercase">
+              {/* 8 px era ilegible en un movil. 9,5 con menos tracking cabe
+                  igual y se lee. */}
+              <p className="mt-0.5 text-[9.5px] font-semibold tracking-[0.16em] text-ra-texto-tenue uppercase">
                 Disciplina | Enfoque | Libertad
               </p>
             </div>
@@ -105,10 +107,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       </header>
 
       {/*
-        pb-24 reserva el hueco de la barra inferior fija. Sin él, el último
-        elemento de cada pantalla queda tapado por la navegación.
+        `ra-contenido` reserva el hueco de la barra inferior fija MAS la barra
+        de gestos del iPhone. Antes era un `pb-24` fijo que no sabia nada del
+        area segura: en un iPhone con barra de gestos, el ultimo elemento de
+        cada pantalla quedaba debajo y no se podia tocar.
       */}
-      <main className="mg-pagina flex-1 pb-24">{children}</main>
+      <main className="mg-pagina ra-contenido flex-1">{children}</main>
       <RegistrarSW />
       <NavegacionApp />
     </div>

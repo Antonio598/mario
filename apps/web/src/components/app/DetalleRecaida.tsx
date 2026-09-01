@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { useBloqueoScroll } from '@/lib/app/useBloqueoScroll';
 import { fechaLarga } from '@reset-alfa/shared';
 import type { Tables } from '@reset-alfa/shared';
 
@@ -20,6 +21,10 @@ type Relapse = Tables<'relapses'>;
 export function DetalleRecaida({ fecha, onCerrar }: { fecha: string; onCerrar: () => void }) {
   const [datos, setDatos] = useState<Relapse | null>(null);
   const [cargando, setCargando] = useState(true);
+
+  // La ficha esta montada solo mientras se muestra, asi que el bloqueo va
+  // siempre activo: se levanta solo al desmontarse.
+  useBloqueoScroll(true);
 
   useEffect(() => {
     let vivo = true;
@@ -70,7 +75,7 @@ export function DetalleRecaida({ fecha, onCerrar }: { fecha: string; onCerrar: (
       */}
       <div
         onClick={(e) => e.stopPropagation()}
-        className="mg-subir max-h-[85dvh] w-full max-w-md overflow-y-auto rounded-t-2xl border border-ra-borde bg-ra-superficie p-6 sm:rounded-2xl"
+        className="ra-hoja mg-subir max-h-[85dvh] w-full max-w-md overflow-y-auto rounded-t-2xl border border-ra-borde bg-ra-superficie p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] sm:rounded-2xl"
       >
         {/* Asa: en una hoja que sube desde abajo indica que se puede cerrar. */}
         <div

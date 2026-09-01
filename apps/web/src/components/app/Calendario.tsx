@@ -86,8 +86,13 @@ export function Calendario({ diasIniciales, anioInicial, mesInicial }: Props) {
   const flecha =
     'mg-pulsable flex h-10 w-10 items-center justify-center rounded-full border border-ra-borde text-ra-rojo transition-colors hover:border-ra-rojo disabled:opacity-25 disabled:hover:border-ra-borde';
 
+  /*
+    Menos margen lateral en movil. Con `px-4` y `gap-1.5`, en un telefono de 390
+    px cada casilla quedaba en 40 px: por debajo del minimo de 44 que hace falta
+    para acertar con el pulgar, y los dias de recaida son pulsables.
+  */
   return (
-    <section className="ra-card px-4 py-5">
+    <section className="ra-card px-2 py-5 sm:px-4">
       <div className="flex items-center justify-between">
         <button
           type="button"
@@ -138,7 +143,7 @@ export function Calendario({ diasIniciales, anioInicial, mesInicial }: Props) {
       </div>
 
       <div
-        className={`mt-3 grid grid-cols-7 gap-1.5 transition-opacity ${
+        className={`mt-3 grid grid-cols-7 gap-1 transition-opacity sm:gap-1.5 ${
           cargando ? 'opacity-40' : 'opacity-100'
         }`}
       >

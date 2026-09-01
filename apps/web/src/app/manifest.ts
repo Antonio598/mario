@@ -24,8 +24,14 @@ export default function manifest(): MetadataRoute.Manifest {
     scope: '/',
     display: 'standalone',
     orientation: 'portrait',
-    background_color: '#F5F5F5',
-    theme_color: '#FFFFFF',
+    /*
+      Colores de la pantalla de arranque. Van en oscuro porque la app arranca
+      en oscuro: con el blanco anterior, abrir el icono instalado daba un
+      fogonazo blanco antes de pintar la interfaz negra. En una app que se abre
+      de noche, ese fogonazo es justo lo que hace que se cierre.
+    */
+    background_color: '#0A0A0A',
+    theme_color: '#0A0A0A',
     lang: 'es',
     categories: ['lifestyle', 'productivity', 'health'],
     icons: [

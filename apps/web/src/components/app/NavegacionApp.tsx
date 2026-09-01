@@ -63,9 +63,8 @@ export function NavegacionApp() {
     <nav
       aria-label="Navegación principal"
       className="ra-nav-bottom fixed inset-x-0 bottom-0 z-50"
-      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
-      <ul className="mx-auto flex max-w-lg">
+      <ul className="mx-auto flex max-w-md">
         {PESTANAS.map((p) => {
           // `/app` solo está activo en la ruta exacta; el resto también en sus
           // subrutas. Sin esta distinción, Inicio se quedaría marcado siempre.
@@ -76,7 +75,7 @@ export function NavegacionApp() {
               <Link
                 href={p.href}
                 aria-current={activo ? 'page' : undefined}
-                className={`mg-pulsable relative flex min-h-[56px] flex-col items-center justify-center gap-1 py-2 text-[11px] font-medium transition-colors ${
+                className={`mg-pulsable relative flex min-h-[var(--ra-nav-h)] flex-col items-center justify-center gap-1 py-2 text-[11px] font-medium transition-colors ${
                   activo
                     ? 'text-ra-rojo'
                     : 'text-ra-texto-tenue hover:text-ra-texto-sec'

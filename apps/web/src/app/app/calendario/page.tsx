@@ -45,7 +45,7 @@ export default async function CalendarioPage() {
           { t: 'Días totales', v: estado?.dias_totales ?? 0 },
         ].map((s) => (
           <div key={s.t} className="ra-card px-2 py-4 text-center">
-            <dt className="text-[9px] font-semibold tracking-widest text-ra-texto-tenue uppercase">
+            <dt className="text-[10px] leading-tight font-semibold tracking-wider text-ra-texto-tenue uppercase">
               {s.t}
             </dt>
             <dd className="mt-1.5">

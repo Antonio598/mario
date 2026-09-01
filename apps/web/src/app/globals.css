@@ -903,3 +903,111 @@ h3 {
   border: 0;
   background: linear-gradient(90deg, transparent, var(--color-ra-borde), transparent);
 }
+
+/* ==========================================================================
+   Reset Alfa · Movil
+   --------------------------------------------------------------------------
+   La app se usa casi siempre con una mano, de noche y en un telefono. Lo que
+   sigue no es "adaptar a pantalla pequena" -el ancho ya estaba resuelto con
+   max-w-md- sino las cosas que solo fallan en un movil real: el area segura
+   del iPhone, el zoom automatico de iOS al enfocar un campo, el rebote del
+   scroll detras de una hoja abierta y el retardo de 300 ms al tocar.
+   ========================================================================== */
+
+/**
+ * Alto de la barra inferior. Se declara como variable para que el hueco que
+ * reserva el contenido y el alto real de la barra no puedan desincronizarse:
+ * antes eran un `pb-24` y un `min-h-[56px]` en ficheros distintos.
+ */
+:root {
+  --ra-nav-h: 60px;
+}
+
+/**
+ * Hueco inferior del contenido: barra + barra de gestos del iPhone + aire.
+ *
+ * `env(safe-area-inset-bottom)` solo devuelve algo distinto de cero si el
+ * viewport lleva `viewport-fit=cover`, que es lo que se acaba de anadir en el
+ * layout raiz. Antes valia 0 y la ultima fila quedaba bajo la barra de gestos.
+ */
+.ra-contenido {
+  padding-bottom: calc(var(--ra-nav-h) + env(safe-area-inset-bottom, 0px) + 1.5rem);
+}
+
+/** Cabecera pegajosa: baja lo que ocupe la barra de estado en modo app. */
+.ra-cabecera {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.ra-nav-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/**
+ * Carrusel horizontal sin barra de desplazamiento visible.
+ *
+ * La clase `scrollbar-none` se estaba usando en el carrusel de Inicio y NO
+ * existia: Tailwind no la trae. Aqui esta.
+ */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/**
+ * Sin retardo de 300 ms al tocar.
+ *
+ * Los navegadores moviles esperaban ese tiempo para distinguir un toque de un
+ * doble toque para hacer zoom. `manipulation` desactiva el doble toque en estos
+ * elementos -no en la pagina- y el toque responde al instante.
+ */
+button,
+a,
+[role='tab'],
+[role='radio'],
+label {
+  touch-action: manipulation;
+}
+
+/**
+ * iOS amplia la pagina automaticamente al enfocar un campo cuyo texto mida
+ * menos de 16 px, y despues no vuelve a su sitio: el usuario se queda con la
+ * interfaz descuadrada. `max()` respeta cualquier tamano mayor.
+ */
+@media (max-width: 640px) {
+  input,
+  textarea,
+  select {
+    font-size: max(16px, 1em);
+  }
+}
+
+/**
+ * Una palabra muy larga -una URL pegada en el protocolo, un correo- estiraba
+ * la pagina a lo ancho y desplazaba toda la interfaz.
+ */
+body {
+  overflow-wrap: break-word;
+}
+
+/**
+ * Hojas y modales: al llegar al final de su scroll, el gesto pasaba a la
+ * pagina de debajo y esta se movia detras. `contain` corta esa propagacion.
+ */
+.ra-hoja {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/**
+ * Pantallas muy bajas -un iPhone SE con el teclado abierto-. El contador de
+ * racha ocupaba tanto que el boton de check-in quedaba fuera de la vista.
+ */
+@media (max-height: 700px) {
+  .ra-titulo {
+    font-size: 1.625rem;
+  }
+}

@@ -48,12 +48,44 @@ export const metadata: Metadata = {
     publicEnv.environment === 'production'
       ? { index: true, follow: true }
       : { index: false, follow: false },
+  /**
+   * `apple` es obligatorio aparte del manifiesto: Safari no lee los iconos del
+   * manifest. Sin esta linea, "Anadir a pantalla de inicio" guarda una captura
+   * de la pagina en vez del logotipo.
+   */
+  icons: {
+    icon: [{ url: '/icono.svg', type: 'image/svg+xml' }],
+    apple: [{ url: '/logos/app.png', sizes: '180x180' }],
+  },
+  appleWebApp: {
+    capable: true,
+    title: 'Reset Alfa',
+    // `black-translucent` deja que el contenido suba bajo la barra de estado.
+    // Es lo que hace falta para que el degradado de la cabecera llegue arriba
+    // del todo en modo app; el hueco lo reserva el safe-area del header.
+    statusBarStyle: 'black-translucent',
+  },
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0A0A0A',
+  /**
+   * `viewportFit: 'cover'` es lo que hace que `env(safe-area-inset-*)` devuelva
+   * algo distinto de cero en un iPhone. Sin el, el hueco que la barra inferior
+   * reserva para la barra de gestos vale 0 y la ultima fila de botones queda
+   * debajo, donde no se puede pulsar.
+   */
+  viewportFit: 'cover',
   width: 'device-width',
   initialScale: 1,
+  /*
+   * Sin `maximumScale` ni `userScalable: false`: bloquear el zoom es un fallo
+   * de accesibilidad, e iOS lo ignora desde hace varias versiones de todos
+   * modos.
+   */
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#F5F5F5' },
+    { media: '(prefers-color-scheme: dark)', color: '#0A0A0A' },
+  ],
 };
 
 /**

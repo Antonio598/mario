@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { useBloqueoScroll } from '@/lib/app/useBloqueoScroll';
 import { FormularioRecaida } from './FormularioRecaida';
 import type { EstadoDiario } from '@/lib/app/tipos';
 
@@ -27,6 +28,8 @@ export function ModalArranque({ estado }: { estado: EstadoDiario }) {
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  useBloqueoScroll(true);
+
   async function confirmarRacha() {
     setError(null);
     setEnviando(true);
@@ -45,7 +48,7 @@ export function ModalArranque({ estado }: { estado: EstadoDiario }) {
 
   if (fase === 'formulario') {
     return (
-      <div className="fixed inset-0 z-[60] overflow-y-auto bg-ra-fondo">
+      <div className="ra-hoja fixed inset-0 z-[60] overflow-y-auto bg-ra-fondo">
         <FormularioRecaida
           consiente={estado.consiente_sensibles}
           onTerminar={() => router.refresh()}

@@ -136,7 +136,12 @@ export default async function AppInicioPage() {
           </p>
 
           {/* Carrusel horizontal */}
-          <div className="mt-4 -mx-5 flex gap-3 overflow-x-auto px-5 pb-2 snap-x snap-mandatory scrollbar-none">
+          {/*
+            `overscroll-x-contain`: al llegar al final del carrusel, seguir
+            arrastrando disparaba el gesto de "atras" del navegador y sacaba al
+            usuario de la app.
+          */}
+          <div className="scrollbar-none mt-4 -mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain px-5 pb-2">
             {masterclasses.map((c) => (
               <Link
                 key={c.id}
