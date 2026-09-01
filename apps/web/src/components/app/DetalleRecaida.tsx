@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useBloqueoScroll } from '@/lib/app/useBloqueoScroll';
+import { Portal } from './Portal';
 import { fechaLarga } from '@reset-alfa/shared';
 import type { Tables } from '@reset-alfa/shared';
 
@@ -61,6 +62,7 @@ export function DetalleRecaida({ fecha, onCerrar }: { fecha: string; onCerrar: (
         ].filter((c) => c.valor !== null && c.valor !== '');
 
   return (
+    <Portal>
     <div
       role="dialog"
       aria-modal="true"
@@ -135,5 +137,6 @@ export function DetalleRecaida({ fecha, onCerrar }: { fecha: string; onCerrar: (
         )}
       </div>
     </div>
+    </Portal>
   );
 }

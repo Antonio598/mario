@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { useBloqueoScroll } from '@/lib/app/useBloqueoScroll';
+import { Portal } from './Portal';
 import { FormularioRecaida } from './FormularioRecaida';
 import type { EstadoDiario } from '@/lib/app/tipos';
 
@@ -81,6 +82,7 @@ export function ModalArranque({ estado }: { estado: EstadoDiario }) {
 
   if (resuelto !== null) {
     return (
+      <Portal>
       <div
         role="dialog"
         aria-modal="true"
@@ -96,21 +98,25 @@ export function ModalArranque({ estado }: { estado: EstadoDiario }) {
           </button>
         </div>
       </div>
+      </Portal>
     );
   }
 
   if (fase === 'formulario') {
     return (
-      <div className="ra-hoja fixed inset-0 z-[60] overflow-y-auto bg-ra-fondo">
-        <FormularioRecaida
-          consiente={estado.consiente_sensibles}
-          onTerminar={() => router.refresh()}
-        />
-      </div>
+      <Portal>
+        <div className="ra-hoja fixed inset-0 z-[60] overflow-y-auto bg-ra-fondo">
+          <FormularioRecaida
+            consiente={estado.consiente_sensibles}
+            onTerminar={() => router.refresh()}
+          />
+        </div>
+      </Portal>
     );
   }
 
   return (
+    <Portal>
     <div
       role="dialog"
       aria-modal="true"
@@ -164,5 +170,6 @@ export function ModalArranque({ estado }: { estado: EstadoDiario }) {
         </p>
       </div>
     </div>
+    </Portal>
   );
 }

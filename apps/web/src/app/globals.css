@@ -99,7 +99,12 @@ body {
     transparent 70%
   );
   background-repeat: no-repeat;
-  background-attachment: fixed;
+  /*
+    Sin `background-attachment: fixed`. En movil obliga al navegador a repintar
+    el fondo entero en cada fotograma del desplazamiento, y el scroll se vuelve
+    pastoso. El halo esta arriba del todo: que acompane a la pagina no se nota,
+    y el desplazamiento pasa a ir suelto.
+  */
 }
 
 h1,
@@ -893,7 +898,6 @@ h3 {
     transparent 70%
   );
   background-repeat: no-repeat;
-  background-attachment: fixed;
 }
 
 /* --- Separador con aire -------------------------------------------------- */
@@ -1009,5 +1013,26 @@ body {
 @media (max-height: 700px) {
   .ra-titulo {
     font-size: 1.625rem;
+  }
+}
+
+/**
+ * Desenfoque de fondo solo donde sale barato.
+ *
+ * La cabecera y la barra inferior llevaban `backdrop-filter`. Ese efecto
+ * obliga a recomponer lo que hay debajo en CADA fotograma del desplazamiento, y
+ * son DOS capas a la vez, una arriba y otra abajo. En un movil de gama media
+ * eso es exactamente la sensacion de scroll pastoso.
+ *
+ * En pantalla tactil se cambia por un fondo opaco: se ve practicamente igual
+ * -detras hay un fondo casi plano- y el desplazamiento va suelto. El desenfoque
+ * se conserva en escritorio, donde sobra potencia.
+ */
+@media (hover: none), (max-width: 768px) {
+  .ra-cabecera,
+  .ra-nav-bottom {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background-color: var(--color-ra-superficie);
   }
 }
