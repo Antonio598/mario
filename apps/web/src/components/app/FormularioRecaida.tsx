@@ -124,13 +124,9 @@ export function FormularioRecaida({ consiente, onTerminar }: PropsFormulario) {
   if (!tieneConsentimiento && !hecho) {
     return (
       <div className="mx-auto flex min-h-[100dvh] max-w-md flex-col justify-center px-5 py-10">
-        <p className="font-titular text-[11px] font-semibold tracking-[0.25em] text-ra-rojo uppercase">
-          Protocolo post-recaída
-        </p>
+        <p className="ra-kicker">Protocolo post-recaída</p>
 
-        <h1 className="mt-3 font-titular text-3xl font-bold text-ra-texto">
-          Antes de empezar
-        </h1>
+        <h1 className="ra-titulo mt-3">Antes de empezar</h1>
 
         <p className="mt-4 text-sm leading-relaxed text-ra-texto-sec">
           El protocolo te va a preguntar dónde, cuándo y en qué estado ocurrió. Esa
@@ -165,7 +161,7 @@ export function FormularioRecaida({ consiente, onTerminar }: PropsFormulario) {
           type="button"
           onClick={() => void activarConsentimiento()}
           disabled={enviando}
-          className="mg-pulsable mt-8 min-h-[56px] w-full rounded-lg bg-ra-rojo px-6 font-titular text-base font-bold tracking-wider text-white uppercase disabled:opacity-60"
+          className="ra-boton mt-8"
         >
           {enviando ? 'Un momento…' : 'Acepto, empezar el protocolo'}
         </button>
@@ -178,7 +174,7 @@ export function FormularioRecaida({ consiente, onTerminar }: PropsFormulario) {
           type="button"
           onClick={() => void enviar({})}
           disabled={enviando}
-          className="mg-pulsable mt-3 min-h-[52px] w-full rounded-lg border border-ra-borde px-6 text-sm font-semibold text-ra-texto-sec disabled:opacity-60"
+          className="ra-boton-sec mt-3"
         >
           Registrar solo el día, sin detalle
         </button>
@@ -192,21 +188,21 @@ export function FormularioRecaida({ consiente, onTerminar }: PropsFormulario) {
   if (hecho) {
     return (
       <div className="mx-auto max-w-md px-5 py-16">
-        <p className="mg-kicker">Registrado</p>
-        <h1 className="mt-3 text-3xl">Esto no borra lo anterior</h1>
+        <p className="ra-kicker">Registrado</p>
+        <h1 className="ra-titulo mt-3">Esto no borra lo anterior</h1>
 
-        <p className="mt-5 text-mg-gris-texto">
+        <p className="mt-5 text-ra-texto-sec">
           Los días que ya sostuviste siguen siendo tuyos. Ahora tienes algo que antes no tenías:
           sabes dónde, cuándo y qué lo disparó.
         </p>
-        <p className="mt-3 text-mg-gris-texto">
+        <p className="mt-3 text-ra-texto-sec">
           Mañana el contador vuelve a empezar. Hoy solo tienes que cerrar esta pantalla.
         </p>
 
         <button
           type="button"
           onClick={() => (onTerminar ? onTerminar() : router.push('/app'))}
-          className="mt-9 min-h-[52px] w-full rounded-md bg-mg-rojo px-6 font-titular font-semibold tracking-wider text-mg-blanco-puro uppercase"
+          className="ra-boton mt-9"
         >
           Volver
         </button>
@@ -245,15 +241,15 @@ export function FormularioRecaida({ consiente, onTerminar }: PropsFormulario) {
         aria-valuemin={1}
         aria-valuemax={PREGUNTAS.length}
         aria-valuenow={paso + 1}
-        className="h-[3px] w-full overflow-hidden rounded bg-mg-negro-borde"
+        className="h-[3px] w-full overflow-hidden rounded bg-ra-borde"
       >
         <div
-          className="h-full bg-mg-rojo transition-[width] duration-300 ease-out"
+          className="h-full bg-ra-rojo transition-[width] duration-300 ease-out"
           style={{ width: `${((paso + 1) / PREGUNTAS.length) * 100}%` }}
         />
       </div>
 
-      <p className="mt-3 text-xs text-mg-gris-tenue">
+      <p className="mt-3 text-xs text-ra-texto-tenue">
         {paso + 1} de {PREGUNTAS.length}
       </p>
 
@@ -264,8 +260,8 @@ export function FormularioRecaida({ consiente, onTerminar }: PropsFormulario) {
           reutiliza el mismo nodo del DOM.
         */}
         <div key={pregunta.campo} className="mg-entrada">
-          <h1 className="text-2xl sm:text-3xl">{pregunta.titulo}</h1>
-          <p className="mt-3 text-sm text-mg-gris-tenue">{pregunta.ayuda}</p>
+          <h1 className="ra-titulo text-2xl sm:text-3xl">{pregunta.titulo}</h1>
+          <p className="mt-3 text-sm text-ra-texto-tenue">{pregunta.ayuda}</p>
 
           <div className="mt-7">
             {pregunta.tipo === 'si_no' ? (
@@ -280,8 +276,8 @@ export function FormularioRecaida({ consiente, onTerminar }: PropsFormulario) {
                     onClick={() => responder(o.v)}
                     className={`min-h-[52px] rounded-md border font-titular tracking-wider uppercase transition-colors ${
                       valor === o.v
-                        ? 'border-mg-rojo bg-mg-rojo text-mg-blanco-puro'
-                        : 'border-mg-negro-borde text-mg-gris-texto hover:border-mg-gris-tenue'
+                        ? 'border-ra-rojo bg-ra-rojo text-white'
+                        : 'border-ra-borde text-ra-texto-sec hover:border-ra-texto-tenue'
                     }`}
                   >
                     {o.t}
@@ -293,7 +289,7 @@ export function FormularioRecaida({ consiente, onTerminar }: PropsFormulario) {
                 type="time"
                 value={typeof valor === 'string' ? valor : ''}
                 onChange={(e) => responder(e.target.value === '' ? null : e.target.value)}
-                className="w-full rounded-md border border-mg-negro-borde bg-mg-negro-elevado px-4 py-3 text-lg"
+                className="w-full rounded-md border border-ra-borde bg-ra-fondo px-4 py-3 text-lg"
               />
             ) : (
               <textarea
@@ -302,21 +298,21 @@ export function FormularioRecaida({ consiente, onTerminar }: PropsFormulario) {
                 value={typeof valor === 'string' ? valor : ''}
                 placeholder={pregunta.placeholder}
                 onChange={(e) => responder(e.target.value === '' ? null : e.target.value)}
-                className="w-full resize-none rounded-md border border-mg-negro-borde bg-mg-negro-elevado px-4 py-3 text-base placeholder:text-mg-gris-apagado"
+                className="w-full resize-none rounded-md border border-ra-borde bg-ra-fondo px-4 py-3 text-base placeholder:text-ra-texto-tenue"
               />
             )}
           </div>
         </div>
       </div>
 
-      {error !== null && <p className="mb-3 text-sm text-mg-rojo-claro">{error}</p>}
+      {error !== null && <p className="mb-3 text-sm text-ra-rojo">{error}</p>}
 
       <div className="flex items-center gap-3">
         {paso > 0 && (
           <button
             type="button"
             onClick={() => setPaso((p) => p - 1)}
-            className="min-h-[52px] rounded-md border border-mg-negro-borde px-5 text-mg-gris-texto"
+            className="ra-boton-sec ra-boton-auto"
           >
             Atrás
           </button>
@@ -326,7 +322,7 @@ export function FormularioRecaida({ consiente, onTerminar }: PropsFormulario) {
           type="button"
           onClick={avanzar}
           disabled={enviando}
-          className="min-h-[52px] flex-1 rounded-md bg-mg-rojo px-6 font-titular font-semibold tracking-wider text-mg-blanco-puro uppercase disabled:opacity-60"
+          className="ra-boton flex-1"
         >
           {enviando ? 'Guardando…' : esUltima ? 'Terminar' : 'Siguiente'}
         </button>
@@ -336,12 +332,12 @@ export function FormularioRecaida({ consiente, onTerminar }: PropsFormulario) {
       <button
         type="button"
         onClick={avanzar}
-        className="mt-4 self-center text-sm text-mg-gris-tenue hover:text-mg-gris-texto"
+        className="mt-4 self-center text-sm text-ra-texto-tenue hover:text-ra-texto-sec"
       >
         Prefiero no responder
       </button>
 
-      <Link href="/app" className="mt-6 self-center text-xs text-mg-gris-apagado">
+      <Link href="/app" className="mt-6 self-center text-xs text-ra-texto-tenue">
         Salir sin guardar
       </Link>
     </div>

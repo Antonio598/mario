@@ -34,15 +34,20 @@ export default async function TiendaPage() {
   return (
     <div className="mx-auto max-w-md px-5 py-8">
       <header>
-        <h1 className="font-titular text-3xl font-bold text-ra-texto">Tienda</h1>
-        <p className="mt-1 text-sm text-ra-texto-tenue">Recursos para tu transformación.</p>
+        <p className="ra-kicker">Recursos</p>
+        <h1 className="ra-titulo mt-2">Tienda</h1>
+        <p className="ra-entradilla">Libros y programas para sostener el cambio.</p>
       </header>
 
       {/* ---------------------------------------------------------------- */}
       {/* Programa destacado                                                */}
       {/* ---------------------------------------------------------------- */}
       {programa.map((p) => (
-        <section key={p.id} className="ra-card mt-6 border-ra-rojo/30 px-6 py-6 text-center">
+        <section
+          key={p.id}
+          className="ra-card mt-6 px-6 py-6 text-center"
+          style={{ borderColor: 'color-mix(in srgb, var(--color-ra-rojo) 35%, transparent)' }}
+        >
           <div className="flex justify-center">
             <Logo variante="programa" alto={48} />
           </div>
@@ -67,7 +72,7 @@ export default async function TiendaPage() {
             href={ENLACE_LLAMADA_ADMISION}
             target="_blank"
             rel="noopener noreferrer"
-            className="mg-pulsable mt-5 flex min-h-[52px] items-center justify-center rounded-lg bg-ra-rojo px-6 font-titular text-sm font-bold tracking-wider text-white uppercase"
+            className="ra-boton mt-5"
           >
             {p.cta_texto ?? CTA_LLAMADA_ADMISION}
           </a>
@@ -78,9 +83,10 @@ export default async function TiendaPage() {
       {/* Libros                                                            */}
       {/* ---------------------------------------------------------------- */}
       <section className="mt-10">
-        <h2 className="font-titular text-sm font-bold tracking-[0.15em] text-ra-texto uppercase">
-          Libros
-        </h2>
+        <div className="ra-seccion">
+          <h2>Libros</h2>
+          {libros.length > 0 && <span className="ra-chip">{libros.length} títulos</span>}
+        </div>
 
         <div className="mg-escalonado mt-4 grid gap-4">
           {libros.length === 0 ? (
@@ -125,7 +131,7 @@ export default async function TiendaPage() {
                   href={p.url_web ?? '#'}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mg-pulsable mt-4 flex min-h-[44px] items-center justify-center rounded-md border border-ra-rojo px-4 text-xs font-bold tracking-wider text-ra-rojo uppercase"
+                  className="ra-boton-sec mt-4 border-ra-rojo text-ra-rojo"
                 >
                   Comprar ahora
                 </a>
@@ -140,17 +146,33 @@ export default async function TiendaPage() {
         pagar, el momento de mayor abandono es justo antes de tocar el botón:
         estos tres mensajes responden a las dudas que aparecen ahí.
       */}
-      <ul className="ra-card mt-8 grid grid-cols-3 gap-2 px-3 py-4 text-center">
+      {/*
+        Banda de confianza. Los emojis se sustituyen por trazos: un emoji cambia
+        de forma en cada sistema operativo y rompe la unica pantalla donde el
+        usuario esta a punto de pagar.
+      */}
+      <ul className="ra-card mt-8 grid grid-cols-3 divide-x divide-ra-borde px-1 py-4 text-center">
         {[
-          { i: '🔒', t: 'Pago 100 % seguro', s: 'Tus datos protegidos' },
-          { i: '⚡', t: 'Acceso inmediato', s: 'Descarga al instante' },
-          { i: '✓', t: 'Garantía', s: 'Si no es para ti, te devolvemos' },
+          { d: 'M4 11h16v10H4V11Zm4 0V7a4 4 0 0 1 8 0v4', t: 'Pago seguro', s: 'Datos protegidos' },
+          { d: 'M13 2 4 14h7l-1 8 9-12h-7l1-8Z', t: 'Acceso inmediato', s: 'Al instante' },
+          { d: 'M20 6 9 17l-5-5', t: 'Garantía', s: 'Si no es para ti' },
         ].map((b) => (
-          <li key={b.t}>
-            <span aria-hidden="true" className="text-base">
-              {b.i}
-            </span>
-            <p className="mt-1 text-[10px] font-semibold text-ra-texto">{b.t}</p>
+          <li key={b.t} className="px-1">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--color-ra-rojo)"
+              strokeWidth="1.9"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="mx-auto"
+              aria-hidden="true"
+            >
+              <path d={b.d} />
+            </svg>
+            <p className="mt-1.5 text-[10px] font-semibold text-ra-texto">{b.t}</p>
             <p className="text-[9px] leading-tight text-ra-texto-tenue">{b.s}</p>
           </li>
         ))}

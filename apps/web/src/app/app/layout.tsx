@@ -53,7 +53,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="ra-app flex min-h-[100dvh] flex-col bg-ra-fondo">
       {/* Header con logo Reset Alfa */}
-      <header className="sticky top-0 z-50 border-b border-ra-borde bg-ra-superficie/95 backdrop-blur-md">
+      <header className="sticky top-0 z-50 border-b border-ra-borde bg-ra-superficie/90 backdrop-blur-xl backdrop-saturate-150">
         <div className="mx-auto flex h-[60px] max-w-lg items-center justify-between px-5">
           <Link href="/app" className="flex items-center gap-2.5">
             <Image
@@ -65,7 +65,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               priority
             />
             <div className="leading-none">
-              <span className="font-titular text-lg font-bold tracking-[0.08em] text-ra-negro uppercase">
+              <span className="font-titular text-lg font-bold tracking-[0.08em] text-ra-texto uppercase">
                 Reset<span className="text-ra-rojo"> Alfa</span>
               </span>
               <p className="mt-0.5 text-[8px] font-semibold tracking-[0.22em] text-ra-texto-tenue uppercase">
@@ -83,14 +83,20 @@ export default async function AppLayout({ children }: { children: React.ReactNod
                 Panel
               </Link>
             )}
+            {/*
+              El avatar llevaba `bg-ra-negro`, token que se invierte en modo
+              oscuro: era un circulo blanco encendido, el elemento mas llamativo
+              de una cabecera que debe pasar desapercibida. Ahora es una
+              superficie con borde, como el resto de la interfaz.
+            */}
             <Link href="/app/perfil" aria-label="Perfil">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-ra-negro">
+              <div className="mg-pulsable flex h-9 w-9 items-center justify-center rounded-full border border-ra-borde bg-ra-fondo transition-colors hover:border-ra-rojo">
                 <Image
                   src="/casco-espartano.svg"
                   alt=""
                   width={20}
                   height={22}
-                  className="h-5 w-auto opacity-80"
+                  className="h-5 w-auto"
                 />
               </div>
             </Link>

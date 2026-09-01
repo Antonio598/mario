@@ -62,11 +62,9 @@ export function ModalArranque({ estado }: { estado: EstadoDiario }) {
       className="fixed inset-0 z-[60] flex items-center justify-center bg-ra-fondo px-5"
     >
       <div className="mg-entrada w-full max-w-sm text-center">
-        <p className="font-titular text-[11px] font-semibold tracking-[0.25em] text-ra-rojo uppercase">
-          Check-in de hoy
-        </p>
+        <p className="ra-kicker justify-center">Check-in de hoy</p>
 
-        <h1 id="titulo-arranque" className="mt-4 font-titular text-4xl font-bold text-ra-texto">
+        <h1 id="titulo-arranque" className="ra-titulo mt-4 text-4xl">
           ¿Sigues en racha?
         </h1>
 
@@ -81,7 +79,7 @@ export function ModalArranque({ estado }: { estado: EstadoDiario }) {
             type="button"
             onClick={() => void confirmarRacha()}
             disabled={enviando}
-            className="mg-pulsable min-h-[56px] rounded-lg bg-ra-rojo font-titular text-base font-bold tracking-wider text-white uppercase disabled:opacity-60"
+            className="ra-boton"
           >
             {enviando ? 'Guardando…' : 'Sí, sigo'}
           </button>
@@ -90,7 +88,7 @@ export function ModalArranque({ estado }: { estado: EstadoDiario }) {
             type="button"
             onClick={() => setFase('formulario')}
             disabled={enviando}
-            className="mg-pulsable min-h-[56px] rounded-lg border border-ra-borde font-titular text-base font-bold tracking-wider text-ra-texto-sec uppercase disabled:opacity-60"
+            className="ra-boton-sec"
           >
             He recaído
           </button>

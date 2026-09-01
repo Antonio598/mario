@@ -65,6 +65,14 @@ export function Calendario({ diasIniciales, anioInicial, mesInicial }: Props) {
   }
 
   const hoy = new Date();
+  /*
+    Fecha de hoy en formato ISO local. `toISOString()` no vale: convierte a UTC,
+    y a partir de las 22:00 en Espana devolveria ya el dia siguiente, marcando
+    el anillo en la casilla equivocada.
+  */
+  const isoHoy = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(
+    hoy.getDate(),
+  ).padStart(2, '0')}`;
   const porFecha = new Map(dias.map((d) => [d.fecha, d]));
   const total = diasDelMes(anio, mes);
   const primerDiaISO = `${anio}-${String(mes).padStart(2, '0')}-01`;
@@ -74,19 +82,35 @@ export function Calendario({ diasIniciales, anioInicial, mesInicial }: Props) {
   // No se navega al futuro: un mes que aún no ha llegado siempre estará vacío.
   const esMesActual = anio === hoy.getFullYear() && mes === hoy.getMonth() + 1;
 
+  /* Flechas de mes: mismo boton redondo a los dos lados del titulo. */
+  const flecha =
+    'mg-pulsable flex h-10 w-10 items-center justify-center rounded-full border border-ra-borde text-ra-rojo transition-colors hover:border-ra-rojo disabled:opacity-25 disabled:hover:border-ra-borde';
+
   return (
-    <section>
+    <section className="ra-card px-4 py-5">
       <div className="flex items-center justify-between">
         <button
           type="button"
           onClick={() => moverMes(-1)}
           aria-label="Mes anterior"
-          className="mg-pulsable min-h-[44px] px-3 text-xl text-ra-rojo"
+          className={flecha}
         >
-          ‹
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M15 18 9 12l6-6" />
+          </svg>
         </button>
 
-        <h2 className="font-titular text-base font-bold tracking-wider text-ra-texto uppercase">
+        <h2 className="font-titular text-base font-bold tracking-[0.12em] text-ra-texto uppercase">
           {nombreMes(mes)} {anio}
         </h2>
 
@@ -95,9 +119,21 @@ export function Calendario({ diasIniciales, anioInicial, mesInicial }: Props) {
           onClick={() => moverMes(1)}
           disabled={esMesActual}
           aria-label="Mes siguiente"
-          className="mg-pulsable min-h-[44px] px-3 text-xl text-ra-rojo disabled:opacity-25"
+          className={flecha}
         >
-          ›
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="m9 18 6-6-6-6" />
+          </svg>
         </button>
       </div>
 
@@ -127,40 +163,44 @@ export function Calendario({ diasIniciales, anioInicial, mesInicial }: Props) {
           const esFuturo = new Date(iso) > hoy;
 
           const base =
-            'flex aspect-square flex-col items-center justify-center rounded-lg text-xs tabular-nums';
+            'relative flex aspect-square items-center justify-center rounded-xl text-xs font-semibold tabular-nums transition-colors';
+
+          // El dia de hoy se marca con un anillo. Sin el, en un mes a medio
+          // registrar no hay forma de situarse de un vistazo.
+          const esHoy = iso === isoHoy;
+          const anillo = esHoy ? ' ring-2 ring-ra-rojo ring-offset-2 ring-offset-ra-superficie' : '';
 
           if (registro?.estado === 'en_racha') {
             return (
               <div
                 key={iso}
-                title={`${dia} · día completado`}
-                className={`${base} font-semibold text-ra-texto`}
+                title={`${dia} - dia completado`}
+                className={`${base}${anillo} text-ra-exito`}
+                style={{
+                  backgroundColor:
+                    'color-mix(in srgb, var(--color-ra-exito) 16%, transparent)',
+                }}
               >
                 {dia}
-                <span aria-hidden="true" className="text-[13px] leading-none text-ra-exito">
-                  ✓
-                </span>
               </div>
             );
           }
 
           if (registro?.estado === 'recaida') {
-            // Botón y no div: tocar un día de recaída abre su ficha, y un
-            // elemento pulsable debe serlo también para el teclado y para un
+            // Boton y no div: tocar un dia de recaida abre su ficha, y un
+            // elemento pulsable debe serlo tambien para el teclado y para un
             // lector de pantalla.
             return (
               <button
                 type="button"
                 key={iso}
                 onClick={() => setAbierta(iso)}
-                title={`${dia} · recaída. Ver detalle`}
+                title={`${dia} - recaida. Ver detalle`}
                 aria-label={`Ver el detalle de la recaída del día ${dia}`}
-                className={`${base} mg-pulsable font-semibold text-ra-rojo`}
+                className={`${base}${anillo} mg-pulsable text-white`}
+                style={{ backgroundColor: 'var(--color-ra-rojo)' }}
               >
                 {dia}
-                <span aria-hidden="true" className="text-[13px] leading-none">
-                  ✕
-                </span>
               </button>
             );
           }
@@ -168,30 +208,43 @@ export function Calendario({ diasIniciales, anioInicial, mesInicial }: Props) {
           return (
             <div
               key={iso}
-              title={`${dia} · sin registro`}
-              className={`${base} ${esFuturo ? 'text-ra-texto-tenue/40' : 'text-ra-texto-tenue'}`}
+              title={`${dia} - sin registro`}
+              className={`${base}${anillo} font-normal ${
+                esFuturo ? 'text-ra-texto-tenue/40' : 'text-ra-texto-tenue'
+              }`}
+              style={
+                esFuturo
+                  ? undefined
+                  : { backgroundColor: 'var(--color-ra-borde-suave)' }
+              }
             >
               {dia}
-              <span aria-hidden="true" className="text-[13px] leading-none opacity-40">
-                ○
-              </span>
             </div>
           );
         })}
       </div>
 
-      <ul className="mt-6 space-y-2 text-xs">
+      <ul className="mt-6 grid grid-cols-3 gap-2 text-[11px]">
         {[
-          { i: '✓', c: 'text-ra-exito', t: 'Día completado', s: 'Sin porno' },
-          { i: '✕', c: 'text-ra-rojo', t: 'Recaída', s: 'Aprende y sigue' },
-          { i: '○', c: 'text-ra-texto-tenue', t: 'Sin registro', s: 'Registra tu día' },
+          {
+            t: 'Completado',
+            fondo: 'color-mix(in srgb, var(--color-ra-exito) 16%, transparent)',
+            color: 'var(--color-ra-exito)',
+          },
+          { t: 'Recaída', fondo: 'var(--color-ra-rojo)', color: '#fff' },
+          {
+            t: 'Sin registro',
+            fondo: 'var(--color-ra-borde-suave)',
+            color: 'var(--color-ra-texto-tenue)',
+          },
         ].map((l) => (
-          <li key={l.t} className="flex items-center gap-3">
-            <span aria-hidden="true" className={`w-4 text-center ${l.c}`}>
-              {l.i}
-            </span>
-            <span className="text-ra-texto">{l.t}</span>
-            <span className="text-ra-texto-tenue">· {l.s}</span>
+          <li key={l.t} className="flex items-center gap-2">
+            <span
+              aria-hidden="true"
+              className="h-5 w-5 shrink-0 rounded-md"
+              style={{ backgroundColor: l.fondo, border: `1px solid ${l.color}22` }}
+            />
+            <span className="text-ra-texto-tenue">{l.t}</span>
           </li>
         ))}
       </ul>

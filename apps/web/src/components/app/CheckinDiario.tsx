@@ -37,16 +37,48 @@ export function CheckinDiario({ estado }: { estado: EstadoDiario }) {
 
   if (!estado.necesita_checkin) {
     return (
-      <div className="mg-entrada ra-card border-ra-exito/30 bg-green-50 px-5 py-4 text-center">
-        <p className="font-titular tracking-wider text-ra-exito uppercase">Hoy ya está registrado</p>
-        <p className="mt-1 text-sm text-ra-texto-sec">Nos vemos mañana.</p>
+      /*
+        El tinte verde se calcula desde el token de exito con `color-mix`, no
+        con un `bg-green-50` fijo: ese verde clarisimo sobre el fondo negro del
+        modo oscuro seria un panel encendido en mitad de la pantalla.
+      */
+      <div
+        className="mg-entrada ra-card flex items-center gap-3 px-5 py-4"
+        style={{
+          borderColor: 'color-mix(in srgb, var(--color-ra-exito) 35%, transparent)',
+          backgroundColor: 'color-mix(in srgb, var(--color-ra-exito) 8%, var(--color-ra-superficie))',
+        }}
+      >
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="var(--color-ra-exito)"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="shrink-0"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="9" />
+          <path d="m8.5 12 2.5 2.5 4.5-5" />
+        </svg>
+        <div className="text-left">
+          <p className="font-titular text-sm font-bold tracking-wider text-ra-exito uppercase">
+            Hoy ya está registrado
+          </p>
+          <p className="text-sm text-ra-texto-sec">Nos vemos mañana.</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="ra-card px-5 py-6 text-center">
-      <h2 className="font-titular text-xl text-ra-negro uppercase">¿Sigues en racha?</h2>
+      <h2 className="font-titular text-2xl font-bold text-ra-texto uppercase">
+        ¿Sigues en racha?
+      </h2>
       <p className="mt-2 text-sm text-ra-texto-sec">
         Responde con la verdad. El contador solo sirve si es real.
       </p>
@@ -58,15 +90,17 @@ export function CheckinDiario({ estado }: { estado: EstadoDiario }) {
           type="button"
           onClick={() => void confirmarRacha()}
           disabled={enviando}
-          className="mg-pulsable min-h-[52px] rounded-xl bg-ra-rojo px-6 font-titular font-semibold tracking-wider text-white uppercase transition-colors hover:bg-ra-rojo-oscuro disabled:opacity-60"
+          className="ra-boton"
         >
           {enviando ? 'Guardando…' : 'Sí, sigo'}
         </button>
 
-        <a
-          href="/app/recaida"
-          className="mg-pulsable flex min-h-[52px] items-center justify-center rounded-xl border border-ra-borde px-6 font-titular font-semibold tracking-wider text-ra-texto-sec uppercase transition-colors hover:border-ra-rojo hover:text-ra-rojo"
-        >
+        {/*
+          Deliberadamente secundario. No por esconderlo -mentir al contador lo
+          inutiliza-, sino porque el boton que se pulsa casi todos los dias es el
+          otro, y darles el mismo peso obliga a leer dos veces cada mañana.
+        */}
+        <a href="/app/recaida" className="ra-boton-sec">
           He recaído
         </a>
       </div>

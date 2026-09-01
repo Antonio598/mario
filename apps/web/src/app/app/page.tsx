@@ -56,7 +56,7 @@ export default async function AppInicioPage() {
   if (error) {
     return (
       <div className="mx-auto max-w-md px-5 py-16 text-center">
-        <h1 className="font-titular text-2xl text-ra-negro uppercase">No hemos podido cargar tu racha</h1>
+        <h1 className="font-titular text-2xl text-ra-texto uppercase">No hemos podido cargar tu racha</h1>
         <p className="mt-3 text-sm text-ra-texto-sec">
           Revisa tu conexión y vuelve a intentarlo.
         </p>
@@ -77,7 +77,7 @@ export default async function AppInicioPage() {
 
     <div className="mx-auto max-w-md px-5 py-6">
       {/* Marca, discreta: el protagonista de esta pantalla es el contador. */}
-      <header className="mb-5 flex justify-center">
+      <header className="mb-6 flex justify-center">
         <Logo variante="app" alto={44} prioridad />
       </header>
 
@@ -115,7 +115,7 @@ export default async function AppInicioPage() {
           </svg>
         </div>
         <div>
-          <h3 className="font-titular text-sm font-semibold tracking-wider text-ra-negro uppercase">
+          <h3 className="font-titular text-sm font-semibold tracking-wider text-ra-texto uppercase">
             Mensaje del día
           </h3>
           <p className="mt-1.5 text-sm leading-relaxed text-ra-texto-sec">
@@ -127,27 +127,9 @@ export default async function AppInicioPage() {
       {/* ── Formación (preview de masterclasses) ──────────────────────── */}
       {masterclasses.length > 0 && (
         <section className="mt-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path
-                  d="M4 17h16M5 17c0-3 2-5.5 7-7 5 1.5 7 4 7 7M12 10V6m0 0l3-3M12 6L9 3"
-                  stroke="var(--color-ra-rojo)"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <h2 className="font-titular text-lg font-bold tracking-wider text-ra-negro uppercase">
-                Formación
-              </h2>
-            </div>
-            <Link
-              href="/app/formacion"
-              className="text-sm font-semibold text-ra-rojo transition-colors hover:text-ra-rojo-oscuro"
-            >
-              Ver todo &gt;
-            </Link>
+          <div className="ra-seccion">
+            <h2>Formación</h2>
+            <Link href="/app/formacion">Ver todo →</Link>
           </div>
           <p className="mt-1 text-sm text-ra-texto-tenue">
             Masterclasses y protocolos para transformar tu vida.
@@ -159,10 +141,10 @@ export default async function AppInicioPage() {
               <Link
                 key={c.id}
                 href={`/app/formacion/${c.slug}`}
-                className="ra-card relative flex w-[140px] shrink-0 snap-start flex-col items-center px-3 py-4 text-center transition-shadow hover:shadow-md"
+                className="ra-card ra-card-enlace mg-pulsable relative flex w-[150px] shrink-0 snap-start flex-col items-center overflow-hidden px-3 pt-7 pb-4 text-center"
               >
-                <span className="ra-badge absolute -top-1 -left-1">Gratis</span>
-                <div className="mt-2 flex h-12 w-12 items-center justify-center rounded-full bg-ra-fondo">
+                <span className="ra-badge absolute top-0 left-0">Gratis</span>
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-ra-fondo">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <path
                       d="M4 17h16M5 17c0-3 2-5.5 7-7 5 1.5 7 4 7 7M12 10V6m0 0l3-3M12 6L9 3"
@@ -173,7 +155,7 @@ export default async function AppInicioPage() {
                     />
                   </svg>
                 </div>
-                <h3 className="mt-3 font-titular text-xs font-bold leading-tight tracking-wider text-ra-negro uppercase">
+                <h3 className="mt-3 font-titular text-xs font-bold leading-tight tracking-wider text-ra-texto uppercase">
                   {c.titulo}
                 </h3>
                 {c.descripcion !== null && (
@@ -191,8 +173,8 @@ export default async function AppInicioPage() {
               {masterclasses.map((c, i) => (
                 <span
                   key={c.id}
-                  className={`h-1.5 rounded-full ${
-                    i === 0 ? 'w-4 bg-ra-rojo' : 'w-1.5 bg-ra-borde'
+                  className={`h-1.5 rounded-full transition-all ${
+                    i === 0 ? 'w-5 bg-ra-rojo' : 'w-1.5 bg-ra-borde'
                   }`}
                 />
               ))}

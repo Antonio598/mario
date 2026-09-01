@@ -28,8 +28,10 @@ export function HistorialRecaidas({ entradas }: { entradas: EntradaHistorial[] }
   if (entradas.length === 0) {
     return (
       <section className="mt-10">
-        <h2 className="font-titular text-base font-bold text-ra-texto">Historial de recaídas</h2>
-        <p className="mt-3 text-sm text-ra-texto-tenue">
+        <div className="ra-seccion">
+          <h2>Historial de recaídas</h2>
+        </div>
+        <p className="ra-card mt-4 px-5 py-6 text-center text-sm text-ra-texto-tenue">
           Todavía no has registrado ninguna. Sigue así.
         </p>
       </section>
@@ -40,14 +42,14 @@ export function HistorialRecaidas({ entradas }: { entradas: EntradaHistorial[] }
 
   return (
     <section className="mt-10">
-      <div className="flex items-end justify-between">
-        <h2 className="font-titular text-base font-bold text-ra-texto">Historial de recaídas</h2>
+      <div className="ra-seccion">
+        <h2>Historial de recaídas</h2>
 
         {entradas.length > 5 && (
           <button
             type="button"
             onClick={() => setTodas((v) => !v)}
-            className="text-xs font-semibold text-ra-rojo"
+            className="shrink-0 text-sm font-semibold text-ra-rojo"
           >
             {todas ? 'Ver menos' : `Ver todas (${entradas.length})`}
           </button>
@@ -60,11 +62,16 @@ export function HistorialRecaidas({ entradas }: { entradas: EntradaHistorial[] }
             <button
               type="button"
               onClick={() => setAbierta(e.fecha)}
-              className="ra-card mg-pulsable flex w-full items-center gap-3 px-4 py-3 text-left"
+              className="ra-card ra-card-enlace mg-pulsable flex w-full items-center gap-3 px-4 py-3.5 text-left"
             >
-              <span aria-hidden="true" className="text-base text-ra-rojo">
-                ✕
-              </span>
+              {/*
+                Un aspa de texto se ve como un boton de cerrar. Este circulo
+                rojo es una marca de dia, que es lo que realmente representa.
+              */}
+              <span
+                aria-hidden="true"
+                className="h-2.5 w-2.5 shrink-0 rounded-full bg-ra-rojo"
+              />
 
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-semibold text-ra-texto">
@@ -76,7 +83,7 @@ export function HistorialRecaidas({ entradas }: { entradas: EntradaHistorial[] }
                 </span>
               </span>
 
-              <span className="shrink-0 text-xs font-semibold text-ra-rojo">Ver detalles ›</span>
+              <span className="shrink-0 text-xs font-semibold text-ra-rojo">Ver →</span>
             </button>
           </li>
         ))}

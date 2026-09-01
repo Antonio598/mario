@@ -28,32 +28,31 @@ export default async function CalendarioPage() {
   return (
     <div className="mx-auto max-w-md px-5 py-8">
       <header>
-        <h1 className="font-titular text-3xl font-bold text-ra-texto">Calendario</h1>
-        <p className="mt-1 text-sm text-ra-texto-tenue">
-          Tu racha, tu historia, tu transformación.
-        </p>
+        <p className="ra-kicker">Tu registro</p>
+        <h1 className="ra-titulo mt-2">Calendario</h1>
+        <p className="ra-entradilla">Tu racha, tu historia, tu transformación.</p>
       </header>
 
       <dl className="mt-6 grid grid-cols-3 gap-3">
+        {/*
+          Sin emoji en la primera. Tenia una llama y las otras dos no, asi que
+          la fila se leia como si midieran cosas distintas cuando son la misma
+          unidad; y un emoji cambia de forma en cada sistema operativo.
+        */}
         {[
-          { t: 'Racha actual', v: estado?.racha_actual ?? 0, icono: '🔥' },
-          { t: 'Récord personal', v: estado?.record_personal ?? 0, icono: null },
-          { t: 'Días totales', v: estado?.dias_totales ?? 0, icono: null },
+          { t: 'Racha actual', v: estado?.racha_actual ?? 0 },
+          { t: 'Récord personal', v: estado?.record_personal ?? 0 },
+          { t: 'Días totales', v: estado?.dias_totales ?? 0 },
         ].map((s) => (
-          <div key={s.t} className="ra-card px-3 py-3 text-center">
+          <div key={s.t} className="ra-card px-2 py-4 text-center">
             <dt className="text-[9px] font-semibold tracking-widest text-ra-texto-tenue uppercase">
               {s.t}
             </dt>
-            <dd className="mt-1 flex items-center justify-center gap-1">
-              {s.icono !== null && (
-                <span aria-hidden="true" className="text-sm">
-                  {s.icono}
-                </span>
-              )}
+            <dd className="mt-1.5">
               <span className="font-titular text-2xl font-bold tabular-nums text-ra-texto">
                 {s.v}
               </span>
-              <span className="text-[10px] text-ra-texto-tenue">días</span>
+              <span className="ml-1 text-[10px] text-ra-texto-tenue">días</span>
             </dd>
           </div>
         ))}

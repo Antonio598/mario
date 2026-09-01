@@ -78,7 +78,7 @@ export function ContadorRacha({ dias, record, diasTotales }: Props) {
                 número sube de 9 a 10 el texto se desplaza y la animación parece un
                 fallo de renderizado.
               */}
-              <span className="font-titular text-6xl leading-none font-bold tabular-nums text-ra-negro">
+              <span className="font-titular text-6xl leading-none font-bold tabular-nums text-ra-texto">
                 {mostrado}
               </span>
               <span className="font-titular text-xl font-medium text-ra-texto-sec">
@@ -128,7 +128,7 @@ export function ContadorRacha({ dias, record, diasTotales }: Props) {
           <p className="text-[10px] font-semibold tracking-[0.2em] text-ra-texto-tenue uppercase">
             Récord
           </p>
-          <p className="mt-1 font-titular text-2xl font-bold tabular-nums text-ra-negro">
+          <p className="mt-1 font-titular text-2xl font-bold tabular-nums text-ra-texto">
             {record}
           </p>
         </div>
@@ -136,7 +136,7 @@ export function ContadorRacha({ dias, record, diasTotales }: Props) {
           <p className="text-[10px] font-semibold tracking-[0.2em] text-ra-texto-tenue uppercase">
             Días totales
           </p>
-          <p className="mt-1 font-titular text-2xl font-bold tabular-nums text-ra-negro">
+          <p className="mt-1 font-titular text-2xl font-bold tabular-nums text-ra-texto">
             {diasTotales}
           </p>
         </div>

@@ -94,7 +94,7 @@ export function AjustarRacha({ diasActuales }: { diasActuales: number }) {
             setDias(String(diasActuales));
             setError(null);
           }}
-          className="mg-pulsable min-h-[44px] flex-1 rounded-md border border-ra-borde text-sm text-ra-texto-sec"
+          className="ra-boton-sec flex-1"
         >
           Cancelar
         </button>
@@ -102,7 +102,7 @@ export function AjustarRacha({ diasActuales }: { diasActuales: number }) {
           type="button"
           onClick={() => void guardar()}
           disabled={guardando}
-          className="mg-pulsable min-h-[44px] flex-1 rounded-md bg-ra-rojo text-sm font-bold tracking-wider text-white uppercase disabled:opacity-60"
+          className="ra-boton flex-1"
         >
           {guardando ? 'Guardando…' : 'Guardar'}
         </button>

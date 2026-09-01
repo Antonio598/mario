@@ -43,15 +43,13 @@ export default async function FormacionPage() {
   /* ------------------------------------------------------------------ */
   const panelGratis = (
     <section className="mt-6">
-      <div className="flex items-center gap-2">
-        <span aria-hidden="true" className="text-lg">
-          🎁
-        </span>
-        <div>
-          <h2 className="font-titular text-base font-bold text-ra-texto">Recursos gratuitos</h2>
-          <p className="text-xs text-ra-texto-tenue">Masterclasses y protocolos para empezar.</p>
-        </div>
+      <div className="ra-seccion">
+        <h2>Recursos gratuitos</h2>
+        <span className="ra-chip">{gratis.length} disponibles</span>
       </div>
+      <p className="mt-1 text-xs text-ra-texto-tenue">
+        Masterclasses y protocolos para empezar.
+      </p>
 
       <div className="mg-escalonado mt-4 grid gap-3">
         {gratis.length === 0 ? (
@@ -66,13 +64,13 @@ export default async function FormacionPage() {
                 <p className="mt-1 text-sm text-ra-texto-sec">{c.descripcion}</p>
               )}
 
-              <div className="mt-4 flex flex-wrap gap-2">
+              <div className="mt-4 flex flex-wrap items-stretch gap-2">
                 {c.url_externa !== null && (
                   <a
                     href={c.url_externa}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mg-pulsable flex min-h-[44px] flex-1 items-center justify-center rounded-md bg-ra-rojo px-4 text-sm font-bold tracking-wider text-white uppercase"
+                    className="ra-boton flex-1 basis-40"
                   >
                     Ver masterclass
                   </a>
@@ -82,7 +80,7 @@ export default async function FormacionPage() {
                     href={c.url_protocolo}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mg-pulsable flex min-h-[44px] items-center justify-center rounded-md border border-ra-borde px-4 text-sm font-semibold text-ra-texto-sec"
+                    className="ra-boton-sec ra-boton-auto"
                   >
                     Protocolo PDF
                   </a>
@@ -100,17 +98,13 @@ export default async function FormacionPage() {
   /* ------------------------------------------------------------------ */
   const panelPremium = (
     <section className="mt-6">
-      <div className="flex items-center gap-2">
-        <span aria-hidden="true" className="text-lg">
-          👑
-        </span>
-        <div>
-          <h2 className="font-titular text-base font-bold text-ra-texto">
-            Formación para alumnos
-          </h2>
-          <p className="text-xs text-ra-texto-tenue">Contenido exclusivo de pago.</p>
-        </div>
+      <div className="ra-seccion">
+        <h2>Formación para alumnos</h2>
+        <span className="ra-chip">{premium.length} cursos</span>
       </div>
+      <p className="mt-1 text-xs text-ra-texto-tenue">
+        Se accede tras la llamada de admisión.
+      </p>
 
       {/*
         Destacado del programa. Antes decía "Mastermind"; el nombre real del
@@ -136,7 +130,7 @@ export default async function FormacionPage() {
             href={ENLACE_LLAMADA_ADMISION}
             target="_blank"
             rel="noopener noreferrer"
-            className="mg-pulsable mt-5 inline-flex min-h-[48px] items-center justify-center rounded-md bg-white px-5 text-xs font-bold tracking-wider text-ra-rojo uppercase"
+            className="ra-boton ra-boton-invertido mt-5"
           >
             {programa.cta_texto ?? CTA_LLAMADA_ADMISION}
           </a>
@@ -158,11 +152,22 @@ export default async function FormacionPage() {
                 </div>
 
                 {!abierto && (
-                  <span
-                    aria-label="Bloqueado"
-                    className="shrink-0 rounded border border-ra-borde px-2 py-1 text-xs"
-                  >
-                    🔒
+                  <span className="ra-chip shrink-0">
+                    <svg
+                      width="11"
+                      height="11"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <rect x="4" y="11" width="16" height="10" rx="2" />
+                      <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+                    </svg>
+                    Bloqueado
                   </span>
                 )}
               </div>
@@ -172,7 +177,7 @@ export default async function FormacionPage() {
                   href={c.url_externa}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mg-pulsable mt-4 flex min-h-[44px] items-center justify-center rounded-md bg-ra-rojo px-4 text-sm font-bold tracking-wider text-white uppercase"
+                  className="ra-boton mt-4"
                 >
                   Entrar al curso
                 </a>
@@ -183,7 +188,10 @@ export default async function FormacionPage() {
       </div>
 
       {!tieneAcceso && programa !== null && (
-        <div className="ra-card mt-6 border-ra-rojo/30 px-6 py-6 text-center">
+        <div
+          className="ra-card mt-6 px-6 py-6 text-center"
+          style={{ borderColor: 'color-mix(in srgb, var(--color-ra-rojo) 35%, transparent)' }}
+        >
           <div className="flex justify-center">
             <Logo variante="programa" alto={52} />
           </div>
@@ -212,7 +220,7 @@ export default async function FormacionPage() {
             href={ENLACE_LLAMADA_ADMISION}
             target="_blank"
             rel="noopener noreferrer"
-            className="mg-pulsable mt-5 flex min-h-[56px] items-center justify-center rounded-lg bg-ra-rojo px-6 font-titular text-base font-bold tracking-wider text-white uppercase"
+            className="ra-boton mt-5"
           >
             {programa.cta_texto ?? CTA_LLAMADA_ADMISION}
           </a>
@@ -241,10 +249,9 @@ export default async function FormacionPage() {
   return (
     <div className="mx-auto max-w-md px-5 py-8">
       <header>
-        <h1 className="font-titular text-3xl font-bold text-ra-texto">Formación</h1>
-        <p className="mt-1 text-sm text-ra-texto-tenue">
-          Aprende con recursos gratuitos y contenido premium.
-        </p>
+        <p className="ra-kicker">Escuela</p>
+        <h1 className="ra-titulo mt-2">Formación</h1>
+        <p className="ra-entradilla">Aprende con recursos gratuitos y contenido premium.</p>
       </header>
 
       <FormacionTabs gratis={panelGratis} premium={panelPremium} />

@@ -70,14 +70,17 @@ export function DetalleRecaida({ fecha, onCerrar }: { fecha: string; onCerrar: (
       */}
       <div
         onClick={(e) => e.stopPropagation()}
-        className="mg-subir max-h-[85dvh] w-full max-w-md overflow-y-auto rounded-t-2xl bg-ra-superficie p-6 sm:rounded-2xl"
+        className="mg-subir max-h-[85dvh] w-full max-w-md overflow-y-auto rounded-t-2xl border border-ra-borde bg-ra-superficie p-6 sm:rounded-2xl"
       >
+        {/* Asa: en una hoja que sube desde abajo indica que se puede cerrar. */}
+        <div
+          aria-hidden="true"
+          className="mx-auto mb-5 h-1 w-10 rounded-full bg-ra-borde sm:hidden"
+        />
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="font-titular text-[11px] font-semibold tracking-[0.25em] text-ra-rojo uppercase">
-              Recaída
-            </p>
-            <h2 className="mt-1.5 font-titular text-xl font-bold text-ra-texto">
+            <p className="ra-kicker">Recaída</p>
+            <h2 className="mt-2 font-titular text-xl font-bold text-ra-texto uppercase">
               {fechaLarga(fecha)}
             </h2>
           </div>
@@ -86,9 +89,20 @@ export function DetalleRecaida({ fecha, onCerrar }: { fecha: string; onCerrar: (
             type="button"
             onClick={onCerrar}
             aria-label="Cerrar"
-            className="mg-pulsable -mt-1 shrink-0 rounded-md px-3 py-2 text-lg text-ra-texto-tenue"
+            className="mg-pulsable -mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-ra-borde text-ra-texto-tenue transition-colors hover:border-ra-rojo hover:text-ra-rojo"
           >
-            ✕
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              aria-hidden="true"
+            >
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
           </button>
         </div>
 
@@ -105,11 +119,11 @@ export function DetalleRecaida({ fecha, onCerrar }: { fecha: string; onCerrar: (
         ) : (
           <dl className="mt-6 space-y-4">
             {campos.map((c) => (
-              <div key={c.etiqueta}>
+              <div key={c.etiqueta} className="border-l-2 border-ra-borde pl-3">
                 <dt className="text-[11px] font-semibold tracking-widest text-ra-texto-tenue uppercase">
                   {c.etiqueta}
                 </dt>
-                <dd className="mt-1 text-sm text-ra-texto">{c.valor}</dd>
+                <dd className="mt-1 text-sm leading-relaxed text-ra-texto">{c.valor}</dd>
               </div>
             ))}
           </dl>

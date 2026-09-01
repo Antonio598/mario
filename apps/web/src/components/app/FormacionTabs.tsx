@@ -24,10 +24,15 @@ export function FormacionTabs({ gratis, premium }: { gratis: ReactNode; premium:
         aria-label="Tipo de contenido"
         className="mt-6 flex rounded-xl border border-ra-borde bg-ra-superficie p-1"
       >
+        {/*
+          Sin emojis. La pestana activa se distingue por color de fondo y peso
+          tipografico, que es lo que se lee de un vistazo; un emoji delante solo
+          añade ruido y cambia de forma en cada sistema operativo.
+        */}
         {(
           [
-            { v: 'gratis', t: 'Gratis', icono: '🎁' },
-            { v: 'premium', t: 'Premium', icono: '👑' },
+            { v: 'gratis', t: 'Gratis' },
+            { v: 'premium', t: 'Premium' },
           ] as const
         ).map((o) => (
           <button
@@ -36,13 +41,12 @@ export function FormacionTabs({ gratis, premium }: { gratis: ReactNode; premium:
             role="tab"
             aria-selected={activa === o.v}
             onClick={() => setActiva(o.v)}
-            className={`mg-pulsable flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-lg text-sm font-semibold transition-colors ${
+            className={`mg-pulsable flex min-h-[44px] flex-1 items-center justify-center rounded-lg font-titular text-sm font-bold tracking-[0.1em] uppercase transition-colors ${
               activa === o.v
-                ? 'bg-ra-fondo text-ra-rojo shadow-sm'
+                ? 'bg-ra-rojo text-white shadow-sm'
                 : 'text-ra-texto-tenue hover:text-ra-texto-sec'
             }`}
           >
-            <span aria-hidden="true">{o.icono}</span>
             {o.t}
           </button>
         ))}

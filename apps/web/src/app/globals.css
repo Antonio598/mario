@@ -41,6 +41,9 @@
   --color-ra-rojo-oscuro: #9a0007;
   --color-ra-rojo-claro: #ef5350;
   --color-ra-exito: #2e7d32;
+  /* Alias historico de --color-ra-texto. Se conserva porque la app movil lo
+     consume; en la web ya no se usa: se llamaba "negro" pero en modo oscuro
+     vale casi blanco, y eso hizo que dos fondos acabaran ilegibles. */
   --color-ra-negro: #1a1a1a;
   --color-ra-sombra: rgba(0, 0, 0, 0.06);
   --color-ra-sombra-md: rgba(0, 0, 0, 0.10);
@@ -547,12 +550,50 @@ h3 {
    /app. El resto de la web (articulos, landing, admin) sigue en oscuro.
    ========================================================================== */
 
-/** Tarjeta clara con sombra suave. */
+/**
+ * Tarjeta. Es la unidad de composicion de toda la app: si esta bien resuelta,
+ * lo esta el 80 % de las pantallas.
+ *
+ * En claro la profundidad la da la sombra. En oscuro una sombra negra sobre
+ * fondo negro no se ve, asi que la da una linea de luz de un pixel en el borde
+ * superior -el mismo truco que usan las interfaces de sistema-, aplicada por
+ * `::before` para no ocupar el `box-shadow` ni el borde.
+ */
 .ra-card {
+  position: relative;
   background-color: var(--color-ra-superficie);
   border: 1px solid var(--color-ra-borde);
-  border-radius: 14px;
-  box-shadow: 0 2px 8px var(--color-ra-sombra);
+  border-radius: 16px;
+  box-shadow: 0 1px 2px var(--color-ra-sombra), 0 6px 16px -8px var(--color-ra-sombra);
+}
+
+:root[data-theme='dark'] .ra-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  border-radius: 16px 16px 0 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.07) 20%,
+    rgba(255, 255, 255, 0.07) 80%,
+    transparent
+  );
+  pointer-events: none;
+}
+
+/** Tarjeta que ademas es un enlace: reacciona al puntero. */
+.ra-card-enlace {
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+.ra-card-enlace:hover {
+  border-color: color-mix(in srgb, var(--color-ra-rojo) 40%, var(--color-ra-borde));
+  box-shadow: 0 2px 4px var(--color-ra-sombra), 0 12px 28px -12px var(--color-ra-sombra-md);
+  transform: translateY(-2px);
 }
 
 /** Badge (etiqueta GRATIS, etc.). */
@@ -569,12 +610,22 @@ h3 {
   border-radius: 4px;
 }
 
-/** Barra de navegacion inferior en tema claro. */
+/**
+ * Barra de navegacion inferior.
+ *
+ * El color sale del token de superficie, no de un blanco fijo. Antes era
+ * `rgba(255,255,255,.95)` y en modo oscuro quedaba una franja blanca cegadora
+ * bajo una app negra: el elemento mas visible de la pantalla, y el unico que no
+ * seguia el tema.
+ *
+ * `color-mix` mantiene la translucidez sobre el token, asi que el desenfoque de
+ * fondo sigue notandose al desplazar contenido por debajo.
+ */
 .ra-nav-bottom {
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: color-mix(in srgb, var(--color-ra-superficie) 88%, transparent);
   border-top: 1px solid var(--color-ra-borde);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
 }
 
 /* ==========================================================================
@@ -622,4 +673,233 @@ h3 {
     background-color 220ms ease,
     color 220ms ease,
     border-color 220ms ease;
+}
+
+/* ==========================================================================
+   Reset Alfa · Sistema de composicion
+   --------------------------------------------------------------------------
+   Antes cada boton repetia una cadena larga de utilidades, y ninguna era igual
+   a la anterior: alturas de 44, 48, 52 y 56 px conviviendo en la misma
+   pantalla, y el mismo boton con dos tracking distintos segun el fichero. Eso
+   no se ve como variedad, se ve como descuido.
+
+   Aqui viven las cuatro piezas que se repiten -boton, cabecera de pantalla,
+   titulo de seccion y chip- para que la app tenga un solo ritmo.
+   ========================================================================== */
+
+/* --- Botones ------------------------------------------------------------ */
+
+.ra-boton,
+.ra-boton-sec,
+.ra-boton-fantasma {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  border-radius: 12px;
+  padding-inline: 1.25rem;
+  font-family: var(--font-titular);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  /* 52px: el minimo comodo para el pulgar es 44, y este es el boton que se
+     pulsa a diario con una mano. */
+  min-height: 52px;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease,
+    transform 120ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ra-boton {
+  background-color: var(--color-ra-rojo);
+  color: #fff;
+  font-size: 0.875rem;
+  box-shadow: 0 6px 18px -10px var(--color-ra-rojo);
+}
+.ra-boton:hover {
+  box-shadow: 0 10px 26px -10px var(--color-ra-rojo);
+}
+.ra-boton:active,
+.ra-boton-sec:active,
+.ra-boton-fantasma:active {
+  transform: scale(0.98);
+}
+.ra-boton:disabled,
+.ra-boton-sec:disabled,
+.ra-boton-fantasma:disabled {
+  opacity: 0.55;
+  box-shadow: none;
+  transform: none;
+  cursor: not-allowed;
+}
+
+.ra-boton-sec {
+  background-color: transparent;
+  border: 1px solid var(--color-ra-borde);
+  color: var(--color-ra-texto-sec);
+  font-size: 0.8125rem;
+  min-height: 48px;
+}
+.ra-boton-sec:hover {
+  border-color: var(--color-ra-rojo);
+  color: var(--color-ra-rojo);
+}
+
+/* Sin borde: para acciones que no compiten con la principal. */
+.ra-boton-fantasma {
+  background-color: transparent;
+  color: var(--color-ra-texto-tenue);
+  font-family: var(--font-cuerpo);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 0.875rem;
+  min-height: 44px;
+}
+.ra-boton-fantasma:hover {
+  color: var(--color-ra-texto-sec);
+}
+
+/* Sobre fondo rojo el boton se invierte: blanco con texto rojo. */
+.ra-boton-invertido {
+  background-color: #fff;
+  color: var(--color-ra-rojo);
+  box-shadow: 0 6px 18px -10px rgba(0, 0, 0, 0.5);
+}
+.ra-boton-invertido:hover {
+  background-color: #fff;
+  box-shadow: 0 10px 26px -10px rgba(0, 0, 0, 0.55);
+}
+
+/**
+ * Ancho automatico.
+ *
+ * Las clases .ra-boton* estan fuera de las capas de Tailwind, asi que ganan a
+ * cualquier utilidad: un `w-auto` al lado no haria nada. Este modificador es la
+ * via para el boton que no debe ocupar la fila entera.
+ */
+.ra-boton-auto {
+  width: auto;
+  flex: 0 0 auto;
+}
+
+/* --- Cabecera de pantalla ----------------------------------------------- */
+
+/**
+ * Todas las pantallas abren igual: linea roja corta, titulo condensado y una
+ * frase de apoyo. Repetir la estructura es lo que hace que la app se sienta
+ * como una sola cosa y no como cinco pantallas sueltas.
+ */
+.ra-kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-titular);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-ra-rojo);
+}
+.ra-kicker::before {
+  content: '';
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background-color: var(--color-ra-rojo);
+}
+
+.ra-titulo {
+  font-family: var(--font-titular);
+  font-size: clamp(1.75rem, 8vw, 2.125rem);
+  font-weight: 700;
+  line-height: 1.05;
+  text-transform: uppercase;
+  color: var(--color-ra-texto);
+}
+
+.ra-entradilla {
+  margin-top: 0.375rem;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--color-ra-texto-tenue);
+}
+
+/* --- Titulo de seccion dentro de una pantalla --------------------------- */
+
+.ra-seccion {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.ra-seccion h2 {
+  font-family: var(--font-titular);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-ra-texto);
+}
+.ra-seccion a {
+  flex-shrink: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-ra-rojo);
+}
+
+/* --- Chip ---------------------------------------------------------------- */
+
+.ra-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border: 1px solid var(--color-ra-borde);
+  border-radius: 999px;
+  padding: 0.1875rem 0.625rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--color-ra-texto-tenue);
+  white-space: nowrap;
+}
+
+/* --- Badge: rectangulo de esquina --------------------------------------- */
+
+.ra-badge {
+  /* Sobresale por la esquina superior izquierda de la tarjeta, asi que el
+     radio acompana al de la tarjeta en lugar de ser uniforme. */
+  border-radius: 16px 0 10px 0;
+  padding: 4px 10px;
+  letter-spacing: 0.14em;
+}
+
+/* --- Fondo de la app ----------------------------------------------------- */
+
+/**
+ * El mismo halo rojo de la web publica, mas contenido. Sin el, /app es una
+ * lamina de gris plano; con el, el contenido flota sobre algo.
+ *
+ * Es un gradiente CSS fijo: no descarga nada ni repinta al desplazar.
+ */
+.ra-app {
+  background-image: radial-gradient(
+    ellipse 90% 40% at 50% 0%,
+    color-mix(in srgb, var(--color-ra-rojo) 9%, transparent),
+    transparent 70%
+  );
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* --- Separador con aire -------------------------------------------------- */
+
+.ra-separador {
+  height: 1px;
+  border: 0;
+  background: linear-gradient(90deg, transparent, var(--color-ra-borde), transparent);
 }

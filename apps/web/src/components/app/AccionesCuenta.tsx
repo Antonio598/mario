@@ -122,10 +122,14 @@ export function AccionesCuenta({ consienteSensibles, timezone }: Props) {
 
   return (
     <div className="mt-6 space-y-3">
+      <div className="ra-seccion mb-4">
+        <h2>Ajustes y datos</h2>
+      </div>
+
       <div className="ra-card px-5 py-4">
         <label className="flex cursor-pointer items-start justify-between gap-4">
           <span>
-            <span className="text-sm font-medium text-ra-negro">Guardar el detalle de mis recaídas</span>
+            <span className="text-sm font-medium text-ra-texto">Guardar el detalle de mis recaídas</span>
             <span className="mt-1 block text-xs text-ra-texto-tenue">
               Incluye información sobre tu vida sexual y se envía al equipo de Modo Guerrero para
               tu seguimiento. Sin esto se registra el día, pero no las respuestas del protocolo.
@@ -142,7 +146,7 @@ export function AccionesCuenta({ consienteSensibles, timezone }: Props) {
       </div>
 
       <div className="ra-card px-5 py-4 text-sm text-ra-texto-sec">
-        Zona horaria: <span className="font-medium text-ra-negro">{timezone}</span>
+        Zona horaria: <span className="font-medium text-ra-texto">{timezone}</span>
         <p className="mt-1 text-xs text-ra-texto-tenue">
           Determina cuándo empieza tu día para el check-in.
         </p>
@@ -154,7 +158,7 @@ export function AccionesCuenta({ consienteSensibles, timezone }: Props) {
         type="button"
         onClick={() => void exportar()}
         disabled={ocupado}
-        className="min-h-[48px] w-full rounded-xl border border-ra-borde px-5 text-sm font-medium text-ra-texto-sec transition-colors hover:border-ra-rojo hover:text-ra-rojo disabled:opacity-60"
+        className="ra-boton-sec"
       >
         Exportar mis datos
       </button>
@@ -162,7 +166,7 @@ export function AccionesCuenta({ consienteSensibles, timezone }: Props) {
       <button
         type="button"
         onClick={() => void salir()}
-        className="min-h-[48px] w-full rounded-xl border border-ra-borde px-5 text-sm font-medium text-ra-texto-sec transition-colors hover:border-ra-rojo hover:text-ra-rojo"
+        className="ra-boton-sec"
       >
         Cerrar sesión
       </button>
@@ -171,7 +175,7 @@ export function AccionesCuenta({ consienteSensibles, timezone }: Props) {
         type="button"
         onClick={() => void borrarCuenta()}
         disabled={ocupado}
-        className="min-h-[48px] w-full rounded-xl border border-red-200 px-5 text-sm font-medium text-ra-rojo disabled:opacity-60"
+        className="ra-boton-fantasma text-ra-rojo hover:text-ra-rojo"
       >
         Eliminar mis datos
       </button>
