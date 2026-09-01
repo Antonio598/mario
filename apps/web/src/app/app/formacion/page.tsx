@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { Logo } from '@/components/app/Logo';
 import { FormacionTabs } from '@/components/app/FormacionTabs';
+import { ENLACE_LLAMADA_ADMISION, CTA_LLAMADA_ADMISION } from '@/lib/app/enlaces';
 
 export const dynamic = 'force-dynamic';
 
@@ -132,12 +133,12 @@ export default async function FormacionPage() {
           )}
 
           <a
-            href={programa.url_web ?? '#'}
+            href={ENLACE_LLAMADA_ADMISION}
             target="_blank"
             rel="noopener noreferrer"
             className="mg-pulsable mt-5 inline-flex min-h-[48px] items-center justify-center rounded-md bg-white px-5 text-xs font-bold tracking-wider text-ra-rojo uppercase"
           >
-            {programa.cta_texto ?? 'Agendar llamada de admisión'}
+            {programa.cta_texto ?? CTA_LLAMADA_ADMISION}
           </a>
         </div>
       )}
@@ -208,12 +209,12 @@ export default async function FormacionPage() {
           )}
 
           <a
-            href={programa.url_web ?? '#'}
+            href={ENLACE_LLAMADA_ADMISION}
             target="_blank"
             rel="noopener noreferrer"
             className="mg-pulsable mt-5 flex min-h-[56px] items-center justify-center rounded-lg bg-ra-rojo px-6 font-titular text-base font-bold tracking-wider text-white uppercase"
           >
-            {programa.cta_texto ?? 'Agendar llamada de admisión'}
+            {programa.cta_texto ?? CTA_LLAMADA_ADMISION}
           </a>
 
           {/*

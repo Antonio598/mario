@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { ENLACE_LLAMADA_ADMISION, CTA_LLAMADA_ADMISION } from '@/lib/app/enlaces';
 
 export const dynamic = 'force-dynamic';
 
@@ -49,7 +50,7 @@ export default async function CursoPage({ params }: { params: Promise<{ slug: st
 
   const { data: programa } = await supabase
     .from('products')
-    .select('url_web, cta_texto')
+    .select('cta_texto')
     .eq('slug', 'programa-reset-alfa')
     .maybeSingle();
 
@@ -128,12 +129,12 @@ export default async function CursoPage({ params }: { params: Promise<{ slug: st
           </p>
 
           <a
-            href={programa?.url_web ?? 'https://marioruperezdc.youcanbook.me'}
+            href={ENLACE_LLAMADA_ADMISION}
             target="_blank"
             rel="noopener noreferrer"
             className="mg-pulsable mt-5 inline-flex min-h-[48px] items-center justify-center rounded-md bg-white px-5 text-xs font-bold tracking-wider text-ra-rojo uppercase"
           >
-            {programa?.cta_texto ?? 'Agendar llamada de admisión'}
+            {programa?.cta_texto ?? CTA_LLAMADA_ADMISION}
           </a>
         </div>
       )}

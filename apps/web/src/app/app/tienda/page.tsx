@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
 import { Logo } from '@/components/app/Logo';
+import { ENLACE_LLAMADA_ADMISION, CTA_LLAMADA_ADMISION } from '@/lib/app/enlaces';
 
 export const dynamic = 'force-dynamic';
 
@@ -63,12 +64,12 @@ export default async function TiendaPage() {
           )}
 
           <a
-            href={p.url_web ?? '#'}
+            href={ENLACE_LLAMADA_ADMISION}
             target="_blank"
             rel="noopener noreferrer"
             className="mg-pulsable mt-5 flex min-h-[52px] items-center justify-center rounded-lg bg-ra-rojo px-6 font-titular text-sm font-bold tracking-wider text-white uppercase"
           >
-            {p.cta_texto ?? 'Acceder a Reset Alfa'}
+            {p.cta_texto ?? CTA_LLAMADA_ADMISION}
           </a>
         </section>
       ))}
