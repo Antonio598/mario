@@ -201,10 +201,17 @@ export default async function AppInicioPage() {
         </section>
       )}
 
-      {/* ── Banner "Recuerda tu misión" ───────────────────────────────── */}
-      <section className="mt-8 overflow-hidden rounded-2xl bg-ra-negro p-5 text-white">
+      {/*
+        ── Banner "Recuerda tu misión" ─────────────────────────────────
+        El rojo va en hexadecimal fijo y no como token a proposito. Este
+        banner llevaba `bg-ra-negro`, y ese token se invierte a #f7f7f7 en modo
+        oscuro: la tarjeta se volvia blanca con el texto blanco encima y
+        desaparecia. Un fondo de marca que siempre lleva texto blanco no puede
+        depender de un token que cambia con el tema.
+      */}
+      <section className="mt-8 overflow-hidden rounded-2xl bg-[#D32F2F] p-5 text-white">
         <div className="flex items-center gap-4">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/20">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
                 d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
@@ -216,17 +223,26 @@ export default async function AppInicioPage() {
             </svg>
           </div>
           <div className="flex-1">
-            <h3 className="font-titular text-sm font-bold tracking-wider uppercase">
+            <h3 className="font-titular text-sm font-bold tracking-wider text-white uppercase">
               Recuerda tu misión
             </h3>
-            <p className="mt-1 text-sm leading-relaxed text-white/70">
+            {/*
+              El negro se reserva para las palabras que sostienen la frase. Si
+              se destacara la frase entera dejaria de destacar nada.
+            */}
+            <p className="mt-1 text-sm leading-relaxed text-white">
               No es solo dejar el porno,{' '}
-              <span className="font-semibold text-ra-rojo-claro">
-                es construir al hombre que admiras.
-              </span>
+              <span className="font-bold text-black">es construir al hombre que admiras.</span>
             </p>
           </div>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="shrink-0 text-white/40" aria-hidden="true">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            className="shrink-0 text-white/70"
+            aria-hidden="true"
+          >
             <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
