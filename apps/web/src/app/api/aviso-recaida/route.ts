@@ -26,7 +26,14 @@ export const runtime = 'nodejs';
  * sexual en una bandeja de entrada por un fallo de la interfaz.
  */
 
-const DESTINO_POR_DEFECTO = 'israymarioresetalfa@gmail.com';
+/*
+  El destinatario vive SOLO en RESEND_TO, no en el codigo. Este repositorio es
+  publico, y una direccion escrita aqui queda indexada y recogida por los
+  rastreadores de spam en cuanto se sube.
+
+  Sin RESEND_TO no se envia nada. Es deliberado: es preferible un aviso que no
+  sale a un correo con datos del art. 9 entregado a una direccion equivocada.
+*/
 
 const VENTANA_MS = 600_000;
 const MAX_POR_VENTANA = 5;
@@ -191,8 +198,13 @@ export async function POST(request: NextRequest) {
 
   const destino = process.env['RESEND_TO']?.trim();
 
+  if (destino === undefined || destino === '') {
+    console.error('[aviso-recaida] falta RESEND_TO: no hay a quien enviar el aviso');
+    return NextResponse.json({ enviado: false, motivo: 'sin_destinatario' });
+  }
+
   const resultado = await enviarCorreo({
-    para: [destino === undefined || destino === '' ? DESTINO_POR_DEFECTO : destino],
+    para: [destino],
     asunto: 'Recaída registrada - ' + nombre + ' - ' + fecha,
     html,
     texto: plano,
