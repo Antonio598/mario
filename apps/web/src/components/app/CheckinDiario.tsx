@@ -24,10 +24,20 @@ export function CheckinDiario({ estado }: { estado: EstadoDiario }) {
   async function confirmarRacha() {
     setError(null);
     const supabase = createClient();
-    const { error: err } = await supabase.rpc('registrar_checkin');
+    const { data, error: err } = await supabase.rpc('registrar_checkin');
 
     if (err) {
-      setError('No hemos podido guardar tu check-in. Inténtalo de nuevo.');
+      setError(
+        `No hemos podido guardar tu check-in. ${err.code ?? ''} ${err.message}`.trim(),
+      );
+      return;
+    }
+
+    // El RPC responde {registrado:false} sin error cuando hoy ya consta o
+    // cuando la racha empieza manana. Sin decirlo, el boton parece roto.
+    const respuesta = (data ?? {}) as { registrado?: boolean; motivo?: string };
+    if (respuesta.registrado === false && respuesta.motivo === 'racha_no_iniciada') {
+      setError('Hoy ya quedó registrado como recaída. Tu racha nueva empieza mañana.');
       return;
     }
     // refresh() y no reload(): vuelve a pedir el Server Component conservando
@@ -83,7 +93,9 @@ export function CheckinDiario({ estado }: { estado: EstadoDiario }) {
         Responde con la verdad. El contador solo sirve si es real.
       </p>
 
-      {error !== null && <p className="mt-4 text-sm text-ra-rojo">{error}</p>}
+      {error !== null && (
+        <p className="mt-4 text-sm break-words text-ra-rojo">{error}</p>
+      )}
 
       <div className="mt-6 grid gap-3">
         <button

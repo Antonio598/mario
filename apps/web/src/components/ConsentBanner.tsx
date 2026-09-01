@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 const CLAVE = 'mg-consent-v1';
 
@@ -29,6 +30,22 @@ type Decision = 'aceptado' | 'rechazado';
  */
 export function ConsentBanner() {
   const [visible, setVisible] = useState(false);
+  const pathname = usePathname();
+
+  /*
+    FUERA DE /app.
+
+    En movil este banner se apila en vertical y ocupa unos 200 px del fondo de
+    la pantalla, por encima de la barra de navegacion y de lo que haya debajo:
+    el boton "Si, sigo" del check-in cae justo ahi, y el toque se lo comia el
+    banner. En escritorio va en una sola fila sobre una pantalla alta, asi que
+    el problema solo se veia en el movil.
+
+    Ademas no pinta nada aqui. /app es una zona privada sin publicidad ni
+    medicion -eso esta escrito en el layout de la app-, y el consentimiento que
+    este banner recoge es el de la web publica, que es donde corre AdSense.
+  */
+  const enLaApp = pathname?.startsWith('/app') ?? false;
 
   useEffect(() => {
     const guardado = window.localStorage.getItem(CLAVE);
@@ -48,7 +65,7 @@ export function ConsentBanner() {
     if (decision === 'aceptado') activarMedicion();
   }
 
-  if (!visible) return null;
+  if (!visible || enLaApp) return null;
 
   return (
     <div
