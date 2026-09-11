@@ -4,6 +4,7 @@ import {
   HistorialRecaidas,
   type EntradaHistorial,
 } from '@/components/app/HistorialRecaidas';
+import { TareaPAD, AccionesPAD } from '@/components/app/PAD';
 import type { DiaCalendario, EstadoDiario } from '@/lib/app/tipos';
 
 export const dynamic = 'force-dynamic';
@@ -15,11 +16,15 @@ export default async function CalendarioPage() {
   const anio = hoy.getFullYear();
   const mes = hoy.getMonth() + 1;
 
-  const [{ data: estadoRaw }, { data: diasRaw }, { data: historialRaw }] = await Promise.all([
-    supabase.rpc('estado_diario'),
-    supabase.rpc('calendario_mes', { p_anio: anio, p_mes: mes }),
-    supabase.rpc('historial_recaidas', { p_limite: 50 }),
-  ]);
+  const [{ data: estadoRaw }, { data: diasRaw }, { data: historialRaw }, { data: perfil }] =
+    await Promise.all([
+      supabase.rpc('estado_diario'),
+      supabase.rpc('calendario_mes', { p_anio: anio, p_mes: mes }),
+      supabase.rpc('historial_recaidas', { p_limite: 50 }),
+      supabase.from('profiles').select('pad').maybeSingle(),
+    ]);
+
+  const pad = perfil?.pad ?? null;
 
   const estado = estadoRaw as unknown as EstadoDiario | null;
   const dias = (diasRaw ?? []) as unknown as DiaCalendario[];
@@ -57,6 +62,13 @@ export default async function CalendarioPage() {
           </div>
         ))}
       </dl>
+
+      {/*
+        El P.A.D vive también aquí porque el calendario es donde se revisan las
+        recaídas, y cada ficha pregunta si se ejecutó. Con P.A.D: recordarlo y
+        poder cambiarlo. Sin él: la misma tarea pendiente que en Inicio.
+      */}
+      <div className="mt-6">{pad === null ? <TareaPAD /> : <AccionesPAD pad={pad} />}</div>
 
       <div className="mt-8">
         <Calendario diasIniciales={dias} anioInicial={anio} mesInicial={mes} />

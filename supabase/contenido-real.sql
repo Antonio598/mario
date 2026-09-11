@@ -227,8 +227,8 @@ insert into reset_alfa.products
   (slug, nombre, descripcion, tipo, precio_cents, moneda, url_web, imagen_url, orden)
 values
   ('libro-activa-el-modo-alfa-vol1',
-   'Activa el Modo Alfa Vol. 1',
-   'Energia Sexual Masculina. El primer libro de la saga: ensenanzas ancestrales '
+   'Energia Sexual Masculina',
+   'El primer libro de la saga: ensenanzas ancestrales '
    'sobre la retencion seminal, como retener tu energia sexual y transmutarla en '
    'poder personal, y despertar tu version mas Alfa por mucho tiempo que lleve dormida.',
    'libro', 1990, 'EUR',

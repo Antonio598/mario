@@ -8,9 +8,12 @@ export const dynamic = 'force-dynamic';
 /**
  * Tienda de la app web.
  *
- * A diferencia de la app nativa, aquí SÍ se muestra el precio y se puede
- * comprar: estamos en la web, así que no aplica la comisión del 15-30 % de
- * Apple y Google. Ese es el motivo de negocio para tener PWA además de app.
+ * SIN PRECIOS, por decisión de negocio. Cada producto se compra fuera —Amazon,
+ * la tienda de modoguerrero.es, la llamada de admisión— y el precio que
+ * manda es el de allí: mostrarlo aquí obliga a mantenerlo sincronizado a mano
+ * y, cuando diverge, el usuario ve dos precios y no compra ninguno.
+ *
+ * `precio_cents` sigue en la tabla para cuando haga falta volver a enseñarlo.
  */
 export default async function TiendaPage() {
   const supabase = await createClient();
@@ -23,13 +26,6 @@ export default async function TiendaPage() {
   const lista = productos ?? [];
   const programa = lista.filter((p) => p.tipo === 'programa');
   const libros = lista.filter((p) => p.tipo === 'libro');
-
-  const precio = (cents: number, moneda: string) =>
-    new Intl.NumberFormat('es-ES', {
-      style: 'currency',
-      currency: moneda,
-      maximumFractionDigits: cents % 100 === 0 ? 0 : 2,
-    }).format(cents / 100);
 
   return (
     <div className="mx-auto max-w-md px-5 py-8">
@@ -54,18 +50,6 @@ export default async function TiendaPage() {
 
           {p.descripcion !== null && (
             <p className="mt-4 text-sm text-ra-texto-sec">{p.descripcion}</p>
-          )}
-
-          {/*
-            El precio solo aparece si `mostrar_precio` es true. El programa se
-            vende por llamada de admisión, no por enlace, así que ahora no lo
-            es. El dato sigue en la tabla: volver a venderlo directo es cambiar
-            un booleano.
-          */}
-          {p.mostrar_precio && (
-            <p className="mt-4 font-titular text-3xl font-bold text-ra-texto">
-              {precio(p.precio_cents, p.moneda)}
-            </p>
           )}
 
           <a
@@ -112,12 +96,9 @@ export default async function TiendaPage() {
                   )}
 
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-start justify-between gap-2">
-                      <h3 className="font-titular text-sm font-bold text-ra-texto">{p.nombre}</h3>
-                      <span className="shrink-0 font-titular text-sm font-bold text-ra-rojo">
-                        {precio(p.precio_cents, p.moneda)}
-                      </span>
-                    </div>
+                    <h3 className="font-titular text-base leading-tight font-bold text-ra-texto">
+                      {p.nombre}
+                    </h3>
                   </div>
                 </div>
 
@@ -133,7 +114,7 @@ export default async function TiendaPage() {
                   rel="noopener noreferrer"
                   className="ra-boton-sec mt-4 border-ra-rojo text-ra-rojo"
                 >
-                  Comprar ahora
+                  Conseguir el libro
                 </a>
               </article>
             ))

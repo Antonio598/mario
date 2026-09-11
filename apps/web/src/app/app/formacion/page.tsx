@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { Logo } from '@/components/app/Logo';
 import { FormacionTabs } from '@/components/app/FormacionTabs';
+import { TareaPAD } from '@/components/app/PAD';
 import { ENLACE_LLAMADA_ADMISION, CTA_LLAMADA_ADMISION } from '@/lib/app/enlaces';
 
 export const dynamic = 'force-dynamic';
@@ -19,11 +20,15 @@ export const dynamic = 'force-dynamic';
 export default async function FormacionPage() {
   const supabase = await createClient();
 
-  const [{ data: cursos }, { data: permisos }, { data: programa }] = await Promise.all([
-    supabase.from('courses').select('*').eq('publicado', true).order('orden'),
-    supabase.from('entitlements').select('product_id, activo, expires_at'),
-    supabase.from('products').select('*').eq('slug', 'programa-reset-alfa').maybeSingle(),
-  ]);
+  const [{ data: cursos }, { data: permisos }, { data: programa }, { data: perfil }] =
+    await Promise.all([
+      supabase.from('courses').select('*').eq('publicado', true).order('orden'),
+      supabase.from('entitlements').select('product_id, activo, expires_at'),
+      supabase.from('products').select('*').eq('slug', 'programa-reset-alfa').maybeSingle(),
+      supabase.from('profiles').select('pad').maybeSingle(),
+    ]);
+
+  const pad = perfil?.pad ?? null;
 
   const ahora = Date.now();
   const desbloqueados = new Set(
@@ -200,22 +205,6 @@ export default async function FormacionPage() {
             <p className="mt-4 text-sm text-ra-texto-sec">{programa.descripcion}</p>
           )}
 
-          {/*
-            El precio solo se pinta si `mostrar_precio` es true. Ahora mismo no
-            lo es: el programa se vende por llamada, no por enlace. El dato
-            sigue en la tabla para poder volver a venderlo directo cambiando un
-            booleano.
-          */}
-          {programa.mostrar_precio && (
-            <p className="mt-5 font-titular text-3xl font-bold text-ra-texto">
-              {new Intl.NumberFormat('es-ES', {
-                style: 'currency',
-                currency: programa.moneda,
-                maximumFractionDigits: 0,
-              }).format(programa.precio_cents / 100)}
-            </p>
-          )}
-
           <a
             href={ENLACE_LLAMADA_ADMISION}
             target="_blank"
@@ -253,6 +242,13 @@ export default async function FormacionPage() {
         <h1 className="ra-titulo mt-2">Formación</h1>
         <p className="ra-entradilla">Aprende con recursos gratuitos y contenido premium.</p>
       </header>
+
+      {/* Solo mientras no exista. Una vez creado, aquí no hay nada que recordar. */}
+      {pad === null && (
+        <div className="mt-6">
+          <TareaPAD />
+        </div>
+      )}
 
       <FormacionTabs gratis={panelGratis} premium={panelPremium} />
     </div>

@@ -48,6 +48,12 @@ export interface EsquemaResetAlfa {
         record_personal: number;
         dias_totales: number;
         onboarding_completado: boolean;
+        /**
+         * Protocolo Anti-Deseo: la accion concreta que el usuario ejecuta
+         * cuando aparece el deseo. Null hasta que la crea. Se escribe solo
+         * por el RPC guardar_pad.
+         */
+        pad: string | null;
         /** usuario | editor | admin. Lo escribe solo un administrador por SQL. */
         rol: UsuarioRol;
         created_at: string;
@@ -464,6 +470,11 @@ export interface EsquemaResetAlfa {
         p_version: string;
         p_origen?: string;
       };
+      Returns: Json;
+    };
+    /** Guarda el P.A.D del usuario. Sustituye al anterior: es una decision, no un historial. */
+    guardar_pad: {
+      Args: { p_texto: string };
       Returns: Json;
     };
     /** Rol del usuario actual. La interfaz lo usa solo para decidir que pinta. */

@@ -5,6 +5,7 @@ import { CheckinDiario } from '@/components/app/CheckinDiario';
 import { ModalArranque } from '@/components/app/ModalArranque';
 import { AjustarRacha } from '@/components/app/AjustarRacha';
 import { Logo } from '@/components/app/Logo';
+import { TareaPAD, RecordatorioPAD } from '@/components/app/PAD';
 import type { EstadoDiario } from '@/lib/app/tipos';
 
 /**
@@ -42,7 +43,7 @@ export default async function AppInicioPage() {
   // El servidor calcula la fecha local del usuario a partir de la zona horaria
   // de su perfil. Nunca se usa la del navegador: cambiar el reloj del
   // dispositivo bastaría para inflar la racha.
-  const [{ data, error }, { data: cursos }] = await Promise.all([
+  const [{ data, error }, { data: cursos }, { data: perfil }] = await Promise.all([
     supabase.rpc('estado_diario'),
     supabase
       .from('courses')
@@ -51,6 +52,7 @@ export default async function AppInicioPage() {
       .eq('tipo', 'gratis')
       .order('orden')
       .limit(4),
+    supabase.from('profiles').select('pad').maybeSingle(),
   ]);
 
   if (error) {
@@ -67,6 +69,9 @@ export default async function AppInicioPage() {
   const estado = data as unknown as EstadoDiario;
   const masterclasses = cursos ?? [];
   const mensaje = mensajeDelDia();
+  // Null también si la columna aún no existe en la base: entonces se muestra la
+  // tarea y el guardado falla con su mensaje, que es mejor que ocultarla.
+  const pad = perfil?.pad ?? null;
 
   // El modal cubre la pantalla mientras falte el check-in del dia. Es una
   // unica pregunta diaria y responderla es el producto: por eso no tiene boton
@@ -95,6 +100,15 @@ export default async function AppInicioPage() {
       <div className="mt-5">
         <CheckinDiario estado={estado} />
       </div>
+
+      {/*
+        ── P.A.D ─────────────────────────────────────────────────────────
+        Tarea pendiente hasta que exista; después, recordatorio de cuál es.
+        Va justo debajo del check-in porque es lo primero que un usuario nuevo
+        tiene que resolver, y lo que un usuario veterano necesita tener a la
+        vista cuando aparece el deseo.
+      */}
+      <div className="mt-5">{pad === null ? <TareaPAD /> : <RecordatorioPAD pad={pad} />}</div>
 
       {/* ── Mensaje del día ───────────────────────────────────────────── */}
       <div className="ra-card mt-5 flex gap-4 px-5 py-5">
