@@ -18,9 +18,15 @@ type Modo = 'entrar' | 'registro';
  * y usar la app con normalidad, solo que sin guardar el detalle de las
  * recaídas.
  */
-export function FormularioAcceso({ destino }: { destino: string }) {
+export function FormularioAcceso({
+  destino,
+  modoInicial = 'entrar',
+}: {
+  destino: string;
+  modoInicial?: Modo;
+}) {
   const router = useRouter();
-  const [modo, setModo] = useState<Modo>('entrar');
+  const [modo, setModo] = useState<Modo>(modoInicial);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [nombre, setNombre] = useState('');

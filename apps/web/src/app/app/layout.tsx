@@ -46,9 +46,24 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     redirect('/entrar?siguiente=/app');
   }
 
-  // Comprobar si es editor para mostrar el enlace al panel
-  const { data: rol } = await supabase.rpc('mi_rol');
+  const [{ data: rol }, { data: perfil }] = await Promise.all([
+    supabase.rpc('mi_rol'),
+    supabase.from('profiles').select('onboarding_completado').maybeSingle(),
+  ]);
   const esEditor = rol === 'editor' || rol === 'admin';
+
+  /*
+    GATE DEL TEST DE ENTRADA.
+
+    Quien no ha completado el test va a /empezar, que esta FUERA de /app: por
+    eso no hay bucle. Fila ausente cuenta como no completado: en este proyecto
+    el perfil se crea de forma perezosa y un usuario recien registrado aun no
+    lo tiene. Editores y administradores quedan exentos para que el equipo
+    nunca se quede sin acceso al panel por un flag.
+  */
+  if (!esEditor && perfil?.onboarding_completado !== true) {
+    redirect('/empezar');
+  }
 
   return (
     <div className="ra-app flex min-h-[100dvh] flex-col bg-ra-fondo">

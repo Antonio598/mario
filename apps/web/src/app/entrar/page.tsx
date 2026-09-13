@@ -17,14 +17,15 @@ export const metadata: Metadata = {
 export default async function EntrarPage({
   searchParams,
 }: {
-  searchParams: Promise<{ siguiente?: string }>;
+  searchParams: Promise<{ siguiente?: string; registro?: string }>;
 }) {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { siguiente } = await searchParams;
+  const { siguiente, registro } = await searchParams;
+  const vieneDelTest = registro === '1';
 
   // Redirección abierta: sin esta comprobación, ?siguiente=https://sitio-falso
   // convertiría el dominio en trampolín de phishing con la credibilidad de la
@@ -41,10 +42,21 @@ export default async function EntrarPage({
       <Link href="/" className="inline-block">
         <Logo variante="app" alto={72} prioridad />
       </Link>
-      <h1 className="mt-6 text-4xl">Entra</h1>
-      <p className="mt-3 text-mg-gris-texto">Tu racha te está esperando.</p>
+      <h1 className="mt-6 text-4xl">{vieneDelTest ? 'Crea tu cuenta' : 'Entra'}</h1>
+      <p className="mt-3 text-mg-gris-texto">
+        {vieneDelTest ? 'Tu plan te está esperando.' : 'Tu racha te está esperando.'}
+      </p>
 
-      <FormularioAcceso destino={destino} />
+      <FormularioAcceso destino={destino} modoInicial={vieneDelTest ? 'registro' : 'entrar'} />
+
+      {!vieneDelTest && (
+        <p className="mt-6 text-center text-sm text-mg-gris-tenue">
+          ¿Nuevo aquí?{' '}
+          <Link href="/empezar" className="text-mg-rojo underline underline-offset-2">
+            Empieza por el test de 2 minutos
+          </Link>
+        </p>
+      )}
 
       <p className="mt-10 text-center text-xs text-mg-gris-apagado">
         Al continuar aceptas la{' '}

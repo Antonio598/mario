@@ -58,8 +58,13 @@ export default async function HomePage() {
         </p>
 
         <div className="mg-entrada mt-9 flex flex-wrap gap-3" style={{ animationDelay: '220ms' }}>
+          {/*
+            Al test, no a la app. Quien llega por primera vez no tiene cuenta:
+            mandarlo a /app es mandarlo a un formulario de acceso en frio. El
+            test le ensena su problema antes de pedirle nada.
+          */}
           <Link
-            href="/app"
+            href="/empezar"
             className="mg-boton-principal mg-pulsable rounded-md bg-mg-rojo px-6 py-3 font-titular font-semibold tracking-wider text-mg-blanco-puro uppercase transition-colors hover:bg-mg-rojo-oscuro"
           >
             Empezar ahora

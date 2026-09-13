@@ -63,6 +63,33 @@ rompe los ficheros— y reinicia con `docker compose up -d rest`.
 NEXT_PUBLIC_SUPABASE_SCHEMA=reset_alfa
 ```
 
+**3. Stripe (suscripción Premium)**, en Environment de EasyPanel — nunca en
+Build Arguments, son secretos:
+
+```
+STRIPE_SECRET_KEY=sk_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_PREMIUM_PRICE_ID=price_...
+```
+
+En el panel de Stripe: producto «Reset Alfa Premium» con precio **recurrente
+mensual de 10 USD** (su id es el `price_...`); webhook a
+`https://<dominio>/api/stripe/webhook` con los eventos
+`checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`,
+`customer.subscription.updated` y `customer.subscription.deleted`; y el
+**Customer Portal** activado (Settings → Billing → Customer portal), que es
+donde el usuario cancela.
+
+Para dar Premium a mano a alguien (un alumno, una prueba), sin pasar por
+Stripe:
+
+```sql
+insert into reset_alfa.entitlements (user_id, product_id, origen, activo, expires_at)
+select id, 'b0000000-0000-4000-8000-000000000010', 'manual', true, null
+  from auth.users where email = 'correo@del.usuario'
+on conflict (user_id, product_id) do update set activo = true, expires_at = null;
+```
+
 ---
 
 ## Migraciones
