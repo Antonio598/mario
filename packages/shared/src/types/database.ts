@@ -16,7 +16,7 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type CheckinEstado = 'en_racha' | 'recaida';
 export type ArticleEstado = 'draft' | 'aprobado' | 'publicado';
 export type CourseTipo = 'gratis' | 'premium';
-export type ProductTipo = 'libro' | 'reto' | 'programa' | 'mastermind';
+export type ProductTipo = 'libro' | 'reto' | 'programa' | 'mastermind' | 'suscripcion';
 export type EntitlementOrigen = 'stripe' | 'manual';
 export type NotificationTipo = 'articulo_diario' | 'recordatorio_checkin' | 'hito' | 'sistema';
 export type UsuarioRol = 'usuario' | 'editor' | 'admin';
@@ -60,6 +60,11 @@ export interface EsquemaResetAlfa {
          * escribe. Se escribe solo por el RPC guardar_carta.
          */
         carta: Json | null;
+        /**
+         * Respuestas del cuestionario de entrada, por clave. Null si no lo
+         * hizo o lo salto. Se escribe solo por el RPC guardar_plan.
+         */
+        plan: Json | null;
         /** usuario | editor | admin. Lo escribe solo un administrador por SQL. */
         rol: UsuarioRol;
         created_at: string;
@@ -282,6 +287,11 @@ export interface EsquemaResetAlfa {
         activo: boolean;
         expires_at: string | null;
         stripe_checkout_session_id: string | null;
+        /** Suscripciones (migracion premium-2): cliente y suscripcion de Stripe. */
+        stripe_customer_id: string | null;
+        stripe_subscription_id: string | null;
+        /** El usuario cancelo; el acceso sigue hasta expires_at. */
+        cancel_at_period_end: boolean;
         created_at: string;
         updated_at: string;
       };
@@ -297,10 +307,17 @@ export interface EsquemaResetAlfa {
         activo?: boolean;
         expires_at?: string | null;
         stripe_checkout_session_id?: string | null;
+        stripe_customer_id?: string | null;
+        stripe_subscription_id?: string | null;
+        cancel_at_period_end?: boolean;
       };
       Update: {
         activo?: boolean;
         expires_at?: string | null;
+        stripe_checkout_session_id?: string | null;
+        stripe_customer_id?: string | null;
+        stripe_subscription_id?: string | null;
+        cancel_at_period_end?: boolean;
       };
       Relationships: [];
     };
@@ -487,6 +504,19 @@ export interface EsquemaResetAlfa {
     guardar_carta: {
       Args: { p_respuestas: Json };
       Returns: Json;
+    };
+    /**
+     * Guarda las respuestas del cuestionario de entrada y marca el onboarding
+     * como completado. Con null solo marca el flag (saltar el test).
+     */
+    guardar_plan: {
+      Args: { p_plan?: Json | null };
+      Returns: Json;
+    };
+    /** True si el usuario tiene la suscripcion Premium activa y vigente. */
+    es_premium: {
+      Args: Record<string, never>;
+      Returns: boolean;
     };
     /** Rol del usuario actual. La interfaz lo usa solo para decidir que pinta. */
     mi_rol: {

@@ -12,8 +12,11 @@ Pega cada fichero en el SQL Editor de Supabase, **en este orden**:
 | 4 | `arreglo-consentimiento.sql` | RPC `dar_consentimiento`. Sin él, «Acepto, empezar el protocolo» puede fallar |
 | 5 | `pad.sql` | Columna `profiles.pad` y RPC `guardar_pad`. Sin él, el P.A.D no se puede crear |
 | 6 | `carta.sql` | Columna `profiles.carta` y RPC `guardar_carta`. Sin él, la carta anti-recaída no se puede crear |
+| 7 | `plan.sql` | Columna `profiles.plan` y RPC `guardar_plan`. Sin él, el test de entrada no se puede guardar y la app manda al test en bucle |
+| 8 | `premium-1-tipo.sql` | **Pégalo SOLO, en su propia ejecución.** Añade el tipo `suscripcion` al enum. PostgreSQL no deja usar un valor de enum en la misma transacción en que se crea |
+| 9 | `premium-2-suscripcion.sql` | Columnas de suscripción en `entitlements`, producto `premium-mensual` y RPC `es_premium` |
 
-Los seis son idempotentes: puedes reejecutarlos sin duplicar nada.
+Los nueve son idempotentes: puedes reejecutarlos sin duplicar nada.
 
 **El SQL Editor envuelve cada ejecución en una transacción.** Si un fichero da
 un error en cualquier punto, deshace todo lo anterior y no queda nada. Por eso
