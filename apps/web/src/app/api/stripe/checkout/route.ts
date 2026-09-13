@@ -3,6 +3,7 @@ import Stripe from 'stripe';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { publicEnv } from '@/lib/env';
+import { precioPremium } from '@/lib/stripe/suscripciones';
 
 export const runtime = 'nodejs';
 
@@ -48,7 +49,7 @@ export async function POST(request: NextRequest) {
 
   const { data: producto } = await admin
     .from('products')
-    .select('id, nombre, stripe_price_id, activo')
+    .select('id, nombre, tipo, stripe_price_id, activo')
     .eq('slug', slug)
     .maybeSingle();
 
@@ -56,30 +57,73 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'producto_no_disponible' }, { status: 404 });
   }
 
-  if (producto.stripe_price_id === null) {
+  const esSuscripcion = producto.tipo === 'suscripcion';
+
+  /*
+    El precio de la suscripción no está en la tabla: es distinto en pruebas y
+    en producción y el seed es público. Vive en STRIPE_PREMIUM_PRICE_ID.
+  */
+  const priceId = esSuscripcion ? precioPremium() : producto.stripe_price_id;
+  if (priceId === null) {
     return NextResponse.json({ error: 'producto_sin_precio' }, { status: 409 });
   }
 
   // Si ya lo tiene, no se le cobra otra vez. Sin esta comprobación, un usuario
   // que vuelve a la ficha desde un enlace antiguo paga dos veces por lo mismo,
   // y eso acaba en una devolución y en una queja.
-  const { data: yaLoTiene } = await admin
+  //
+  // Para la suscripción cuenta también `expires_at`: una fila cancelada o
+  // caducada sigue existiendo, y quien vuelve tiene que poder suscribirse.
+  const { data: existente } = await admin
     .from('entitlements')
-    .select('id')
+    .select('id, activo, expires_at, stripe_customer_id')
     .eq('user_id', user.id)
     .eq('product_id', producto.id)
-    .eq('activo', true)
     .maybeSingle();
 
-  if (yaLoTiene !== null) {
+  const vigente =
+    existente !== null &&
+    existente.activo &&
+    (existente.expires_at === null || new Date(existente.expires_at).getTime() > Date.now());
+
+  if (vigente) {
     return NextResponse.json({ error: 'ya_adquirido' }, { status: 409 });
   }
 
   const stripe = new Stripe(claveStripe);
 
+  if (esSuscripcion) {
+    /*
+      `client_reference_id` y `subscription_data.metadata` llevan el usuario
+      por dos vías. La primera la lee la página de éxito desde la sesión; la
+      segunda viaja EN la suscripción, que es lo que traen todos los eventos
+      posteriores (renovación, cancelación). Sin ella, un `invoice.paid` seis
+      meses después no sabría de quién es.
+
+      Si ya hubo cliente en Stripe se reutiliza: un usuario, un cliente. Es lo
+      que hace que el portal de facturación muestre todo su historial.
+    */
+    const sesion = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      line_items: [{ price: priceId, quantity: 1 }],
+      ...(existente?.stripe_customer_id
+        ? { customer: existente.stripe_customer_id }
+        : { customer_email: user.email ?? undefined }),
+      client_reference_id: user.id,
+      metadata: { user_id: user.id, product_id: producto.id },
+      subscription_data: { metadata: { user_id: user.id, product_id: producto.id } },
+      allow_promotion_codes: true,
+      success_url: `${publicEnv.siteUrl}/app/premium?estado=ok&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${publicEnv.siteUrl}/app/premium?estado=cancelado`,
+      automatic_tax: { enabled: true },
+    });
+
+    return NextResponse.json({ url: sesion.url });
+  }
+
   const sesion = await stripe.checkout.sessions.create({
     mode: 'payment',
-    line_items: [{ price: producto.stripe_price_id, quantity: 1 }],
+    line_items: [{ price: priceId, quantity: 1 }],
 
     // El correo de la cuenta va precargado: un correo distinto en Stripe
     // complica el soporte cuando hay que cruzar un pago con un usuario.
@@ -95,8 +139,8 @@ export async function POST(request: NextRequest) {
       product_id: producto.id,
     },
 
-    success_url: `${publicEnv.siteUrl}/compra/gracias?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${publicEnv.siteUrl}/producto/${slug}`,
+    success_url: `${publicEnv.siteUrl}/app/formacion?compra=ok`,
+    cancel_url: `${publicEnv.siteUrl}/app/formacion`,
 
     // Requisito fiscal en España para productos digitales.
     automatic_tax: { enabled: true },

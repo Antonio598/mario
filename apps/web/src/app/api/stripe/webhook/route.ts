@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import Stripe from 'stripe';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { sincronizarSuscripcion } from '@/lib/stripe/suscripciones';
 
 export const runtime = 'nodejs';
 
@@ -56,6 +57,59 @@ export async function POST(request: NextRequest) {
   }
 
   const supabase = createAdminClient();
+
+  /* --------------------------------------------------------------------- */
+  /* SUSCRIPCION PREMIUM                                                    */
+  /*                                                                       */
+  /* Todos los eventos acaban en sincronizarSuscripcion, que copia el       */
+  /* estado real de Stripe. No se interpreta el evento: es lo que hace que  */
+  /* una entrega duplicada o fuera de orden no pueda romper nada.           */
+  /* --------------------------------------------------------------------- */
+
+  const sincronizar = async (subId: string, userId?: string | null, sessionId?: string) => {
+    try {
+      const r = await sincronizarSuscripcion(
+        stripe,
+        subId,
+        userId,
+        sessionId === undefined ? undefined : { stripeCheckoutSessionId: sessionId },
+      );
+      // Usuario irresoluble: reintentar no lo arregla. 200 con aviso.
+      if (!r.ok) return NextResponse.json({ recibido: true, aviso: r.motivo });
+      return NextResponse.json({ recibido: true, activo: r.activo });
+    } catch (e) {
+      // Fallo de base o de la API de Stripe: transitorio, que reintente.
+      console.error('[stripe] fallo al sincronizar', subId, e instanceof Error ? e.message : e);
+      return NextResponse.json({ error: 'fallo_sincronizacion' }, { status: 500 });
+    }
+  };
+
+  if (evento.type === 'checkout.session.completed' && evento.data.object.mode === 'subscription') {
+    const sesion = evento.data.object;
+    const subId = typeof sesion.subscription === 'string' ? sesion.subscription : sesion.subscription?.id;
+    if (subId === undefined || subId === null) {
+      console.error('[stripe] sesión de suscripción sin subscription', sesion.id);
+      return NextResponse.json({ recibido: true, aviso: 'sin_suscripcion' });
+    }
+    return sincronizar(subId, sesion.metadata?.['user_id'] ?? sesion.client_reference_id, sesion.id);
+  }
+
+  if (evento.type === 'customer.subscription.updated' || evento.type === 'customer.subscription.deleted') {
+    return sincronizar(evento.data.object.id);
+  }
+
+  if (evento.type === 'invoice.paid' || evento.type === 'invoice.payment_failed') {
+    const factura = evento.data.object;
+    const ref = factura.parent?.subscription_details?.subscription;
+    const subId = typeof ref === 'string' ? ref : (ref?.id ?? null);
+    // Una factura sin suscripción es una compra única: no es asunto de aquí.
+    if (subId === null) return NextResponse.json({ recibido: true });
+    return sincronizar(subId);
+  }
+
+  /* --------------------------------------------------------------------- */
+  /* COMPRA UNICA                                                           */
+  /* --------------------------------------------------------------------- */
 
   if (evento.type === 'checkout.session.completed') {
     const sesion = evento.data.object;
