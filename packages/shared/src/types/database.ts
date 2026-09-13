@@ -65,6 +65,8 @@ export interface EsquemaResetAlfa {
          * hizo o lo salto. Se escribe solo por el RPC guardar_plan.
          */
         plan: Json | null;
+        /** Claves de las pantallas de hito ya mostradas. Solo por marcar_hito. */
+        hitos_vistos: string[];
         /** usuario | editor | admin. Lo escribe solo un administrador por SQL. */
         rol: UsuarioRol;
         created_at: string;
@@ -511,6 +513,11 @@ export interface EsquemaResetAlfa {
      */
     guardar_plan: {
       Args: { p_plan?: Json | null };
+      Returns: Json;
+    };
+    /** Registra que el usuario ya vio la pantalla de un hito (7-dias, 30-dias). */
+    marcar_hito: {
+      Args: { p_hito: string };
       Returns: Json;
     };
     /** True si el usuario tiene la suscripcion Premium activa y vigente. */

@@ -10,11 +10,13 @@ import { PREGUNTAS } from '@/lib/app/preguntas-recaida';
 
 interface PropsFormulario {
   consiente: boolean;
-  /** Se invoca al cerrar. Permite usarlo como pantalla o dentro del modal. */
-  onTerminar?: () => void;
 }
 
-export function FormularioRecaida({ consiente, onTerminar }: PropsFormulario) {
+/**
+ * Al terminar no hay callback: el cierre lleva siempre a la landing de
+ * recaida (/app/hito/recaida), tanto desde el modal como desde la pagina.
+ */
+export function FormularioRecaida({ consiente }: PropsFormulario) {
   const router = useRouter();
   const [paso, setPaso] = useState(0);
   const [respuestas, setRespuestas] = useState<RespuestasRecaida>({});
@@ -199,12 +201,17 @@ export function FormularioRecaida({ consiente, onTerminar }: PropsFormulario) {
           Mañana el contador vuelve a empezar. Hoy solo tienes que cerrar esta pantalla.
         </p>
 
+        {/*
+          Al cerrar, la landing de recaida: el video y las herramientas para
+          que la proxima no pille sin plan. Es el momento de maxima
+          receptividad y no se desperdicia en un simple "volver".
+        */}
         <button
           type="button"
-          onClick={() => (onTerminar ? onTerminar() : router.push('/app'))}
+          onClick={() => router.push('/app/hito/recaida')}
           className="ra-boton mt-9"
         >
-          Volver
+          Continuar
         </button>
 
 

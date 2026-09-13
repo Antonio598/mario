@@ -107,10 +107,7 @@ export function ModalArranque({ estado, esPremium }: { estado: EstadoDiario; esP
     return (
       <Portal>
         <div className="ra-hoja fixed inset-0 z-[60] overflow-y-auto bg-ra-fondo">
-          <FormularioRecaida
-            consiente={estado.consiente_sensibles}
-            onTerminar={() => router.refresh()}
-          />
+          <FormularioRecaida consiente={estado.consiente_sensibles} />
         </div>
       </Portal>
     );

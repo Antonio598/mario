@@ -11,6 +11,8 @@ import { leerCarta } from '@/lib/app/carta';
 import { obtenerAcceso } from '@/lib/app/acceso';
 import { Bloqueado } from '@/components/app/Bloqueado';
 import { BannerPremium } from '@/components/app/BannerPremium';
+import { HitoInterstitial } from '@/components/app/HitoInterstitial';
+import { hitoPendiente } from '@/lib/app/hitos';
 import type { EstadoDiario } from '@/lib/app/tipos';
 
 /**
@@ -57,7 +59,7 @@ export default async function AppInicioPage() {
       .eq('tipo', 'gratis')
       .order('orden')
       .limit(4),
-    supabase.from('profiles').select('pad, carta').maybeSingle(),
+    supabase.from('profiles').select('pad, carta, hitos_vistos').maybeSingle(),
     obtenerAcceso(),
   ]);
   const { esPremium } = acceso;
@@ -81,12 +83,24 @@ export default async function AppInicioPage() {
   const pad = perfil?.pad ?? null;
   const carta = leerCarta(perfil?.carta);
 
+  /*
+    Hito pendiente (7 o 30 dias). Solo cuando el check-in de hoy ya esta
+    hecho: primero la pregunta diaria, despues la celebracion. Si la columna
+    aun no existe en la base, `hitos_vistos` llega undefined y se trata como
+    vacio: se mostraria el hito y marcarlo fallaria con su mensaje, que es
+    preferible a no mostrarlo nunca.
+  */
+  const hito = estado.necesita_checkin
+    ? null
+    : hitoPendiente(estado.racha_actual, perfil?.hitos_vistos ?? []);
+
   // El modal cubre la pantalla mientras falte el check-in del dia. Es una
   // unica pregunta diaria y responderla es el producto: por eso no tiene boton
   // de cerrar.
   return (
     <>
       {estado.necesita_checkin && <ModalArranque estado={estado} esPremium={esPremium} />}
+      {hito !== null && <HitoInterstitial clave={hito} esPremium={esPremium} />}
 
     <div className="mx-auto max-w-md px-5 py-6">
       {/* Marca, discreta: el protagonista de esta pantalla es el contador. */}

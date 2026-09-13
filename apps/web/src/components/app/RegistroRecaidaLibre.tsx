@@ -88,10 +88,12 @@ export function RegistroRecaidaLibre({ onTerminar }: { onTerminar?: () => void }
 
       <button
         type="button"
-        onClick={() => (onTerminar ? onTerminar() : router.push('/app'))}
-        className="ra-boton-sec mt-6"
+        onClick={() =>
+          hecho ? router.push('/app/hito/recaida') : onTerminar ? onTerminar() : router.push('/app')
+        }
+        className={hecho ? 'ra-boton mt-6' : 'ra-boton-sec mt-6'}
       >
-        {hecho ? 'Volver' : 'Salir sin registrar'}
+        {hecho ? 'Continuar' : 'Salir sin registrar'}
       </button>
     </div>
   );

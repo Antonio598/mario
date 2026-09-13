@@ -18,6 +18,8 @@ const BENEFICIO: Record<OrigenPremium, string> = {
   carta: 'La carta anti-recaída es Premium.',
   racha: 'Ve tu racha entera, sin tope de 30 días.',
   logros: 'Las medallas de 90, 180 y 365 días son Premium.',
+  recaida: 'Que la próxima no te pille sin plan.',
+  hito: 'La segunda semana es donde más se cae. Ten las herramientas antes.',
 };
 
 export async function BannerPremium({ desde }: { desde: OrigenPremium }) {

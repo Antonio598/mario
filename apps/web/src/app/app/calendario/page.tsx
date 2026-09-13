@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { Calendario } from '@/components/app/Calendario';
 import {
@@ -131,6 +132,33 @@ export default async function CalendarioPage() {
       <div className="mt-8">
         <Calendario diasIniciales={dias} anioInicial={anio} mesInicial={mes} />
       </div>
+
+      {/*
+        Con al menos una recaida, la landing de recaida queda accesible desde
+        aqui: el video y las herramientas no son solo para el momento en que
+        se registra.
+      */}
+      {historial.length > 0 && (
+        <Link
+          href="/app/hito/recaida"
+          className="ra-card ra-card-enlace mg-pulsable mt-6 flex items-center gap-4 px-5 py-4"
+        >
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ra-rojo text-white">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M8 5.5v13l11-6.5-11-6.5Z" />
+            </svg>
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="ra-kicker">Después de una recaída</span>
+            <span className="mt-0.5 block text-sm text-ra-texto">
+              Qué hacer para que la próxima no te pille sin plan.
+            </span>
+          </span>
+          <span aria-hidden="true" className="shrink-0 text-ra-rojo">
+            →
+          </span>
+        </Link>
+      )}
 
       <Logros
         datos={{

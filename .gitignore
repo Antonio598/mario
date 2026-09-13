@@ -40,3 +40,10 @@ pnpm-debug.log*
 .vscode/*
 !.vscode/extensions.json
 .idea/
+
+# Material de origen del propietario (videos, portadas, capturas de referencia).
+# Lo que la app usa se copia a apps/web/public con nombre ASCII; el original no
+# se sube: duplicaria 37 MB de video en cada clon.
+/Videos CTA consultoria/
+/Caratulas nuevas/
+/Ejemplos/

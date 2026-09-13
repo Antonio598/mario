@@ -38,7 +38,9 @@ export type OrigenPremium =
   | 'pad'
   | 'carta'
   | 'racha'
-  | 'logros';
+  | 'logros'
+  | 'recaida'
+  | 'hito';
 
 export function enlacePremium(desde: OrigenPremium): string {
   return `/app/premium?desde=${desde}`;
