@@ -5,6 +5,9 @@ import {
   type EntradaHistorial,
 } from '@/components/app/HistorialRecaidas';
 import { TareaPAD, AccionesPAD } from '@/components/app/PAD';
+import { TareaCarta, AccionesCarta } from '@/components/app/CartaAntiRecaida';
+import { Logros } from '@/components/app/Logros';
+import { leerCarta } from '@/lib/app/carta';
 import type { DiaCalendario, EstadoDiario } from '@/lib/app/tipos';
 
 export const dynamic = 'force-dynamic';
@@ -16,15 +19,31 @@ export default async function CalendarioPage() {
   const anio = hoy.getFullYear();
   const mes = hoy.getMonth() + 1;
 
-  const [{ data: estadoRaw }, { data: diasRaw }, { data: historialRaw }, { data: perfil }] =
-    await Promise.all([
-      supabase.rpc('estado_diario'),
-      supabase.rpc('calendario_mes', { p_anio: anio, p_mes: mes }),
-      supabase.rpc('historial_recaidas', { p_limite: 50 }),
-      supabase.from('profiles').select('pad').maybeSingle(),
-    ]);
+  const [
+    { data: estadoRaw },
+    { data: diasRaw },
+    { data: historialRaw },
+    { data: perfil },
+    { data: plantillas },
+  ] = await Promise.all([
+    supabase.rpc('estado_diario'),
+    supabase.rpc('calendario_mes', { p_anio: anio, p_mes: mes }),
+    supabase.rpc('historial_recaidas', { p_limite: 50 }),
+    supabase.from('profiles').select('pad, carta').maybeSingle(),
+    // Para el logro "plantilla rellenada": una fila en `relapses` no basta,
+    // porque "registrar solo el día" también crea una fila, toda en nulo.
+    // Cuenta solo las que tienen al menos una respuesta.
+    supabase
+      .from('relapses')
+      .select('lugar, trigger, accion_correctiva, ejecuto_pad, motivo_fallo, ajuste_pad, contexto_ambiental, contexto_emocional')
+      .limit(100),
+  ]);
 
   const pad = perfil?.pad ?? null;
+  const carta = leerCarta(perfil?.carta);
+  const plantillasRellenadas = (plantillas ?? []).filter((r) =>
+    Object.values(r).some((v) => v !== null && v !== ''),
+  ).length;
 
   const estado = estadoRaw as unknown as EstadoDiario | null;
   const dias = (diasRaw ?? []) as unknown as DiaCalendario[];
@@ -69,10 +88,23 @@ export default async function CalendarioPage() {
         poder cambiarlo. Sin él: la misma tarea pendiente que en Inicio.
       */}
       <div className="mt-6">{pad === null ? <TareaPAD /> : <AccionesPAD pad={pad} />}</div>
+      <div className="mt-3">
+        {carta === null ? <TareaCarta /> : <AccionesCarta carta={carta} />}
+      </div>
 
       <div className="mt-8">
         <Calendario diasIniciales={dias} anioInicial={anio} mesInicial={mes} />
       </div>
+
+      <Logros
+        datos={{
+          record: estado?.record_personal ?? 0,
+          diasTotales: estado?.dias_totales ?? 0,
+          tienePad: pad !== null,
+          tieneCarta: carta !== null,
+          plantillasRellenadas,
+        }}
+      />
 
       <HistorialRecaidas entradas={historial} />
 

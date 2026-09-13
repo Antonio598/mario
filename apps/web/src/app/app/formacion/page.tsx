@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/server';
 import { Logo } from '@/components/app/Logo';
 import { FormacionTabs } from '@/components/app/FormacionTabs';
 import { TareaPAD } from '@/components/app/PAD';
+import { TareaCarta } from '@/components/app/CartaAntiRecaida';
+import { leerCarta } from '@/lib/app/carta';
 import { ENLACE_LLAMADA_ADMISION, CTA_LLAMADA_ADMISION } from '@/lib/app/enlaces';
 
 export const dynamic = 'force-dynamic';
@@ -25,10 +27,11 @@ export default async function FormacionPage() {
       supabase.from('courses').select('*').eq('publicado', true).order('orden'),
       supabase.from('entitlements').select('product_id, activo, expires_at'),
       supabase.from('products').select('*').eq('slug', 'programa-reset-alfa').maybeSingle(),
-      supabase.from('profiles').select('pad').maybeSingle(),
+      supabase.from('profiles').select('pad, carta').maybeSingle(),
     ]);
 
   const pad = perfil?.pad ?? null;
+  const carta = leerCarta(perfil?.carta);
 
   const ahora = Date.now();
   const desbloqueados = new Set(
@@ -247,6 +250,11 @@ export default async function FormacionPage() {
       {pad === null && (
         <div className="mt-6">
           <TareaPAD />
+        </div>
+      )}
+      {carta === null && (
+        <div className="mt-3">
+          <TareaCarta />
         </div>
       )}
 

@@ -54,6 +54,12 @@ export interface EsquemaResetAlfa {
          * por el RPC guardar_pad.
          */
         pad: string | null;
+        /**
+         * Carta anti-recaida: respuestas a las preguntas guiadas, por clave
+         * (motivo, coste, despues, futuro, mensaje). Null hasta que la
+         * escribe. Se escribe solo por el RPC guardar_carta.
+         */
+        carta: Json | null;
         /** usuario | editor | admin. Lo escribe solo un administrador por SQL. */
         rol: UsuarioRol;
         created_at: string;
@@ -475,6 +481,11 @@ export interface EsquemaResetAlfa {
     /** Guarda el P.A.D del usuario. Sustituye al anterior: es una decision, no un historial. */
     guardar_pad: {
       Args: { p_texto: string };
+      Returns: Json;
+    };
+    /** Guarda la carta anti-recaida. Sustituye a la anterior. */
+    guardar_carta: {
+      Args: { p_respuestas: Json };
       Returns: Json;
     };
     /** Rol del usuario actual. La interfaz lo usa solo para decidir que pinta. */

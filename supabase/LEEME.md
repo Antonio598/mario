@@ -11,8 +11,9 @@ Pega cada fichero en el SQL Editor de Supabase, **en este orden**:
 | 3 | `admin-editores.sql` | *(opcional)* Panel de administración. **Cambia el correo del final por el tuyo** |
 | 4 | `arreglo-consentimiento.sql` | RPC `dar_consentimiento`. Sin él, «Acepto, empezar el protocolo» puede fallar |
 | 5 | `pad.sql` | Columna `profiles.pad` y RPC `guardar_pad`. Sin él, el P.A.D no se puede crear |
+| 6 | `carta.sql` | Columna `profiles.carta` y RPC `guardar_carta`. Sin él, la carta anti-recaída no se puede crear |
 
-Los cinco son idempotentes: puedes reejecutarlos sin duplicar nada.
+Los seis son idempotentes: puedes reejecutarlos sin duplicar nada.
 
 **El SQL Editor envuelve cada ejecución en una transacción.** Si un fichero da
 un error en cualquier punto, deshace todo lo anterior y no queda nada. Por eso
