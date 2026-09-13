@@ -1,5 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { FormularioRecaida } from '@/components/app/FormularioRecaida';
+import { RegistroRecaidaLibre } from '@/components/app/RegistroRecaidaLibre';
+import { obtenerAcceso } from '@/lib/app/acceso';
 import type { EstadoDiario } from '@/lib/app/tipos';
 
 export const dynamic = 'force-dynamic';
@@ -14,8 +16,11 @@ export const dynamic = 'force-dynamic';
  */
 export default async function RecaidaPage() {
   const supabase = await createClient();
-  const { data } = await supabase.rpc('estado_diario');
+  const [{ data }, acceso] = await Promise.all([supabase.rpc('estado_diario'), obtenerAcceso()]);
   const estado = data as unknown as EstadoDiario | null;
+
+  // En gratis se registra el día; el protocolo de 9 preguntas es Premium.
+  if (!acceso.esPremium) return <RegistroRecaidaLibre />;
 
   return <FormularioRecaida consiente={estado?.consiente_sensibles ?? false} />;
 }

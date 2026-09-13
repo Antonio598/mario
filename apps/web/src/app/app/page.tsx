@@ -8,6 +8,9 @@ import { Logo } from '@/components/app/Logo';
 import { TareaPAD, RecordatorioPAD } from '@/components/app/PAD';
 import { TareaCarta, RecordatorioCarta } from '@/components/app/CartaAntiRecaida';
 import { leerCarta } from '@/lib/app/carta';
+import { obtenerAcceso } from '@/lib/app/acceso';
+import { Bloqueado } from '@/components/app/Bloqueado';
+import { BannerPremium } from '@/components/app/BannerPremium';
 import type { EstadoDiario } from '@/lib/app/tipos';
 
 /**
@@ -45,7 +48,7 @@ export default async function AppInicioPage() {
   // El servidor calcula la fecha local del usuario a partir de la zona horaria
   // de su perfil. Nunca se usa la del navegador: cambiar el reloj del
   // dispositivo bastaría para inflar la racha.
-  const [{ data, error }, { data: cursos }, { data: perfil }] = await Promise.all([
+  const [{ data, error }, { data: cursos }, { data: perfil }, acceso] = await Promise.all([
     supabase.rpc('estado_diario'),
     supabase
       .from('courses')
@@ -55,7 +58,9 @@ export default async function AppInicioPage() {
       .order('orden')
       .limit(4),
     supabase.from('profiles').select('pad, carta').maybeSingle(),
+    obtenerAcceso(),
   ]);
+  const { esPremium } = acceso;
 
   if (error) {
     return (
@@ -81,7 +86,7 @@ export default async function AppInicioPage() {
   // de cerrar.
   return (
     <>
-      {estado.necesita_checkin && <ModalArranque estado={estado} />}
+      {estado.necesita_checkin && <ModalArranque estado={estado} esPremium={esPremium} />}
 
     <div className="mx-auto max-w-md px-5 py-6">
       {/* Marca, discreta: el protagonista de esta pantalla es el contador. */}
@@ -94,6 +99,7 @@ export default async function AppInicioPage() {
         dias={estado.racha_actual}
         record={estado.record_personal}
         diasTotales={estado.dias_totales}
+        esPremium={esPremium}
       />
 
       {/* ── Ajuste manual de la racha ─────────────────────────────────── */}
@@ -111,11 +117,45 @@ export default async function AppInicioPage() {
         tiene que resolver, y lo que un usuario veterano necesita tener a la
         vista cuando aparece el deseo.
       */}
-      <div className="mt-5">{pad === null ? <TareaPAD /> : <RecordatorioPAD pad={pad} />}</div>
+      {/*
+        En gratis la TAREA va con candado; el P.A.D o la carta que ya existan
+        se muestran igual. Nunca se esconde lo que el usuario ya creó.
+      */}
+      <div className="mt-5">
+        {pad !== null ? (
+          <RecordatorioPAD pad={pad} />
+        ) : esPremium ? (
+          <TareaPAD />
+        ) : (
+          <Bloqueado
+            titulo="Tu P.A.D"
+            texto="La acción concreta que ejecutas cuando aparece el deseo. Con cuatro reglas para que funcione siempre."
+            desde="pad"
+          >
+            <TareaPAD />
+          </Bloqueado>
+        )}
+      </div>
 
       {/* ── Carta anti-recaída: misma lógica que el P.A.D ───────────────── */}
       <div className="mt-3">
-        {carta === null ? <TareaCarta /> : <RecordatorioCarta carta={carta} />}
+        {carta !== null ? (
+          <RecordatorioCarta carta={carta} />
+        ) : esPremium ? (
+          <TareaCarta />
+        ) : (
+          <Bloqueado
+            titulo="Tu carta anti-recaída"
+            texto="Un mensaje de ti para ti, para leerlo en el momento exacto de la tentación."
+            desde="carta"
+          >
+            <TareaCarta />
+          </Bloqueado>
+        )}
+      </div>
+
+      <div className="mt-3">
+        <BannerPremium desde="inicio" />
       </div>
 
       {/* ── Mensaje del día ───────────────────────────────────────────── */}

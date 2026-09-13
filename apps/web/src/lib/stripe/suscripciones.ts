@@ -2,7 +2,7 @@ import 'server-only';
 
 import Stripe from 'stripe';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { PRODUCTO_PREMIUM_ID } from '@/lib/app/enlaces';
+import { GRACIA_HORAS, PRODUCTO_PREMIUM_ID } from '@/lib/app/enlaces';
 
 /**
  * Suscripción Premium: la única fuente de verdad es Stripe.
@@ -21,9 +21,6 @@ import { PRODUCTO_PREMIUM_ID } from '@/lib/app/enlaces';
  *   antes que `checkout.session.completed`, no importa: los dos escriben lo
  *   que Stripe dice AHORA, no lo que decía el evento.
  */
-
-/** Horas de gracia tras el fin del periodo, mientras Stripe cobra la renovación. */
-const GRACIA_HORAS = 48;
 
 export function obtenerStripe(): Stripe {
   const clave = process.env['STRIPE_SECRET_KEY'];

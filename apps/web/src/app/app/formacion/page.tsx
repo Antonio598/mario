@@ -4,6 +4,9 @@ import { FormacionTabs } from '@/components/app/FormacionTabs';
 import { TareaPAD } from '@/components/app/PAD';
 import { TareaCarta } from '@/components/app/CartaAntiRecaida';
 import { leerCarta } from '@/lib/app/carta';
+import { obtenerAcceso } from '@/lib/app/acceso';
+import { Bloqueado } from '@/components/app/Bloqueado';
+import { BannerPremium } from '@/components/app/BannerPremium';
 import { ENLACE_LLAMADA_ADMISION, CTA_LLAMADA_ADMISION } from '@/lib/app/enlaces';
 
 export const dynamic = 'force-dynamic';
@@ -22,14 +25,16 @@ export const dynamic = 'force-dynamic';
 export default async function FormacionPage() {
   const supabase = await createClient();
 
-  const [{ data: cursos }, { data: permisos }, { data: programa }, { data: perfil }] =
+  const [{ data: cursos }, { data: permisos }, { data: programa }, { data: perfil }, acceso] =
     await Promise.all([
       supabase.from('courses').select('*').eq('publicado', true).order('orden'),
       supabase.from('entitlements').select('product_id, activo, expires_at'),
       supabase.from('products').select('*').eq('slug', 'programa-reset-alfa').maybeSingle(),
       supabase.from('profiles').select('pad, carta').maybeSingle(),
+      obtenerAcceso(),
     ]);
 
+  const { esPremium } = acceso;
   const pad = perfil?.pad ?? null;
   const carta = leerCarta(perfil?.carta);
 
@@ -246,15 +251,39 @@ export default async function FormacionPage() {
         <p className="ra-entradilla">Aprende con recursos gratuitos y contenido premium.</p>
       </header>
 
+      <div className="mt-6">
+        <BannerPremium desde="formacion" />
+      </div>
+
       {/* Solo mientras no exista. Una vez creado, aquí no hay nada que recordar. */}
       {pad === null && (
-        <div className="mt-6">
-          <TareaPAD />
+        <div className="mt-3">
+          {esPremium ? (
+            <TareaPAD />
+          ) : (
+            <Bloqueado
+              titulo="Tu P.A.D"
+              texto="La acción concreta que ejecutas cuando aparece el deseo."
+              desde="pad"
+            >
+              <TareaPAD />
+            </Bloqueado>
+          )}
         </div>
       )}
       {carta === null && (
         <div className="mt-3">
-          <TareaCarta />
+          {esPremium ? (
+            <TareaCarta />
+          ) : (
+            <Bloqueado
+              titulo="Tu carta anti-recaída"
+              texto="Un mensaje de ti para ti, para el momento de la tentación."
+              desde="carta"
+            >
+              <TareaCarta />
+            </Bloqueado>
+          )}
         </div>
       )}
 

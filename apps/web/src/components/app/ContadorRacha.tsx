@@ -2,11 +2,16 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { LIMITE_RACHA_GRATIS } from '@/lib/app/enlaces';
+import { mostrarDias, rachaRecortada } from '@/lib/app/racha';
+import { enlacePremium } from './Bloqueado';
 
 interface Props {
   dias: number;
   record: number;
   diasTotales: number;
+  esPremium: boolean;
 }
 
 const HITOS = [7, 21, 30, 90, 180, 365] as const;
@@ -58,10 +63,21 @@ function useCuentaAtras(destino: number, duracion = 900): number {
  * Diseño inspirado en la referencia de Reset Alfa: número grande a la izquierda
  * con etiqueta "RACHA ACTUAL", y casco espartano decorativo a la derecha.
  */
-export function ContadorRacha({ dias, record, diasTotales }: Props) {
-  const mostrado = useCuentaAtras(dias);
+export function ContadorRacha({ dias, record, diasTotales, esPremium }: Props) {
+  /*
+    En gratis el contador se detiene en 30. La racha REAL sigue contando en el
+    servidor —no se toca ningún dato—, y ese número real es precisamente el
+    argumento de venta de abajo: "tu racha real es de 47 días" solo funciona si
+    esos 47 existen.
+  */
+  const recortada = rachaRecortada(dias, esPremium);
+  const visibles = recortada ? LIMITE_RACHA_GRATIS : dias;
+  const mostrado = useCuentaAtras(visibles);
 
-  const siguienteHito = HITOS.find((h) => h > dias) ?? null;
+  // Sin Premium no hay hitos por encima del tope: prometer el de 90 a quien
+  // no puede verlo es una promesa falsa.
+  const hitos = esPremium ? HITOS : HITOS.filter((h) => h <= LIMITE_RACHA_GRATIS);
+  const siguienteHito = hitos.find((h) => h > visibles) ?? null;
 
   return (
     <div className="mg-entrada space-y-4">
@@ -80,9 +96,10 @@ export function ContadorRacha({ dias, record, diasTotales }: Props) {
               */}
               <span className="font-titular text-6xl leading-none font-bold tabular-nums text-ra-texto">
                 {mostrado}
+                {recortada && <span className="text-3xl text-ra-rojo">+</span>}
               </span>
               <span className="font-titular text-xl font-medium text-ra-texto-sec">
-                {dias === 1 ? 'día' : 'días'}
+                {visibles === 1 ? 'día' : 'días'}
               </span>
             </div>
             <p className="mt-1.5 text-sm text-ra-texto-tenue">Sin porno</p>
@@ -101,20 +118,34 @@ export function ContadorRacha({ dias, record, diasTotales }: Props) {
           </div>
         </div>
 
+        {/* Tope del plan gratuito: el dato real, como argumento. */}
+        {recortada && (
+          <Link
+            href={enlacePremium('racha')}
+            className="mt-4 flex items-center justify-between gap-3 rounded-xl px-4 py-3 text-sm"
+            style={{ backgroundColor: 'color-mix(in srgb, var(--color-ra-rojo) 10%, transparent)' }}
+          >
+            <span className="text-ra-texto">
+              Tu racha real es de <strong>{dias} días</strong>. Sigue contando.
+            </span>
+            <span className="shrink-0 font-semibold text-ra-rojo">Verla entera →</span>
+          </Link>
+        )}
+
         {/* Barra de progreso hacia el siguiente hito */}
         {siguienteHito !== null && (
           <div className="mt-4">
             <div className="flex items-center justify-between text-[11px] text-ra-texto-tenue">
               <span>Siguiente hito: {siguienteHito} días</span>
               <span className="font-medium tabular-nums text-ra-rojo">
-                {siguienteHito - dias} {siguienteHito - dias === 1 ? 'día' : 'días'} más
+                {siguienteHito - visibles} {siguienteHito - visibles === 1 ? 'día' : 'días'} más
               </span>
             </div>
             <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-ra-borde">
               <div
                 className="h-full rounded-full bg-ra-rojo transition-all duration-700"
                 style={{
-                  width: `${Math.min(100, (dias / siguienteHito) * 100)}%`,
+                  width: `${Math.min(100, (visibles / siguienteHito) * 100)}%`,
                 }}
               />
             </div>
@@ -129,13 +160,14 @@ export function ContadorRacha({ dias, record, diasTotales }: Props) {
             Récord
           </p>
           <p className="mt-1 font-titular text-2xl font-bold tabular-nums text-ra-texto">
-            {record}
+            {mostrarDias(record, esPremium)}
           </p>
         </div>
         <div className="ra-card px-4 py-3.5 text-center">
           <p className="text-[10px] font-semibold tracking-[0.2em] text-ra-texto-tenue uppercase">
             Días totales
           </p>
+          {/* Sin tope: es la suma de todos los días limpios, no una racha. */}
           <p className="mt-1 font-titular text-2xl font-bold tabular-nums text-ra-texto">
             {diasTotales}
           </p>

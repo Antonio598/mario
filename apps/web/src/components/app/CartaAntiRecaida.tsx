@@ -258,7 +258,13 @@ export function RecordatorioCarta({ carta }: { carta: RespuestasCarta }) {
   );
 }
 
-export function AccionesCarta({ carta }: { carta: RespuestasCarta }) {
+export function AccionesCarta({
+  carta,
+  bloqueado = false,
+}: {
+  carta: RespuestasCarta;
+  bloqueado?: boolean;
+}) {
   const [editando, setEditando] = useState(false);
   const [leyendo, setLeyendo] = useState(false);
 
@@ -278,9 +284,15 @@ export function AccionesCarta({ carta }: { carta: RespuestasCarta }) {
           <button type="button" onClick={() => setLeyendo(true)} className="ra-boton">
             Leer
           </button>
-          <button type="button" onClick={() => setEditando(true)} className="ra-boton-sec">
-            Modificar
-          </button>
+          {bloqueado ? (
+            <a href="/app/premium?desde=carta" className="ra-boton-sec">
+              Modificar · Premium
+            </a>
+          ) : (
+            <button type="button" onClick={() => setEditando(true)} className="ra-boton-sec">
+              Modificar
+            </button>
+          )}
         </div>
       </section>
 

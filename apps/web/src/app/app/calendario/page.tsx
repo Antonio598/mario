@@ -8,6 +8,10 @@ import { TareaPAD, AccionesPAD } from '@/components/app/PAD';
 import { TareaCarta, AccionesCarta } from '@/components/app/CartaAntiRecaida';
 import { Logros } from '@/components/app/Logros';
 import { leerCarta } from '@/lib/app/carta';
+import { obtenerAcceso } from '@/lib/app/acceso';
+import { mostrarDias } from '@/lib/app/racha';
+import { Bloqueado } from '@/components/app/Bloqueado';
+import { BannerPremium } from '@/components/app/BannerPremium';
 import type { DiaCalendario, EstadoDiario } from '@/lib/app/tipos';
 
 export const dynamic = 'force-dynamic';
@@ -25,6 +29,7 @@ export default async function CalendarioPage() {
     { data: historialRaw },
     { data: perfil },
     { data: plantillas },
+    acceso,
   ] = await Promise.all([
     supabase.rpc('estado_diario'),
     supabase.rpc('calendario_mes', { p_anio: anio, p_mes: mes }),
@@ -37,8 +42,10 @@ export default async function CalendarioPage() {
       .from('relapses')
       .select('lugar, trigger, accion_correctiva, ejecuto_pad, motivo_fallo, ajuste_pad, contexto_ambiental, contexto_emocional')
       .limit(100),
+    obtenerAcceso(),
   ]);
 
+  const { esPremium } = acceso;
   const pad = perfil?.pad ?? null;
   const carta = leerCarta(perfil?.carta);
   const plantillasRellenadas = (plantillas ?? []).filter((r) =>
@@ -64,9 +71,9 @@ export default async function CalendarioPage() {
           unidad; y un emoji cambia de forma en cada sistema operativo.
         */}
         {[
-          { t: 'Racha actual', v: estado?.racha_actual ?? 0 },
-          { t: 'Récord personal', v: estado?.record_personal ?? 0 },
-          { t: 'Días totales', v: estado?.dias_totales ?? 0 },
+          { t: 'Racha actual', v: mostrarDias(estado?.racha_actual ?? 0, esPremium) },
+          { t: 'Récord personal', v: mostrarDias(estado?.record_personal ?? 0, esPremium) },
+          { t: 'Días totales', v: String(estado?.dias_totales ?? 0) },
         ].map((s) => (
           <div key={s.t} className="ra-card px-2 py-4 text-center">
             <dt className="text-[10px] leading-tight font-semibold tracking-wider text-ra-texto-tenue uppercase">
@@ -87,9 +94,38 @@ export default async function CalendarioPage() {
         recaídas, y cada ficha pregunta si se ejecutó. Con P.A.D: recordarlo y
         poder cambiarlo. Sin él: la misma tarea pendiente que en Inicio.
       */}
-      <div className="mt-6">{pad === null ? <TareaPAD /> : <AccionesPAD pad={pad} />}</div>
+      <div className="mt-6">
+        {pad !== null ? (
+          <AccionesPAD pad={pad} bloqueado={!esPremium} />
+        ) : esPremium ? (
+          <TareaPAD />
+        ) : (
+          <Bloqueado
+            titulo="Tu P.A.D"
+            texto="La acción concreta que ejecutas cuando aparece el deseo."
+            desde="pad"
+          >
+            <TareaPAD />
+          </Bloqueado>
+        )}
+      </div>
       <div className="mt-3">
-        {carta === null ? <TareaCarta /> : <AccionesCarta carta={carta} />}
+        {carta !== null ? (
+          <AccionesCarta carta={carta} bloqueado={!esPremium} />
+        ) : esPremium ? (
+          <TareaCarta />
+        ) : (
+          <Bloqueado
+            titulo="Tu carta anti-recaída"
+            texto="Un mensaje de ti para ti, para el momento de la tentación."
+            desde="carta"
+          >
+            <TareaCarta />
+          </Bloqueado>
+        )}
+      </div>
+      <div className="mt-3">
+        <BannerPremium desde="calendario" />
       </div>
 
       <div className="mt-8">
@@ -103,6 +139,7 @@ export default async function CalendarioPage() {
           tienePad: pad !== null,
           tieneCarta: carta !== null,
           plantillasRellenadas,
+          esPremium,
         }}
       />
 

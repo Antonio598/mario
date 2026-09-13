@@ -36,3 +36,10 @@ export const PRECIO_PREMIUM_TEXTO = '10 USD / mes';
  * debajo; solo se limita lo que se ensena.
  */
 export const LIMITE_RACHA_GRATIS = 30;
+
+/**
+ * Horas de gracia tras el fin del periodo pagado, mientras Stripe cobra la
+ * renovacion. `expires_at` en la base ya las incluye; para ensenar la fecha
+ * de renovacion hay que restarlas.
+ */
+export const GRACIA_HORAS = 48;

@@ -1,7 +1,14 @@
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
 import { Logo } from '@/components/app/Logo';
-import { ENLACE_LLAMADA_ADMISION, CTA_LLAMADA_ADMISION } from '@/lib/app/enlaces';
+import Link from 'next/link';
+import {
+  ENLACE_LLAMADA_ADMISION,
+  CTA_LLAMADA_ADMISION,
+  PRECIO_PREMIUM_TEXTO,
+} from '@/lib/app/enlaces';
+import { obtenerAcceso } from '@/lib/app/acceso';
+import { IconoCandado, enlacePremium } from '@/components/app/Bloqueado';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,15 +24,15 @@ export const dynamic = 'force-dynamic';
  */
 export default async function TiendaPage() {
   const supabase = await createClient();
-  const { data: productos } = await supabase
-    .from('products')
-    .select('*')
-    .eq('activo', true)
-    .order('orden');
+  const [{ data: productos }, acceso] = await Promise.all([
+    supabase.from('products').select('*').eq('activo', true).order('orden'),
+    obtenerAcceso(),
+  ]);
 
   const lista = productos ?? [];
   const programa = lista.filter((p) => p.tipo === 'programa');
   const libros = lista.filter((p) => p.tipo === 'libro');
+  const suscripcion = lista.find((p) => p.tipo === 'suscripcion') ?? null;
 
   return (
     <div className="mx-auto max-w-md px-5 py-8">
@@ -34,6 +41,37 @@ export default async function TiendaPage() {
         <h1 className="ra-titulo mt-2">Tienda</h1>
         <p className="ra-entradilla">Libros y programas para sostener el cambio.</p>
       </header>
+
+      {/* ---------------------------------------------------------------- */}
+      {/* Suscripción Premium. Es el único producto con precio a la vista: */}
+      {/* se paga aquí, no fuera.                                          */}
+      {/* ---------------------------------------------------------------- */}
+      {suscripcion !== null && !acceso.esPremium && (
+        <Link
+          href={enlacePremium('tienda')}
+          className="ra-card ra-card-enlace mg-pulsable mt-6 block px-6 py-6"
+          style={{ borderColor: 'color-mix(in srgb, var(--color-ra-rojo) 55%, transparent)' }}
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <p className="ra-kicker">Suscripción</p>
+              <h2 className="mt-2 font-titular text-2xl leading-tight font-bold text-ra-texto uppercase">
+                {suscripcion.nombre}
+              </h2>
+              {suscripcion.descripcion !== null && (
+                <p className="mt-2 text-sm text-ra-texto-sec">{suscripcion.descripcion}</p>
+              )}
+            </div>
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ra-rojo text-white">
+              <IconoCandado tamano={18} />
+            </span>
+          </div>
+          <div className="mt-5 flex items-center justify-between">
+            <span className="font-titular text-xl font-bold text-ra-texto">{PRECIO_PREMIUM_TEXTO}</span>
+            <span className="font-semibold text-ra-rojo">Ver Premium →</span>
+          </div>
+        </Link>
+      )}
 
       {/* ---------------------------------------------------------------- */}
       {/* Programa destacado                                                */}

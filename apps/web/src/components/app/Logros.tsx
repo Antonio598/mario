@@ -19,6 +19,7 @@ export interface DatosLogros {
   tienePad: boolean;
   tieneCarta: boolean;
   plantillasRellenadas: number;
+  esPremium: boolean;
 }
 
 interface Logro {
@@ -28,6 +29,8 @@ interface Logro {
   /** Texto corto dentro de la medalla. */
   marca: string;
   conseguido: boolean;
+  /** Solo alcanzable con Premium. Se pinta con candado en vez de con número. */
+  premium: boolean;
 }
 
 const HITOS_RACHA: ReadonlyArray<{ dias: number; titulo: string }> = [
@@ -40,13 +43,22 @@ const HITOS_RACHA: ReadonlyArray<{ dias: number; titulo: string }> = [
 ];
 
 export function calcularLogros(d: DatosLogros): Logro[] {
-  const racha: Logro[] = HITOS_RACHA.map((h) => ({
-    id: `racha-${h.dias}`,
-    titulo: h.titulo,
-    descripcion: `${h.dias} días de racha`,
-    marca: String(h.dias),
-    conseguido: d.record >= h.dias,
-  }));
+  /*
+    En gratis el contador se detiene en 30, así que los hitos por encima no
+    se pueden ver: se marcan como Premium y no se conceden aunque el récord
+    real los supere. Concederlos contradiría el "30+" del contador.
+  */
+  const racha: Logro[] = HITOS_RACHA.map((h) => {
+    const premium = h.dias > 30 && !d.esPremium;
+    return {
+      id: `racha-${h.dias}`,
+      titulo: h.titulo,
+      descripcion: `${h.dias} días de racha`,
+      marca: String(h.dias),
+      conseguido: !premium && d.record >= h.dias,
+      premium,
+    };
+  });
 
   return [
     {
@@ -55,6 +67,7 @@ export function calcularLogros(d: DatosLogros): Logro[] {
       descripcion: 'Tu primer check-in',
       marca: '1',
       conseguido: d.diasTotales >= 1,
+      premium: false,
     },
     {
       id: 'pad',
@@ -62,6 +75,7 @@ export function calcularLogros(d: DatosLogros): Logro[] {
       descripcion: 'Has creado tu P.A.D',
       marca: 'PAD',
       conseguido: d.tienePad,
+      premium: false,
     },
     {
       id: 'carta',
@@ -69,6 +83,7 @@ export function calcularLogros(d: DatosLogros): Logro[] {
       descripcion: 'Has escrito tu carta anti-recaída',
       marca: '✉',
       conseguido: d.tieneCarta,
+      premium: false,
     },
     {
       id: 'plantilla',
@@ -76,6 +91,7 @@ export function calcularLogros(d: DatosLogros): Logro[] {
       descripcion: 'Has rellenado la plantilla post-recaída',
       marca: '✓',
       conseguido: d.plantillasRellenadas >= 1,
+      premium: false,
     },
     ...racha,
   ];
@@ -147,7 +163,9 @@ function Medalla({ logro }: { logro: Logro }) {
       <p className="mt-2 font-titular text-xs leading-tight font-bold text-ra-texto uppercase">
         {logro.titulo}
       </p>
-      <p className="mt-0.5 text-[10px] leading-tight text-ra-texto-tenue">{logro.descripcion}</p>
+      <p className="mt-0.5 text-[10px] leading-tight text-ra-texto-tenue">
+        {logro.premium ? 'Premium' : logro.descripcion}
+      </p>
     </li>
   );
 }

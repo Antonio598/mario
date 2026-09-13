@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { AccionesCuenta } from '@/components/app/AccionesCuenta';
 import { InterruptorTema } from '@/components/app/InterruptorTema';
+import { SeccionPremium } from '@/components/app/SeccionPremium';
 
 export const dynamic = 'force-dynamic';
 
@@ -48,6 +49,10 @@ export default async function PerfilPage() {
       </div>
 
       <div className="mt-8">
+        <SeccionPremium />
+      </div>
+
+      <div className="mt-3">
         <InterruptorTema />
       </div>
 

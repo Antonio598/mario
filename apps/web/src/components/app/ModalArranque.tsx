@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useBloqueoScroll } from '@/lib/app/useBloqueoScroll';
 import { Portal } from './Portal';
 import { FormularioRecaida } from './FormularioRecaida';
+import { RegistroRecaidaLibre } from './RegistroRecaidaLibre';
 import type { EstadoDiario } from '@/lib/app/tipos';
 
 /**
@@ -23,9 +24,9 @@ import type { EstadoDiario } from '@/lib/app/tipos';
  * pregunta al día y responderla es el producto. Lo que sí se puede es omitir
  * cada pregunta del formulario: ninguna es obligatoria.
  */
-export function ModalArranque({ estado }: { estado: EstadoDiario }) {
+export function ModalArranque({ estado, esPremium }: { estado: EstadoDiario; esPremium: boolean }) {
   const router = useRouter();
-  const [fase, setFase] = useState<'pregunta' | 'formulario'>('pregunta');
+  const [fase, setFase] = useState<'pregunta' | 'formulario' | 'libre'>('pregunta');
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   /** Mensaje de cierre cuando no hay nada que registrar hoy. */
@@ -115,6 +116,17 @@ export function ModalArranque({ estado }: { estado: EstadoDiario }) {
     );
   }
 
+  // Gratis: se registra el día y el protocolo queda detrás del candado.
+  if (fase === 'libre') {
+    return (
+      <Portal>
+        <div className="ra-hoja fixed inset-0 z-[60] overflow-y-auto bg-ra-fondo">
+          <RegistroRecaidaLibre onTerminar={() => router.refresh()} />
+        </div>
+      </Portal>
+    );
+  }
+
   return (
     <Portal>
     <div
@@ -157,7 +169,7 @@ export function ModalArranque({ estado }: { estado: EstadoDiario }) {
 
           <button
             type="button"
-            onClick={() => setFase('formulario')}
+            onClick={() => setFase(esPremium ? 'formulario' : 'libre')}
             disabled={enviando}
             className="ra-boton-sec"
           >

@@ -304,7 +304,7 @@ export function RecordatorioPAD({ pad }: { pad: string }) {
 /* Calendario: recordar y modificar                                            */
 /* -------------------------------------------------------------------------- */
 
-export function AccionesPAD({ pad }: { pad: string }) {
+export function AccionesPAD({ pad, bloqueado = false }: { pad: string; bloqueado?: boolean }) {
   const [editando, setEditando] = useState(false);
 
   if (editando) return <CrearPAD actual={pad} onCancelar={() => setEditando(false)} />;
@@ -318,9 +318,19 @@ export function AccionesPAD({ pad }: { pad: string }) {
 
       <div className="mt-4 grid grid-cols-2 gap-2">
         <BotonQueEs secundario />
-        <button type="button" onClick={() => setEditando(true)} className="ra-boton-sec">
-          Modificar
-        </button>
+        {/*
+          En gratis se conserva el P.A.D que ya existe —nunca se esconde lo que
+          el usuario creó— pero cambiarlo es Premium.
+        */}
+        {bloqueado ? (
+          <a href="/app/premium?desde=pad" className="ra-boton-sec">
+            Modificar · Premium
+          </a>
+        ) : (
+          <button type="button" onClick={() => setEditando(true)} className="ra-boton-sec">
+            Modificar
+          </button>
+        )}
       </div>
     </section>
   );
