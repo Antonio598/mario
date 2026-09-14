@@ -73,7 +73,9 @@ STRIPE_WEBHOOK_SECRET=whsec_...
 STRIPE_PREMIUM_PRICE_ID=price_...
 ```
 
-En el panel de Stripe: producto «Reset Alfa Premium» con precio **recurrente
+**Paso a paso detallado de Stripe:** [`docs/stripe-premium.md`](../docs/stripe-premium.md).
+
+En resumen: producto «Reset Alfa Premium» con precio **recurrente
 mensual de 10 USD** (su id es el `price_...`); webhook a
 `https://<dominio>/api/stripe/webhook` con los eventos
 `checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`,

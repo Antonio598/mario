@@ -30,6 +30,22 @@ export function obtenerStripe(): Stripe {
   return new Stripe(clave);
 }
 
+/**
+ * Stripe Tax: calculo automatico del IVA.
+ *
+ * DESACTIVADO POR DEFECTO. Si se pide con `automatic_tax` y la cuenta no lo
+ * tiene configurado, Stripe RECHAZA la creacion de la sesion y el usuario ve
+ * "no hemos podido abrir el pago". Es decir: un ajuste fiscal pendiente en el
+ * panel impide cobrar, y nada en la pantalla dice por que.
+ *
+ * Para venta de productos digitales en la UE hay que activarlo: Stripe Tax en
+ * el panel y despues STRIPE_AUTOMATIC_TAX=true aqui. Dos pasos separados a
+ * proposito, para que el segundo no pueda ir antes que el primero.
+ */
+export function impuestoAutomatico(): boolean {
+  return process.env['STRIPE_AUTOMATIC_TAX']?.trim().toLowerCase() === 'true';
+}
+
 export function precioPremium(): string | null {
   const id = process.env['STRIPE_PREMIUM_PRICE_ID']?.trim();
   return id === undefined || id === '' ? null : id;

@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { publicEnv } from '@/lib/env';
-import { precioPremium } from '@/lib/stripe/suscripciones';
+import { impuestoAutomatico, precioPremium } from '@/lib/stripe/suscripciones';
 
 export const runtime = 'nodejs';
 
@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
       allow_promotion_codes: true,
       success_url: `${publicEnv.siteUrl}/app/premium?estado=ok&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${publicEnv.siteUrl}/app/premium?estado=cancelado`,
-      automatic_tax: { enabled: true },
+      automatic_tax: { enabled: impuestoAutomatico() },
     });
 
     return NextResponse.json({ url: sesion.url });
@@ -142,8 +142,7 @@ export async function POST(request: NextRequest) {
     success_url: `${publicEnv.siteUrl}/app/formacion?compra=ok`,
     cancel_url: `${publicEnv.siteUrl}/app/formacion`,
 
-    // Requisito fiscal en España para productos digitales.
-    automatic_tax: { enabled: true },
+    automatic_tax: { enabled: impuestoAutomatico() },
   });
 
   return NextResponse.json({ url: sesion.url });
