@@ -35,7 +35,7 @@ export async function SeccionPremium() {
               Hazte Premium
             </h2>
             <p className="mt-1.5 text-sm text-ra-texto-sec">
-              Protocolo post-recaída, P.A.D, carta anti-recaída y racha sin límite.{' '}
+              Bitácora de NOFAP, P.A.D, carta anti-recaída y racha sin límite.{' '}
               {PRECIO_PREMIUM_TEXTO}. Cancela cuando quieras.
             </p>
           </div>

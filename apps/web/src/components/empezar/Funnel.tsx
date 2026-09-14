@@ -505,7 +505,7 @@ const HERRAMIENTAS: ReadonlyArray<{ t: string; d: string; premium?: boolean }> =
   { t: 'P.A.D', d: 'La acción exacta que ejecutas cuando aparece el deseo.', premium: true },
   { t: 'Carta anti-recaída', d: 'Un mensaje de ti para ti, para el momento crítico.', premium: true },
   {
-    t: 'Protocolo post-recaída',
+    t: 'Bitácora de NOFAP',
     d: 'Nueve preguntas que convierten una caída en información.',
     premium: true,
   },

@@ -1,8 +1,17 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { fechaLarga } from '@reset-alfa/shared';
-import { DetalleRecaida } from './DetalleRecaida';
+import type { Tables } from '@reset-alfa/shared';
+import { createClient } from '@/lib/supabase/client';
+import {
+  LEMA_BITACORA,
+  NOMBRE_BITACORA,
+  camposRecaida,
+  type CampoRecaida,
+} from '@/lib/app/preguntas-recaida';
+import { IconoCandado } from './Bloqueado';
 
 export interface EntradaHistorial {
   fecha: string;
@@ -10,29 +19,45 @@ export interface EntradaHistorial {
   racha_anterior: number;
 }
 
+type Relapse = Tables<'relapses'>;
+
 /**
- * Historial de recaídas.
+ * Bitácora de NOFAP en el calendario.
  *
  * Cada entrada muestra la longitud de la racha que se rompió ese día. Es el
  * dato que da contexto: "20 de mayo · racha anterior de 11 días" cuenta una
  * historia que una fecha suelta no cuenta.
  *
+ * PREMIUM: cada entrada se despliega y muestra las nueve respuestas debajo,
+ * en la misma pantalla. La ficha en hoja aparte se queda para el calendario;
+ * aquí el valor está en leer varias seguidas y ver el patrón.
+ *
+ * GRATIS: se ve la lista —son sus días, no se esconden— pero las respuestas
+ * son de la bitácora, que es Premium. La entrada lleva candado y lleva al
+ * paywall.
+ *
  * Se muestran cinco y el resto queda tras "Ver todas". Una lista larga de
  * fracasos nada más abrir el calendario es justo lo contrario del tono que
  * busca la app.
  */
-export function HistorialRecaidas({ entradas }: { entradas: EntradaHistorial[] }) {
+export function HistorialRecaidas({
+  entradas,
+  esPremium,
+}: {
+  entradas: EntradaHistorial[];
+  esPremium: boolean;
+}) {
   const [todas, setTodas] = useState(false);
-  const [abierta, setAbierta] = useState<string | null>(null);
 
   if (entradas.length === 0) {
     return (
       <section className="mt-10">
         <div className="ra-seccion">
-          <h2>Historial de recaídas</h2>
+          <h2>{NOMBRE_BITACORA}</h2>
         </div>
+        <p className="mt-1 text-xs text-ra-texto-tenue">{LEMA_BITACORA}.</p>
         <p className="ra-card mt-4 px-5 py-6 text-center text-sm text-ra-texto-tenue">
-          Todavía no has registrado ninguna. Sigue así.
+          Todavía no has registrado ninguna recaída. Sigue así.
         </p>
       </section>
     );
@@ -43,7 +68,7 @@ export function HistorialRecaidas({ entradas }: { entradas: EntradaHistorial[] }
   return (
     <section className="mt-10">
       <div className="ra-seccion">
-        <h2>Historial de recaídas</h2>
+        <h2>{NOMBRE_BITACORA}</h2>
 
         {entradas.length > 5 && (
           <button
@@ -55,43 +80,134 @@ export function HistorialRecaidas({ entradas }: { entradas: EntradaHistorial[] }
           </button>
         )}
       </div>
+      <p className="mt-1 text-xs text-ra-texto-tenue">{LEMA_BITACORA}.</p>
 
       <ul className="mg-escalonado mt-4 grid gap-2">
-        {visibles.map((e) => (
-          <li key={e.fecha}>
-            <button
-              type="button"
-              onClick={() => setAbierta(e.fecha)}
-              className="ra-card ra-card-enlace mg-pulsable flex w-full items-center gap-3 px-4 py-3.5 text-left"
-            >
-              {/*
-                Un aspa de texto se ve como un boton de cerrar. Este circulo
-                rojo es una marca de dia, que es lo que realmente representa.
-              */}
-              <span
-                aria-hidden="true"
-                className="h-2.5 w-2.5 shrink-0 rounded-full bg-ra-rojo"
-              />
-
-              <span className="min-w-0 flex-1">
-                <span className="block text-sm font-semibold text-ra-texto">
-                  {fechaLarga(e.fecha)}
-                </span>
-                <span className="block text-xs text-ra-texto-tenue">
-                  Racha anterior: {e.racha_anterior}{' '}
-                  {e.racha_anterior === 1 ? 'día' : 'días'}
-                </span>
-              </span>
-
-              <span className="shrink-0 text-xs font-semibold text-ra-rojo">Ver →</span>
-            </button>
-          </li>
-        ))}
+        {visibles.map((e) =>
+          esPremium ? (
+            <EntradaPremium key={e.fecha} entrada={e} />
+          ) : (
+            <EntradaBloqueada key={e.fecha} entrada={e} />
+          ),
+        )}
       </ul>
-
-      {abierta !== null && (
-        <DetalleRecaida fecha={abierta} onCerrar={() => setAbierta(null)} />
-      )}
     </section>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Premium: entrada desplegable con las respuestas                             */
+/* -------------------------------------------------------------------------- */
+
+function EntradaPremium({ entrada }: { entrada: EntradaHistorial }) {
+  const [abierta, setAbierta] = useState(false);
+  const [campos, setCampos] = useState<CampoRecaida[] | null>(null);
+  const [cargando, setCargando] = useState(false);
+
+  async function alternar() {
+    const siguiente = !abierta;
+    setAbierta(siguiente);
+    if (!siguiente || campos !== null) return;
+
+    // Las respuestas se cargan al abrir y no con la lista: son datos del
+    // art. 9 RGPD y no tiene sentido traer treinta fichas para leer una.
+    setCargando(true);
+    const supabase = createClient();
+    const { data } = await supabase.rpc('detalle_recaida', { p_fecha: entrada.fecha });
+    const fila = (data as unknown as Relapse | null) ?? null;
+    setCampos(fila === null ? [] : camposRecaida(fila));
+    setCargando(false);
+  }
+
+  const contestadas = campos?.filter((c) => c.valor !== null) ?? [];
+
+  return (
+    <li className="ra-card overflow-hidden">
+      <button
+        type="button"
+        onClick={() => void alternar()}
+        aria-expanded={abierta}
+        className="mg-pulsable flex w-full items-center gap-3 px-4 py-3.5 text-left"
+      >
+        <span aria-hidden="true" className="h-2.5 w-2.5 shrink-0 rounded-full bg-ra-rojo" />
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-semibold text-ra-texto">{fechaLarga(entrada.fecha)}</span>
+          <span className="block text-xs text-ra-texto-tenue">
+            Racha anterior: {entrada.racha_anterior}{' '}
+            {entrada.racha_anterior === 1 ? 'día' : 'días'}
+          </span>
+        </span>
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+          className={`shrink-0 text-ra-rojo transition-transform ${abierta ? 'rotate-180' : ''}`}
+        >
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </button>
+
+      {abierta && (
+        <div className="mg-entrada border-t border-ra-borde-suave px-4 py-4">
+          {cargando ? (
+            <div className="space-y-3">
+              <div className="mg-esqueleto h-4 w-3/4 rounded" />
+              <div className="mg-esqueleto h-4 w-1/2 rounded" />
+            </div>
+          ) : contestadas.length === 0 ? (
+            <p className="text-sm text-ra-texto-tenue">
+              Ese día se registró la recaída sin rellenar la bitácora.
+            </p>
+          ) : (
+            <dl className="space-y-4">
+              {contestadas.map((c) => (
+                <div key={c.etiqueta} className="border-l-2 border-ra-borde pl-3">
+                  <dt className="text-[11px] font-semibold tracking-widest text-ra-texto-tenue uppercase">
+                    {c.etiqueta}
+                  </dt>
+                  <dd className="mt-1 text-sm leading-relaxed whitespace-pre-line text-ra-texto">
+                    {c.valor}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          )}
+        </div>
+      )}
+    </li>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Gratis: la fecha se ve, las respuestas son Premium                          */
+/* -------------------------------------------------------------------------- */
+
+function EntradaBloqueada({ entrada }: { entrada: EntradaHistorial }) {
+  return (
+    <li>
+      <Link
+        href="/app/premium?desde=protocolo"
+        className="ra-card ra-card-enlace mg-pulsable flex w-full items-center gap-3 px-4 py-3.5 text-left"
+      >
+        <span aria-hidden="true" className="h-2.5 w-2.5 shrink-0 rounded-full bg-ra-rojo" />
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-semibold text-ra-texto">{fechaLarga(entrada.fecha)}</span>
+          <span className="block text-xs text-ra-texto-tenue">
+            Racha anterior: {entrada.racha_anterior}{' '}
+            {entrada.racha_anterior === 1 ? 'día' : 'días'}
+          </span>
+        </span>
+        <span className="ra-chip shrink-0 text-ra-rojo">
+          <IconoCandado tamano={11} />
+          Premium
+        </span>
+      </Link>
+    </li>
   );
 }

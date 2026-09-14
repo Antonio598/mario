@@ -8,12 +8,12 @@ import { IconoCandado, enlacePremium, type OrigenPremium } from './Bloqueado';
 /* -------------------------------------------------------------------------- */
 
 const BENEFICIO: Record<OrigenPremium, string> = {
-  inicio: 'Protocolo post-recaída, P.A.D, carta y racha sin límite.',
+  inicio: 'Bitácora de NOFAP, P.A.D, carta y racha sin límite.',
   formacion: 'Las herramientas del método, no solo las masterclasses.',
-  calendario: 'Cada recaída con su protocolo, y tu racha entera.',
+  calendario: 'Tu Bitácora de NOFAP con cada recaída, y tu racha entera.',
   tienda: 'La app completa por menos que un libro.',
   perfil: 'Desbloquea todas las herramientas.',
-  protocolo: 'El protocolo de 9 preguntas es Premium.',
+  protocolo: 'La Bitácora de NOFAP es Premium.',
   pad: 'Crear tu P.A.D es Premium.',
   carta: 'La carta anti-recaída es Premium.',
   racha: 'Ve tu racha entera, sin tope de 30 días.',

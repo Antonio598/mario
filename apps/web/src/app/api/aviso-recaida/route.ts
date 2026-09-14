@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { enviarCorreo } from '@/lib/correo/resend';
-import { PREGUNTAS } from '@/lib/app/preguntas-recaida';
+import { NOMBRE_BITACORA, PREGUNTAS } from '@/lib/app/preguntas-recaida';
 import type { RespuestasRecaida } from '@/lib/app/tipos';
 
 export const runtime = 'nodejs';
@@ -169,7 +169,7 @@ export async function POST(request: NextRequest) {
     '<div style="max-width:600px;margin:0 auto;padding:24px;background:#ffffff">',
     '<div style="border-left:4px solid #D32F2F;padding-left:14px">',
     '<div style="font:700 12px/1.4 system-ui,sans-serif;color:#D32F2F;',
-    'text-transform:uppercase;letter-spacing:.12em">Reset Alfa &middot; Protocolo post-recaída</div>',
+    'text-transform:uppercase;letter-spacing:.12em">Reset Alfa &middot; ' + esc(NOMBRE_BITACORA) + '</div>',
     '<h1 style="margin:6px 0 0;font:700 22px/1.3 system-ui,sans-serif;color:#111111">',
     esc(nombre),
     '</h1>',
@@ -189,7 +189,7 @@ export async function POST(request: NextRequest) {
   ].join('');
 
   const plano = [
-    'RESET ALFA - Protocolo post-recaída',
+    'RESET ALFA - ' + NOMBRE_BITACORA,
     nombre + ' <' + (correoUsuario ?? 'sin correo') + '>',
     fecha + (rachaRota === null ? '' : ' - racha rota de ' + rachaRota + ' días'),
     '',

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { PREGUNTAS } from '@/lib/app/preguntas-recaida';
+import { LEMA_BITACORA, NOMBRE_BITACORA, PREGUNTAS } from '@/lib/app/preguntas-recaida';
 import { Bloqueado } from './Bloqueado';
 
 /**
@@ -71,8 +71,8 @@ export function RegistroRecaidaLibre({ onTerminar }: { onTerminar?: () => void }
 
       <div className="mt-8">
         <Bloqueado
-          titulo="El protocolo post-recaída"
-          texto="Nueve preguntas que te dicen dónde, cuándo y por qué. Es lo que convierte una recaída en información."
+          titulo={NOMBRE_BITACORA}
+          texto={`${LEMA_BITACORA}. Nueve preguntas que te dicen dónde, cuándo y por qué.`}
           desde="protocolo"
         >
           {/* Vista previa: la primera pregunta, sin datos de nadie. */}

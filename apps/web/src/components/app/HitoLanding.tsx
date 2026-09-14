@@ -139,7 +139,7 @@ export function HitoLanding({ clave, esPremium, modo }: Props) {
                       Que la próxima no te pille sin plan
                     </h2>
                     <p className="mt-1.5 text-sm text-ra-texto-sec">
-                      Protocolo post-recaída, P.A.D y carta anti-recaída: las tres herramientas
+                      Bitácora de NOFAP, P.A.D y carta anti-recaída: las tres herramientas
                       para el momento exacto en que aparece el deseo.
                     </p>
                   </div>

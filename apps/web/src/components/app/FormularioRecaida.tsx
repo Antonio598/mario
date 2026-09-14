@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { registrarConsentimiento } from '@/lib/app/consentimiento';
 import type { RespuestasRecaida } from '@/lib/app/tipos';
-import { PREGUNTAS } from '@/lib/app/preguntas-recaida';
+import { LEMA_BITACORA, NOMBRE_BITACORA, PREGUNTAS } from '@/lib/app/preguntas-recaida';
 
 interface PropsFormulario {
   consiente: boolean;
@@ -126,12 +126,13 @@ export function FormularioRecaida({ consiente }: PropsFormulario) {
   if (!tieneConsentimiento && !hecho) {
     return (
       <div className="mx-auto flex min-h-[100dvh] max-w-md flex-col justify-center px-5 py-10">
-        <p className="ra-kicker">Protocolo post-recaída</p>
+        <p className="ra-kicker">{NOMBRE_BITACORA}</p>
 
         <h1 className="ra-titulo mt-3">Antes de empezar</h1>
+        <p className="mt-2 text-sm text-ra-texto-tenue">{LEMA_BITACORA}</p>
 
         <p className="mt-4 text-sm leading-relaxed text-ra-texto-sec">
-          El protocolo te va a preguntar dónde, cuándo y en qué estado ocurrió. Esa
+          La bitácora te va a preguntar dónde, cuándo y en qué estado ocurrió. Esa
           información describe aspectos de tu vida sexual, así que la ley exige tu permiso
           explícito para guardarla.
         </p>
@@ -165,7 +166,7 @@ export function FormularioRecaida({ consiente }: PropsFormulario) {
           disabled={enviando}
           className="ra-boton mt-8"
         >
-          {enviando ? 'Un momento…' : 'Acepto, empezar el protocolo'}
+          {enviando ? 'Un momento…' : 'Acepto, empezar la bitácora'}
         </button>
 
         {/*

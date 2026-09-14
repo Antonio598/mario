@@ -6,6 +6,7 @@ import { useBloqueoScroll } from '@/lib/app/useBloqueoScroll';
 import { Portal } from './Portal';
 import { fechaLarga } from '@reset-alfa/shared';
 import type { Tables } from '@reset-alfa/shared';
+import { camposRecaida, NOMBRE_BITACORA } from '@/lib/app/preguntas-recaida';
 
 type Relapse = Tables<'relapses'>;
 
@@ -43,23 +44,7 @@ export function DetalleRecaida({ fecha, onCerrar }: { fecha: string; onCerrar: (
     };
   }, [fecha]);
 
-  const campos: { etiqueta: string; valor: string | null }[] =
-    datos === null
-      ? []
-      : [
-          { etiqueta: 'Lugar exacto', valor: datos.lugar },
-          { etiqueta: 'Hora', valor: datos.hora },
-          { etiqueta: 'Trigger o disparador', valor: datos.trigger },
-          { etiqueta: 'Acción para eliminar el trigger', valor: datos.accion_correctiva },
-          {
-            etiqueta: '¿Ejecutó su P.A.D?',
-            valor: datos.ejecuto_pad === null ? null : datos.ejecuto_pad ? 'Sí' : 'No',
-          },
-          { etiqueta: 'Por qué falló o no se ejecutó', valor: datos.motivo_fallo },
-          { etiqueta: 'Cambio en el P.A.D', valor: datos.ajuste_pad },
-          { etiqueta: 'Contexto ambiental', valor: datos.contexto_ambiental },
-          { etiqueta: 'Contexto psicológico y emocional', valor: datos.contexto_emocional },
-        ].filter((c) => c.valor !== null && c.valor !== '');
+  const campos = datos === null ? [] : camposRecaida(datos).filter((c) => c.valor !== null);
 
   return (
     <Portal>
@@ -86,7 +71,7 @@ export function DetalleRecaida({ fecha, onCerrar }: { fecha: string; onCerrar: (
         />
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="ra-kicker">Recaída</p>
+            <p className="ra-kicker">{NOMBRE_BITACORA}</p>
             <h2 className="mt-2 font-titular text-xl font-bold text-ra-texto uppercase">
               {fechaLarga(fecha)}
             </h2>

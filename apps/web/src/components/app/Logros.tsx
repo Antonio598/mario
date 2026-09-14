@@ -88,7 +88,7 @@ export function calcularLogros(d: DatosLogros): Logro[] {
     {
       id: 'plantilla',
       titulo: 'Sin excusas',
-      descripcion: 'Has rellenado la plantilla post-recaída',
+      descripcion: 'Has rellenado tu Bitácora de NOFAP',
       marca: '✓',
       conseguido: d.plantillasRellenadas >= 1,
       premium: false,

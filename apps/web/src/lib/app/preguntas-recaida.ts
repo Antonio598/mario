@@ -1,5 +1,13 @@
 import type { RespuestasRecaida } from './tipos';
 
+/**
+ * Nombre del producto. Antes "Protocolo post-recaida"; el formulario de nueve
+ * preguntas se llama ahora asi en toda la app, en el correo y en los logros.
+ * Un solo sitio para que no vuelvan a convivir dos nombres.
+ */
+export const NOMBRE_BITACORA = 'Bitácora de NOFAP';
+export const LEMA_BITACORA = 'Registra tus recaídas y acelera tu progreso en NOFAP';
+
 export type TipoPregunta = 'texto' | 'hora' | 'si_no';
 
 export interface Pregunta {
@@ -97,3 +105,41 @@ export const PREGUNTAS: readonly Pregunta[] = [
     placeholder: 'Cansado y con la sensación de haber perdido el día',
   },
 ];
+
+/** Una respuesta guardada, con la etiqueta de la pregunta tal como se hizo. */
+export interface CampoRecaida {
+  etiqueta: string;
+  valor: string | null;
+}
+
+/**
+ * Convierte una fila de `relapses` en la lista de respuestas, con las MISMAS
+ * etiquetas que el formulario. Antes la ficha del calendario tenia sus propias
+ * etiquetas y ya habian divergido de las preguntas.
+ */
+export function camposRecaida(fila: {
+  lugar: string | null;
+  hora: string | null;
+  trigger: string | null;
+  accion_correctiva: string | null;
+  ejecuto_pad: boolean | null;
+  motivo_fallo: string | null;
+  ajuste_pad: string | null;
+  contexto_ambiental: string | null;
+  contexto_emocional: string | null;
+}): CampoRecaida[] {
+  return PREGUNTAS.map((p) => {
+    const bruto = fila[p.campo];
+    const valor =
+      p.campo === 'ejecuto_pad'
+        ? bruto === null
+          ? null
+          : bruto
+            ? 'Sí'
+            : 'No'
+        : typeof bruto === 'string' && bruto.trim() !== ''
+          ? bruto
+          : null;
+    return { etiqueta: p.titulo, valor };
+  });
+}

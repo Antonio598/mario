@@ -130,7 +130,12 @@ export default async function CalendarioPage() {
       </div>
 
       <div className="mt-8">
-        <Calendario diasIniciales={dias} anioInicial={anio} mesInicial={mes} />
+        <Calendario
+          diasIniciales={dias}
+          anioInicial={anio}
+          mesInicial={mes}
+          esPremium={esPremium}
+        />
       </div>
 
       {/*
@@ -171,7 +176,7 @@ export default async function CalendarioPage() {
         }}
       />
 
-      <HistorialRecaidas entradas={historial} />
+      <HistorialRecaidas entradas={historial} esPremium={esPremium} />
 
       {/* Cierra la pantalla reencuadrando, no contabilizando fracasos. */}
       <blockquote className="ra-card mt-10 px-5 py-5">

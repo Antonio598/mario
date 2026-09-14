@@ -26,7 +26,7 @@ const FILAS: ReadonlyArray<{ f: string; gratis: string | boolean; premium: strin
   { f: 'Contador de racha', gratis: 'Hasta 30 días', premium: 'Sin límite' },
   { f: 'Check-in diario', gratis: true, premium: true },
   { f: 'Registrar una recaída', gratis: true, premium: true },
-  { f: 'Protocolo post-recaída (9 preguntas)', gratis: false, premium: true },
+  { f: 'Bitácora de NOFAP (9 preguntas por recaída)', gratis: false, premium: true },
   { f: 'P.A.D — Protocolo Anti-Deseo', gratis: false, premium: true },
   { f: 'Carta anti-recaída', gratis: false, premium: true },
   { f: 'Medallas de 90, 180 y 365 días', gratis: false, premium: true },

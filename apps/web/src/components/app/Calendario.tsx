@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { diaSemanaLunes, diasDelMes, nombreMes } from '@reset-alfa/shared';
 import { createClient } from '@/lib/supabase/client';
 import { DetalleRecaida } from './DetalleRecaida';
@@ -13,6 +14,8 @@ interface Props {
   diasIniciales: DiaCalendario[];
   anioInicial: number;
   mesInicial: number;
+  /** Sin Premium, la ficha de una recaída no se abre: se ofrece Premium. */
+  esPremium: boolean;
 }
 
 /**
@@ -27,7 +30,8 @@ interface Props {
  * "Sin registro" es un estado con entidad propia, no un error: un día sin
  * marcar NO rompe la racha.
  */
-export function Calendario({ diasIniciales, anioInicial, mesInicial }: Props) {
+export function Calendario({ diasIniciales, anioInicial, mesInicial, esPremium }: Props) {
+  const router = useRouter();
   const [anio, setAnio] = useState(anioInicial);
   const [mes, setMes] = useState(mesInicial);
   const [dias, setDias] = useState(diasIniciales);
@@ -199,7 +203,11 @@ export function Calendario({ diasIniciales, anioInicial, mesInicial }: Props) {
               <button
                 type="button"
                 key={iso}
-                onClick={() => setAbierta(iso)}
+                // En gratis las respuestas son Premium: el toque lleva al
+                // paywall, no a una ficha vacía.
+                onClick={() =>
+                  esPremium ? setAbierta(iso) : router.push('/app/premium?desde=protocolo')
+                }
                 title={`${dia} - recaida. Ver detalle`}
                 aria-label={`Ver el detalle de la recaída del día ${dia}`}
                 className={`${base}${anillo} mg-pulsable text-white`}
