@@ -153,7 +153,7 @@ error.**
    - **Actualizar métodos de pago** ✅
    - **Ver historial de facturas** ✅
 3. En *Business information* pon el enlace a tus términos y a la política de
-   privacidad (`https://modoguerrero.es/privacidad`).
+   privacidad (`https://app.modoguerrero.es/privacidad`).
 4. Guarda.
 
 **Hay que activarlo en los dos modos**, prueba y real: son dos configuraciones
