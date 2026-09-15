@@ -108,15 +108,15 @@ El webhook es la llamada que Stripe hace a la app para avisar de que alguien
 pagó, renovó o canceló. **Sin esto, el usuario paga y no recibe el acceso.**
 
 1. Menú lateral → **Desarrolladores** → **Webhooks** → **+ Añadir endpoint**.
-2. **URL del endpoint**: la dirección de tu web seguida de la ruta. Si la web
-   está en `modoguerrero.es`:
+2. **URL del endpoint**:
 
    ```
-   https://modoguerrero.es/api/stripe/webhook
+   https://app.modoguerrero.es/api/stripe/webhook
    ```
 
-   Tiene que ser el dominio **público**, con `https`, el mismo que tienes en
-   `NEXT_PUBLIC_SITE_URL`.
+   Tiene que ser el dominio **público** de la app, con `https`, el mismo que
+   tienes en `NEXT_PUBLIC_SITE_URL`. Para dejarlo conectado, ver
+   [`dominio-app.md`](./dominio-app.md).
 3. **Seleccionar eventos**: pulsa *Seleccionar eventos* y marca **exactamente
    estos cinco**:
 
