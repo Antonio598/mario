@@ -1,5 +1,8 @@
 # Publicar en App Store y Google Play
 
+> Para el «qué pulso y en qué orden» de la App Store, con los pasos repartidos
+> entre el propietario y el desarrollador: [`app-store-paso-a-paso.md`](./app-store-paso-a-paso.md).
+
 Estado a día de hoy: la app móvil tiene las 13 pantallas escritas pero **nunca
 se ha compilado**. No hay `assets/`, ni icono, ni splash, ni proyecto EAS.
 
@@ -86,7 +89,7 @@ npx eas build --platform all --profile production
 | **Clasificación por edad** | **17+ / 18+** |
 | Capturas | iPhone 6.7" y 6.5"; Android teléfono y tablet |
 | Gráfico destacado (solo Play) | 1024x500 |
-| Política de privacidad | https://modoguerrero.es/privacidad |
+| Política de privacidad | https://app.modoguerrero.es/privacidad |
 | Cuenta de prueba | Correo y contraseña reales para el revisor |
 
 **Sin cuenta de prueba, Apple rechaza en el primer intento.** Toda la app está
