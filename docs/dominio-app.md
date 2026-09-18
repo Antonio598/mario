@@ -8,7 +8,7 @@ Son cinco sitios que tocar, en este orden. Saltarse uno deja la app a medias
 
 | # | Dónde | Qué |
 |---|---|---|
-| 1 | ProfesionalHosting | Registro DNS `app` → IP del VPS |
+| 1 | ProfesionalHosting | **Cambiar** el registro DNS `app` para que apunte al VPS |
 | 2 | EasyPanel | Añadir el dominio al servicio y activar HTTPS |
 | 3 | EasyPanel | `NEXT_PUBLIC_SITE_URL` en **Build Arguments** + rebuild |
 | 4 | Supabase | Autorizar el dominio para el inicio de sesión |
@@ -16,70 +16,95 @@ Son cinco sitios que tocar, en este orden. Saltarse uno deja la app a medias
 
 ---
 
-## Paso 0 — Averigua la IP de tu VPS
+## Situación actual (consultada el 17/09/2026)
 
-La necesitas para el paso 1.
+| | |
+|---|---|
+| `modoguerrero.es` | `45.154.57.25` — ProfesionalHosting (tu WordPress) |
+| `app.modoguerrero.es` | `45.154.57.25` — **ProfesionalHosting también** ❌ |
+| Tu VPS con EasyPanel | `82.25.93.42` |
+| Servidores DNS del dominio | `dns5725.phdns22.es` / `dns5726.phdns22.es` (ProfesionalHosting) |
 
-**Opción A.** En EasyPanel, arriba a la izquierda o en *Settings → Server*, aparece
-la dirección IP del servidor.
+**El subdominio ya existe, pero apunta al sitio equivocado.** Ahora mismo
+`app.modoguerrero.es` lleva al hosting compartido, no a tu VPS. No hay que
+crearlo: hay que **cambiar a dónde apunta**.
 
-**Opción B.** En el panel de tu proveedor de VPS (Hetzner, DigitalOcean, Contabo…),
-en la ficha de la máquina.
-
-Es un número tipo `203.0.113.45`. Anótalo — lo llamaré **IP-DEL-VPS**.
-
-> Si tienes IPv6 además de IPv4, apunta las dos. La IPv4 empieza por números
-> separados por puntos; la IPv6 lleva dos puntos y letras (`2a01:4f8:…`).
+Comprobado que no es un comodín (`*`): un subdominio inventado como
+`xyz123.modoguerrero.es` no resuelve, así que `app` está puesto a mano.
 
 ---
 
-## Paso 1 — DNS en ProfesionalHosting
+## ⚠️ Lo importante: «Subdominios» NO es lo mismo que «Zona DNS»
 
-Aquí le dices a internet que `app.modoguerrero.es` vive en tu VPS.
+En el panel de ProfesionalHosting (cPanel) hay dos herramientas que parecen la
+misma y no lo son. Casi seguro que el subdominio se creó con la primera, y por
+eso apunta al hosting:
 
-1. Entra en tu **Área de Cliente de ProfesionalHosting**.
-2. Busca **Dominios** → `modoguerrero.es` → **Administrar** → **Zona DNS**
-   (puede llamarse *Editor de Zona DNS* o *DNS Management*).
-3. Pulsa **Añadir registro** y rellena:
+| Herramienta | Qué hace | ¿Sirve aquí? |
+|---|---|---|
+| **Subdominios** (*Subdomains*) | Crea una carpeta en el hosting y apunta el subdominio **a ese mismo servidor** | ❌ **No** |
+| **Zona DNS** (*Editor de Zona DNS*) | Dice a qué IP apunta cada nombre, esté donde esté | ✅ **Sí** |
+
+Tu app **no vive en ProfesionalHosting**, vive en tu VPS. Por eso el subdominio
+no puede ser una carpeta del hosting: tiene que ser un registro DNS que apunte
+fuera, a `82.25.93.42`.
+
+---
+
+## Paso 1 — Cambiar el registro en ProfesionalHosting
+
+1. Entra en tu **Área de Cliente de ProfesionalHosting** → **cPanel** del
+   dominio.
+2. Busca **Editor de Zona DNS** (*Zone Editor* / *Zona DNS*). **No entres en
+   «Subdominios».**
+3. Pulsa **Administrar** en `modoguerrero.es`. Verás la lista de registros.
+4. Busca la línea de **`app.modoguerrero.es`**, tipo `A`, con valor
+   `45.154.57.25`.
+
+   **Si la encuentras** → pulsa **Editar** y cambia solo el valor:
+
+   ```
+   45.154.57.25   →   82.25.93.42
+   ```
+
+   **Si no la encuentras** → pulsa **Añadir registro**:
 
    | Campo | Valor |
    |---|---|
-   | **Tipo** | `A` |
-   | **Nombre / Host** | `app` |
-   | **Valor / Apunta a** | **IP-DEL-VPS** |
-   | **TTL** | `3600` (o el que venga por defecto) |
+   | Tipo | `A` |
+   | Nombre | `app` (si el panel completa solo el dominio) o `app.modoguerrero.es.` |
+   | TTL | `3600` |
+   | Registro / Dirección | `82.25.93.42` |
 
-4. Guarda.
+5. Guarda.
 
-**Sobre el campo «Nombre»:** algunos paneles quieren solo `app` y otros el dominio
-entero `app.modoguerrero.es`. Si al guardar ves que ha quedado
-`app.modoguerrero.es.modoguerrero.es`, es que había que poner solo `app` —
-edítalo.
+6. **Si además aparece en la sección «Subdominios»**, elimínalo de ahí *después*
+   de arreglar la zona DNS. Si no lo quitas, cPanel puede volver a escribir el
+   registro apuntando al hosting y el cambio se deshace solo.
 
-**Si tienes IPv6:** añade además otro registro igual pero de tipo `AAAA` con la
-dirección IPv6.
+   > Al borrar un subdominio, cPanel a veces borra también su registro DNS.
+   > Comprueba la zona otra vez después de hacerlo.
 
-**No toques el registro de `modoguerrero.es` a secas ni el de `www`.** Esos
-apuntan a tu WordPress actual y tienen que seguir como están: la web pública y la
-app son dos cosas distintas.
+**No toques `modoguerrero.es` ni `www`.** Esos apuntan a tu WordPress y tienen
+que seguir exactamente igual: la web pública y la app son dos cosas distintas en
+dos servidores distintos.
 
-### Comprobar que el DNS ya funciona
+### Confirma antes de seguir
 
-Espera entre 5 minutos y 2 horas (normalmente unos 15 min). Para comprobarlo:
+El DNS tarda entre 15 minutos y 2 horas. Comprueba con:
 
-- Entra en <https://dnschecker.org>, escribe `app.modoguerrero.es`, tipo `A`, y
-  mira si sale tu IP en la mayoría de los países.
-- O desde tu ordenador, en la terminal:
+```sh
+nslookup app.modoguerrero.es 8.8.8.8
+```
 
-  ```sh
-  nslookup app.modoguerrero.es
-  ```
+Tiene que devolver **`82.25.93.42`**. Mientras siga diciendo `45.154.57.25`, el
+cambio no ha llegado.
 
-  Tiene que devolver **IP-DEL-VPS**.
+También sirve <https://dnschecker.org> escribiendo `app.modoguerrero.es`.
 
-**No sigas al paso 2 hasta que esto responda con tu IP.** Si intentas emitir el
-certificado HTTPS antes de que el DNS propague, Let's Encrypt falla y hay que
-esperar un rato antes de reintentar.
+**No pases al paso 2 hasta que responda con la IP nueva.** Si pides el
+certificado HTTPS antes, Let's Encrypt intenta validar contra el hosting
+antiguo, falla, y luego hay que esperar para reintentar.
 
 ---
 
