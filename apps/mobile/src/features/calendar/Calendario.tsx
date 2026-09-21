@@ -9,6 +9,8 @@ interface Props {
   dias: readonly DiaCalendario[];
   onMes: (delta: number) => void;
   onDia: (dia: DiaCalendario) => void;
+  /** Un dia de recaida solo se abre con Premium; en gratis, onDia recibe igual el toque para ofrecer acceso. */
+  esPremium: boolean;
 }
 
 const CABECERA = ['L', 'M', 'X', 'J', 'V', 'S', 'D'] as const;
@@ -27,8 +29,13 @@ const CABECERA = ['L', 'M', 'X', 'J', 'V', 'S', 'D'] as const;
  * Ademas cada celda lleva su etiqueta de accesibilidad completa, de modo que un
  * lector de pantalla anuncia el estado y no solo el numero.
  */
-export function Calendario({ anio, mes, dias, onMes, onDia }: Props) {
+export function Calendario({ anio, mes, dias, onMes, onDia, esPremium }: Props) {
   const total = diasDelMes(anio, mes);
+  // Hoy en local, nunca con toISOString (UTC): a partir de las 22:00 en Espana
+  // marcaria la casilla del dia siguiente.
+  const h = new Date();
+  const hoyIso = `${h.getFullYear()}-${String(h.getMonth() + 1).padStart(2, '0')}-${String(h.getDate()).padStart(2, '0')}`;
+  const esMesActual = anio === h.getFullYear() && mes === h.getMonth() + 1;
   const primerDia = diaSemanaLunes(`${anio}-${String(mes).padStart(2, '0')}-01`);
 
   const porFecha = new Map(dias.map((d) => [d.fecha, d]));
@@ -58,7 +65,7 @@ export function Calendario({ anio, mes, dias, onMes, onDia }: Props) {
           {nombreMes(mes)} {anio}
         </Text>
 
-        <Pressable onPress={() => onMes(1)} accessibilityRole="button" accessibilityLabel="Mes siguiente" style={{ padding: spacing.sm }}>
+        <Pressable onPress={() => onMes(1)} disabled={esMesActual} accessibilityRole="button" accessibilityLabel="Mes siguiente" style={{ padding: spacing.sm, opacity: esMesActual ? 0.3 : 1 }}>
           <Text style={{ color: colors.grisTexto, fontSize: fontSize.lg }}>›</Text>
         </Pressable>
       </View>
@@ -83,6 +90,8 @@ export function Calendario({ anio, mes, dias, onMes, onDia }: Props) {
           const esRegistro = typeof celda !== 'number';
           const numero = esRegistro ? Number(celda.fecha.slice(8, 10)) : celda;
           const estado = esRegistro ? celda.estado : 'sin_registro';
+          const iso = `${anio}-${String(mes).padStart(2, '0')}-${String(numero).padStart(2, '0')}`;
+          const esHoy = iso === hoyIso;
 
           const fondo =
             estado === 'en_racha'
@@ -94,9 +103,10 @@ export function Calendario({ anio, mes, dias, onMes, onDia }: Props) {
           return (
             <View key={`d-${numero}`} style={{ width: `${100 / 7}%`, aspectRatio: 1, padding: 2 }}>
               <Pressable
-                disabled={!esRegistro || celda.relapse_id === null}
+                disabled={!esRegistro || estado !== 'recaida'}
                 onPress={() => esRegistro && onDia(celda)}
-                accessibilityRole={esRegistro && celda.relapse_id !== null ? 'button' : 'text'}
+                accessibilityRole={esRegistro && estado === 'recaida' ? 'button' : 'text'}
+                accessibilityHint={estado === 'recaida' ? (esPremium ? 'Abre la bitácora de ese día' : 'La bitácora es Premium') : undefined}
                 accessibilityLabel={
                   `Dia ${numero}: ` +
                   (estado === 'en_racha'
@@ -112,8 +122,8 @@ export function Calendario({ anio, mes, dias, onMes, onDia }: Props) {
                   alignItems: 'center',
                   justifyContent: 'center',
                   // Segunda senal, ademas del color.
-                  borderWidth: estado === 'en_racha' ? 2 : 0,
-                  borderColor: colors.blanco,
+                  borderWidth: esHoy ? 2 : estado === 'en_racha' ? 2 : 0,
+                  borderColor: esHoy ? colors.rojo : colors.blanco,
                   opacity: estado === 'sin_registro' ? 0.45 : 1,
                 }}
               >

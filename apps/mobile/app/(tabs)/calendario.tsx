@@ -1,14 +1,23 @@
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { mostrarDias } from '@reset-alfa/shared';
 import { Calendario } from '../../src/features/calendar/Calendario';
 import { HistorialRecaidas } from '../../src/features/calendar/HistorialRecaidas';
+import { obtenerCalendario, obtenerEstadoDiario, type DiaCalendario, type EstadoDiario } from '../../src/features/streak/api';
 import {
-  obtenerCalendario,
-  obtenerEstadoDiario,
-  type DiaCalendario,
-  type EstadoDiario,
-} from '../../src/features/streak/api';
+  historialRecaidas,
+  obtenerAcceso,
+  obtenerPerfil,
+  plantillasRellenadas,
+  type EntradaHistorial,
+  type Perfil,
+} from '../../src/features/perfil/api';
+import { AccionesPAD, TareaPAD } from '../../src/features/pad/PAD';
+import { AccionesCarta, TareaCarta } from '../../src/features/carta/Carta';
+import { Logros } from '../../src/features/logros/Logros';
+import { AvisoAcceso, Bloqueado, Cabecera, Tarjeta, TEXTO_ACCESO_NATIVO } from '../../src/components/ui';
 import { colors, fontSize, spacing, theme } from '../../src/theme';
 
 export default function CalendarioScreen() {
@@ -18,30 +27,42 @@ export default function CalendarioScreen() {
   const [mes, setMes] = useState(hoy.getMonth() + 1);
   const [dias, setDias] = useState<DiaCalendario[]>([]);
   const [estado, setEstado] = useState<EstadoDiario | null>(null);
+  const [perfil, setPerfil] = useState<Perfil | null>(null);
+  const [historial, setHistorial] = useState<EntradaHistorial[]>([]);
+  const [rellenadas, setRellenadas] = useState(0);
+  const [esPremium, setEsPremium] = useState(false);
   const [cargando, setCargando] = useState(true);
 
-  // useFocusEffect y no useEffect: al volver de registrar una recaida, el
-  // calendario debe reflejarla sin que el usuario tenga que refrescar a mano.
+  const cargar = useCallback(async () => {
+    const [d, e, p, h, r, a] = await Promise.all([
+      obtenerCalendario(anio, mes),
+      obtenerEstadoDiario(),
+      obtenerPerfil(),
+      historialRecaidas(50),
+      plantillasRellenadas(),
+      obtenerAcceso(),
+    ]);
+    setDias(d);
+    setEstado(e);
+    setPerfil(p);
+    setHistorial(h);
+    setRellenadas(r);
+    setEsPremium(a.esPremium);
+  }, [anio, mes]);
+
   useFocusEffect(
     useCallback(() => {
       let activo = true;
       setCargando(true);
-
-      void Promise.all([obtenerCalendario(anio, mes), obtenerEstadoDiario()])
-        .then(([d, e]) => {
-          if (!activo) return;
-          setDias(d);
-          setEstado(e);
-        })
+      void cargar()
         .catch(() => undefined)
         .finally(() => {
           if (activo) setCargando(false);
         });
-
       return () => {
         activo = false;
       };
-    }, [anio, mes]),
+    }, [cargar]),
   );
 
   function cambiarMes(delta: number) {
@@ -57,38 +78,108 @@ export default function CalendarioScreen() {
     }
   }
 
+  const recargar = () => void cargar().catch(() => undefined);
+  const pad = perfil?.pad ?? null;
+  const carta = perfil?.carta ?? null;
+
   return (
     <ScrollView style={theme.pantalla} contentContainerStyle={{ padding: spacing.lg }}>
-      <View style={{ flexDirection: 'row', gap: spacing.lg, marginBottom: spacing.xl }}>
+      <Cabecera kicker="Tu registro" titulo="Calendario" entradilla="Tu racha, tu historia, tu transformación." />
+
+      <View style={{ flexDirection: 'row', gap: spacing.sm, marginTop: spacing.lg }}>
         {[
-          { valor: estado?.racha_actual ?? 0, etiqueta: 'Racha actual' },
-          { valor: estado?.record_personal ?? 0, etiqueta: 'Record' },
-          { valor: estado?.dias_totales ?? 0, etiqueta: 'Dias totales' },
+          { t: 'Racha actual', v: mostrarDias(estado?.racha_actual ?? 0, esPremium) },
+          { t: 'Récord', v: mostrarDias(estado?.record_personal ?? 0, esPremium) },
+          { t: 'Días totales', v: String(estado?.dias_totales ?? 0) },
         ].map((s) => (
-          <View key={s.etiqueta} style={{ flex: 1 }}>
-            <Text style={{ color: colors.blanco, fontSize: fontSize['2xl'], fontWeight: '700' }}>
-              {s.valor}
+          <Tarjeta key={s.t} style={{ flex: 1, alignItems: 'center', paddingHorizontal: spacing.xs }}>
+            <Text style={[theme.etiquetaEstadistica, { fontSize: 10, textAlign: 'center' }]}>{s.t}</Text>
+            <Text style={theme.valorEstadistica}>
+              {s.v}
+              <Text style={[theme.textoTenue, { fontSize: 10 }]}> días</Text>
             </Text>
-            <Text style={[theme.textoTenue, { fontSize: fontSize.xs }]}>{s.etiqueta}</Text>
-          </View>
+          </Tarjeta>
         ))}
       </View>
 
-      {cargando && dias.length === 0 ? (
-        <ActivityIndicator color={colors.rojo} />
-      ) : (
-        <Calendario
-          anio={anio}
-          mes={mes}
-          dias={dias}
-          onMes={cambiarMes}
-          onDia={(d) => {
-            if (d.relapse_id !== null) router.push(`/recaida/${d.relapse_id}`);
-          }}
-        />
+      <View style={{ marginTop: spacing.lg, gap: spacing.sm }}>
+        {pad !== null ? (
+          <AccionesPAD pad={pad} bloqueado={!esPremium} onGuardado={recargar} />
+        ) : esPremium ? (
+          <TareaPAD onGuardado={recargar} />
+        ) : (
+          <Bloqueado titulo="Tu P.A.D" texto="La acción concreta que ejecutas cuando aparece el deseo.">
+            <TareaPAD onGuardado={recargar} />
+          </Bloqueado>
+        )}
+        {carta !== null ? (
+          <AccionesCarta carta={carta} bloqueado={!esPremium} onGuardado={recargar} />
+        ) : esPremium ? (
+          <TareaCarta onGuardado={recargar} />
+        ) : (
+          <Bloqueado titulo="Tu carta anti-recaída" texto="Un mensaje de ti para ti, para el momento de la tentación.">
+            <TareaCarta onGuardado={recargar} />
+          </Bloqueado>
+        )}
+        {!esPremium && <AvisoAcceso texto="Tu Bitácora de NOFAP con cada recaída, y tu racha entera." />}
+      </View>
+
+      <View style={{ marginTop: spacing.xl }}>
+        {cargando && dias.length === 0 ? (
+          <ActivityIndicator color={colors.rojo} />
+        ) : (
+          <Tarjeta style={{ paddingHorizontal: spacing.sm }}>
+            <Calendario
+              anio={anio}
+              mes={mes}
+              dias={dias}
+              esPremium={esPremium}
+              onMes={cambiarMes}
+              onDia={(d) => {
+                if (esPremium) router.push({ pathname: '/recaida/[id]', params: { id: d.fecha } });
+                else Alert.alert('Bitácora de NOFAP', `Las respuestas de ese día son Premium. ${TEXTO_ACCESO_NATIVO}`);
+              }}
+            />
+          </Tarjeta>
+        )}
+      </View>
+
+      {historial.length > 0 && (
+        <Pressable
+          onPress={() => router.push({ pathname: '/(modals)/hito/[clave]', params: { clave: 'recaida', modo: 'pagina' } })}
+          accessibilityRole="button"
+          style={[theme.tarjeta, { marginTop: spacing.lg, flexDirection: 'row', alignItems: 'center', gap: spacing.md, borderRadius: 18 }]}
+        >
+          <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: colors.rojo, alignItems: 'center', justifyContent: 'center' }}>
+            <Ionicons name="play" size={16} color={colors.blancoPuro} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={theme.kicker}>Después de una recaída</Text>
+            <Text style={[theme.texto, { color: colors.blanco, fontSize: fontSize.sm }]}>Qué hacer para que la próxima no te pille sin plan.</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={colors.rojo} />
+        </Pressable>
       )}
 
-      <HistorialRecaidas />
+      <Logros
+        datos={{
+          record: estado?.record_personal ?? 0,
+          diasTotales: estado?.dias_totales ?? 0,
+          tienePad: pad !== null,
+          tieneCarta: carta !== null,
+          plantillasRellenadas: rellenadas,
+          esPremium,
+        }}
+      />
+
+      <HistorialRecaidas entradas={historial} esPremium={esPremium} />
+
+      <Tarjeta style={{ marginTop: spacing.xl }}>
+        <Text style={[theme.texto, { fontSize: fontSize.sm }]}>
+          <Text style={{ color: colors.rojo, fontSize: fontSize.lg }}>“ </Text>
+          No se trata de nunca caer, sino de levantarte cada vez más fuerte.
+        </Text>
+      </Tarjeta>
     </ScrollView>
   );
 }

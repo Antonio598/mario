@@ -1,41 +1,37 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { fechaLarga } from '@reset-alfa/shared';
-import { supabase } from '../../src/lib/supabase';
+import { camposRecaida, fechaLarga, NOMBRE_BITACORA, type CampoRecaida } from '@reset-alfa/shared';
+import { detalleRecaida } from '../../src/features/perfil/api';
+import { Kicker } from '../../src/components/ui';
 import { colors, fontSize, spacing, theme } from '../../src/theme';
-import { PREGUNTAS } from '../../src/features/relapse/preguntas';
-
-type Detalle = Record<string, string | boolean | null> & { created_at: string };
 
 /**
- * Detalle de una recaida.
+ * Ficha de un dia de recaida. `id` es la fecha (YYYY-MM-DD): se abre al tocar
+ * un dia rojo del calendario. Solo lectura. Las preguntas sin respuesta no se
+ * pintan: ver huecos en blanco convierte una omision deliberada en un reproche.
  *
- * Se abre al tocar un dia marcado en el calendario o una fila del historial.
- * Solo lectura: revisar el propio registro es lo que da valor al formulario.
- *
- * Las preguntas sin respuesta no se pintan. Ver huecos en blanco convierte una
- * omision deliberada en un reproche.
+ * Las etiquetas son las MISMAS del formulario, generadas desde la lista
+ * compartida de preguntas.
  */
 export default function DetalleRecaidaScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const [detalle, setDetalle] = useState<Detalle | null>(null);
+  const [campos, setCampos] = useState<CampoRecaida[] | null>(null);
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
     let activo = true;
-
-    void supabase
-      .from('relapses')
-      .select('*')
-      .eq('id', id)
-      .maybeSingle()
-      .then(({ data }) => {
+    void detalleRecaida(id)
+      .then((fila) => {
         if (!activo) return;
-        setDetalle(data as Detalle | null);
-        setCargando(false);
+        setCampos(fila === null ? [] : camposRecaida(fila).filter((c) => c.valor !== null));
+      })
+      .catch(() => {
+        if (activo) setCampos([]);
+      })
+      .finally(() => {
+        if (activo) setCargando(false);
       });
-
     return () => {
       activo = false;
     };
@@ -49,37 +45,26 @@ export default function DetalleRecaidaScreen() {
     );
   }
 
-  if (detalle === null) {
-    return (
-      <View style={[theme.pantalla, { justifyContent: 'center', padding: spacing.lg }]}>
-        <Text style={theme.texto}>No hemos encontrado este registro.</Text>
-      </View>
-    );
-  }
-
   return (
-    <>
-      <Stack.Screen options={{ title: 'Registro' }} />
+    <ScrollView style={theme.pantalla} contentContainerStyle={{ padding: spacing.lg }}>
+      <Stack.Screen options={{ title: NOMBRE_BITACORA }} />
+      <Kicker>{NOMBRE_BITACORA}</Kicker>
+      <Text style={[theme.titulo, { fontSize: fontSize.xl, marginTop: spacing.sm }]}>{fechaLarga(id)}</Text>
 
-      <ScrollView style={theme.pantalla} contentContainerStyle={{ padding: spacing.lg }}>
-        <Text style={[theme.titulo, { fontSize: fontSize.xl }]}>
-          {fechaLarga(detalle.created_at.slice(0, 10))}
+      {campos === null || campos.length === 0 ? (
+        <Text style={[theme.texto, { marginTop: spacing.lg }]}>
+          Ese día quedó registrado como recaída, pero no se guardó el detalle de la bitácora.
         </Text>
-
-        {PREGUNTAS.map((p) => {
-          const valor = detalle[p.campo];
-          if (valor === null || valor === undefined || valor === '') return null;
-
-          return (
-            <View key={p.campo} style={{ marginTop: spacing.lg }}>
-              <Text style={[theme.textoTenue, { fontSize: fontSize.xs }]}>{p.titulo}</Text>
-              <Text style={[theme.texto, { marginTop: spacing.xs, color: colors.blanco }]}>
-                {typeof valor === 'boolean' ? (valor ? 'Si' : 'No') : String(valor)}
-              </Text>
+      ) : (
+        <View style={{ marginTop: spacing.lg, gap: spacing.lg }}>
+          {campos.map((c) => (
+            <View key={c.etiqueta} style={{ borderLeftWidth: 2, borderLeftColor: colors.negroBorde, paddingLeft: spacing.md }}>
+              <Text style={theme.etiquetaEstadistica}>{c.etiqueta}</Text>
+              <Text style={[theme.texto, { color: colors.blanco, marginTop: 4 }]}>{c.valor}</Text>
             </View>
-          );
-        })}
-      </ScrollView>
-    </>
+          ))}
+        </View>
+      )}
+    </ScrollView>
   );
 }
