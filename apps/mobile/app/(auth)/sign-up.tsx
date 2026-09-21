@@ -89,6 +89,12 @@ export default function SignUpScreen() {
     }
 
     setEnviando(false);
+
+    // Sin sesion todavia (confirmacion por correo): se avisa y el plan del
+    // test espera en el dispositivo hasta que entre.
+    if (data.session === null) {
+      setError('Revisa tu correo para confirmar la cuenta. Tu plan te espera al entrar.');
+    }
   }
 
   return (

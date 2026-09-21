@@ -22,8 +22,11 @@ function Guardia() {
     if (cargando) return;
 
     const enFlujoDeAuth = segments[0] === '(auth)';
+    // El test de entrada se hace ANTES de tener cuenta: es la unica pantalla
+    // publica fuera del flujo de acceso.
+    const enEmbudo = segments[0] === 'empezar';
 
-    if (session === null && !enFlujoDeAuth) {
+    if (session === null && !enFlujoDeAuth && !enEmbudo) {
       router.replace('/(auth)/sign-in');
     } else if (session !== null && enFlujoDeAuth) {
       router.replace('/(tabs)');

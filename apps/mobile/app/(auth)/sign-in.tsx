@@ -83,6 +83,12 @@ export default function SignInScreen() {
         <Link href="/(auth)/sign-up" style={{ marginTop: spacing.xl }}>
           <Text style={theme.textoTenue}>No tienes cuenta? Crear una</Text>
         </Link>
+
+        <Link href="/empezar" style={{ marginTop: spacing.md }}>
+          <Text style={[theme.textoTenue, { textAlign: 'center' }]}>
+            ¿Nuevo aquí? <Text style={{ color: colors.rojo }}>Empieza por el test de 2 minutos</Text>
+          </Text>
+        </Link>
       </ScrollView>
     </KeyboardAvoidingView>
   );

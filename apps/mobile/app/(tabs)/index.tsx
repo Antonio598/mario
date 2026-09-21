@@ -6,9 +6,10 @@ import { hitoPendiente } from '@reset-alfa/shared';
 import { obtenerEstadoDiario, type EstadoDiario } from '../../src/features/streak/api';
 import { mensajeDelDia } from '../../src/features/streak/mensajes';
 import { AjustarRacha, ContadorRacha } from '../../src/features/streak/ContadorRacha';
-import { obtenerAcceso, obtenerPerfil, type Acceso, type Perfil } from '../../src/features/perfil/api';
+import { guardarPlan, obtenerAcceso, obtenerPerfil, type Acceso, type Perfil } from '../../src/features/perfil/api';
 import { listarCursos, type Curso } from '../../src/features/learning/api';
 import { RecordatorioPAD, TareaPAD } from '../../src/features/pad/PAD';
+import { borrarPlanLocal, hayPlanLocalCompleto } from '../../src/features/empezar/almacen';
 import { RecordatorioCarta, TareaCarta } from '../../src/features/carta/Carta';
 import { AvisoAcceso, Bloqueado, Tarjeta, TituloSeccion } from '../../src/components/ui';
 import { colors, fontSize, radius, spacing, theme } from '../../src/theme';
@@ -45,16 +46,26 @@ export default function InicioScreen() {
     setAcceso(a);
     setCursos(c.filter((x) => x.tipo === 'gratis' && x.publicado).slice(0, 4));
 
-    // Perfil sin flag: usuario antiguo o recien creado sin test. Al embudo.
-    if (p === null || !p.onboardingCompletado) {
-      router.replace('/empezar');
-      return e;
+    // Perfil sin flag. Si el test ya esta hecho en este dispositivo (acaba de
+    // crear la cuenta), se guarda y se sigue; si no, al embudo.
+    let perfilActual = p;
+    if (perfilActual === null || !perfilActual.onboardingCompletado) {
+      const plan = await hayPlanLocalCompleto();
+      if (plan !== null) {
+        await guardarPlan(plan);
+        await borrarPlanLocal();
+        perfilActual = await obtenerPerfil();
+        setPerfil(perfilActual);
+      } else {
+        router.replace('/empezar');
+        return e;
+      }
     }
     if (e.necesita_checkin) {
       router.replace('/(modals)/checkin');
       return e;
     }
-    const hito = hitoPendiente(e.racha_actual, p.hitosVistos);
+    const hito = hitoPendiente(e.racha_actual, perfilActual?.hitosVistos ?? []);
     if (hito !== null) router.push({ pathname: '/(modals)/hito/[clave]', params: { clave: hito } });
     return e;
   }, [router]);
