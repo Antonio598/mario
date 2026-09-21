@@ -1,9 +1,9 @@
-import type { RespuestasRecaida } from '../streak/api';
+import { PREGUNTAS as PREGUNTAS_COMPARTIDAS, type Pregunta as PreguntaCompartida } from '@reset-alfa/shared';
 
 export type TipoPregunta = 'texto' | 'texto_largo' | 'hora' | 'si_no';
 
 export interface Pregunta {
-  campo: keyof RespuestasRecaida;
+  campo: PreguntaCompartida['campo'];
   tipo: TipoPregunta;
   titulo: string;
   ayuda?: string;
@@ -11,80 +11,15 @@ export interface Pregunta {
 }
 
 /**
- * Las ocho preguntas del protocolo post-recaida, en el orden del brief.
- *
- * Una por pantalla, estilo Typeform. Ese formato no es estetico: obliga a
- * pensar una cosa cada vez, y un formulario largo en una sola pantalla se
- * abandona a la mitad justo en el momento en que menos ganas hay de rellenarlo.
- *
- * TODAS SON OMITIBLES. Es un requisito de minimizacion del RGPD —son datos de
- * categoria especial— y tambien de sentido comun: quien acaba de recaer no
- * siempre puede o quiere responderlo todo, y un formulario que bloquea es un
- * formulario que se cierra.
- *
- * El tono interroga los hechos, nunca a la persona. Nada de "por que has
- * fallado": eso convierte el registro en un castigo y hace que se deje de usar.
+ * Las nueve preguntas de la Bitacora de NOFAP, tal cual las define
+ * packages/shared: son las mismas que en la web y las mismas etiquetas con las
+ * que se leen despues en el calendario. Aqui solo se adapta el tipo de campo
+ * al control nativo: el texto libre va siempre en area multilinea.
  */
-export const PREGUNTAS: readonly Pregunta[] = [
-  {
-    campo: 'lugar',
-    tipo: 'texto',
-    titulo: 'Lugar exacto de la recaida',
-    ayuda: 'El sitio exacto. Cuanto mas concreto, mas facil sera cambiarlo.',
-    placeholder: 'Mi habitacion, en la cama',
-  },
-  {
-    campo: 'hora',
-    tipo: 'hora',
-    titulo: 'Hora de la recaida',
-    ayuda: 'Los patrones aparecen solos cuando acumulas varios registros.',
-  },
-  {
-    campo: 'trigger',
-    tipo: 'texto_largo',
-    titulo: 'Trigger o disparador',
-    ayuda: 'El momento exacto en que cambio algo: un pensamiento, una imagen, un estado.',
-    placeholder: 'Aburrimiento mirando el movil sin rumbo',
-  },
-  {
-    campo: 'accion_correctiva',
-    tipo: 'texto_largo',
-    titulo: 'Accion que puedo aplicar ahora para eliminar el trigger',
-    ayuda: 'Una accion concreta y pequena. No un proposito.',
-    placeholder: 'Dejar el movil cargando en la cocina por la noche',
-  },
-  {
-    campo: 'ejecuto_pad',
-    tipo: 'si_no',
-    titulo: 'Ejecute mi P.A.D?',
-    ayuda: 'Tu Protocolo Anti-Deseo.',
-  },
-  {
-    campo: 'motivo_fallo',
-    tipo: 'texto_largo',
-    titulo: 'Si lo ejecutaste, por que fallo? Si no, por que no lo ejecutaste?',
-    ayuda: 'Si no lo ejecutaste, que te lo impidio. Si lo ejecutaste, donde se rompio.',
-    placeholder: 'No me acorde en el momento',
-  },
-  {
-    campo: 'ajuste_pad',
-    tipo: 'texto_largo',
-    titulo: 'Que debo cambiar en mi P.A.D para hacerlo 100% efectivo?',
-    ayuda: 'Un ajuste concreto para la proxima vez.',
-    placeholder: 'Anadir un paso antes: levantarme y salir de la habitacion',
-  },
-  {
-    campo: 'contexto_ambiental',
-    tipo: 'texto_largo',
-    titulo: 'Contexto ambiental',
-    ayuda: 'Solo o acompanado, dentro o fuera, con o sin pantallas.',
-    placeholder: 'Solo en casa, de noche, sin nada planificado',
-  },
-  {
-    campo: 'contexto_emocional',
-    tipo: 'texto_largo',
-    titulo: 'Contexto psicologico y emocional',
-    ayuda: 'Cansancio, estres, soledad, euforia. Lo que hubiera.',
-    placeholder: 'Cansado y con la sensacion de haber perdido el dia',
-  },
-];
+export const PREGUNTAS: readonly Pregunta[] = PREGUNTAS_COMPARTIDAS.map((p) => ({
+  campo: p.campo,
+  tipo: p.tipo === 'texto' ? 'texto_largo' : p.tipo,
+  titulo: p.titulo,
+  ...(p.ayuda !== undefined ? { ayuda: p.ayuda } : {}),
+  ...(p.placeholder !== undefined ? { placeholder: p.placeholder } : {}),
+}));

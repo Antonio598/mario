@@ -49,7 +49,7 @@ const config: ExpoConfig = {
     permissions: ['INTERNET'],
   },
 
-  plugins: ['expo-router', 'expo-secure-store', 'expo-web-browser'],
+  plugins: ['expo-router', 'expo-secure-store', 'expo-web-browser', 'expo-video'],
 
   experiments: {
     typedRoutes: true,

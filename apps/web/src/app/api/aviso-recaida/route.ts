@@ -1,5 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import type { Database, EsquemaSupabase } from '@reset-alfa/shared';
 import { createClient } from '@/lib/supabase/server';
+import { publicEnv } from '@/lib/env';
 import { enviarCorreo } from '@/lib/correo/resend';
 import { NOMBRE_BITACORA, PREGUNTAS } from '@/lib/app/preguntas-recaida';
 import type { RespuestasRecaida } from '@/lib/app/tipos';
@@ -76,8 +79,33 @@ function formatear(campo: keyof RespuestasRecaida, datos: Record<string, unknown
   return limpiar(bruto);
 }
 
+/**
+ * Cliente segun de donde venga la peticion.
+ *
+ * El navegador trae la sesion en cookies. La app nativa no tiene cookies del
+ * dominio: manda el token de acceso en `Authorization: Bearer`. En ese caso se
+ * construye un cliente con la anon key y esa cabecera, de modo que la RLS se
+ * aplica exactamente igual que con la cookie: sigue siendo el usuario, no el
+ * servidor, quien lee sus datos.
+ */
+async function clientePara(request: NextRequest) {
+  const auth = request.headers.get('authorization');
+  if (auth !== null && auth.startsWith('Bearer ')) {
+    return createSupabaseClient<Database, EsquemaSupabase>(
+      publicEnv.supabaseUrl,
+      publicEnv.supabaseAnonKey,
+      {
+        db: { schema: publicEnv.supabaseSchema },
+        auth: { persistSession: false, autoRefreshToken: false },
+        global: { headers: { Authorization: auth } },
+      },
+    );
+  }
+  return createClient();
+}
+
 export async function POST(request: NextRequest) {
-  const supabase = await createClient();
+  const supabase = await clientePara(request);
   const {
     data: { user },
   } = await supabase.auth.getUser();
