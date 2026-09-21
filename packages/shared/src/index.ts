@@ -32,3 +32,5 @@ export {
   HITOS_RACHA,
   AVISO_NO_TERAPEUTICO,
 } from './constants/index';
+
+export * from './dominio/index';
