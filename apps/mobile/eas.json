@@ -16,14 +16,14 @@
       "distribution": "internal",
       "android": { "buildType": "apk" },
       "env": {
-        "EXPO_PUBLIC_SITE_URL": "https://staging.modoguerrero.es"
+        "EXPO_PUBLIC_SITE_URL": "https://app.modoguerrero.es"
       }
     },
 
     "production": {
       "autoIncrement": true,
       "env": {
-        "EXPO_PUBLIC_SITE_URL": "https://modoguerrero.es"
+        "EXPO_PUBLIC_SITE_URL": "https://app.modoguerrero.es"
       }
     }
   },

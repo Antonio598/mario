@@ -3,8 +3,10 @@
 > Para el «qué pulso y en qué orden» de la App Store, con los pasos repartidos
 > entre el propietario y el desarrollador: [`app-store-paso-a-paso.md`](./app-store-paso-a-paso.md).
 
-Estado a día de hoy: la app móvil tiene las 13 pantallas escritas pero **nunca
-se ha compilado**. No hay `assets/`, ni icono, ni splash, ni proyecto EAS.
+Estado a día de hoy: la app móvil tiene **todas las funciones de la web**,
+icono, pantalla de arranque y configuración de EAS. Falta `eas init` con la
+cuenta de Expo del propietario y la decisión sobre el borrado de identidad
+(ver `app-store-paso-a-paso.md`).
 
 ---
 

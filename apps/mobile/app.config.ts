@@ -17,13 +17,15 @@ import type { ExpoConfig } from 'expo/config';
 const config: ExpoConfig = {
   name: 'Reset Alfa',
   slug: 'reset-alfa',
-  version: '0.1.0',
+  version: '1.0.0',
+  icon: './assets/icon.png',
   orientation: 'portrait',
   scheme: 'resetalfa',
   userInterfaceStyle: 'dark',
   newArchEnabled: true,
 
   splash: {
+    image: './assets/splash.png',
     resizeMode: 'contain',
     backgroundColor: '#0A0A0A',
   },
@@ -39,6 +41,7 @@ const config: ExpoConfig = {
   android: {
     package: 'es.modoguerrero.resetalfa',
     adaptiveIcon: {
+      foregroundImage: './assets/adaptive-icon.png',
       backgroundColor: '#0A0A0A',
     },
     /**
@@ -56,11 +59,17 @@ const config: ExpoConfig = {
   },
 
   extra: {
+    /**
+     * Proyecto EAS. Lo rellena `eas init` con la cuenta de Expo del
+     * propietario; hasta entonces queda vacio y `eas build` lo pide.
+     */
+    eas: { projectId: process.env['EAS_PROJECT_ID'] ?? '' },
     supabaseUrl: process.env['EXPO_PUBLIC_SUPABASE_URL'],
     supabaseAnonKey: process.env['EXPO_PUBLIC_SUPABASE_ANON_KEY'],
     // 'public' o 'reset_alfa'. Ver supabase/instalacion-esquema-aislado.sql
     supabaseSchema: process.env['EXPO_PUBLIC_SUPABASE_SCHEMA'] ?? 'public',
-    siteUrl: process.env['EXPO_PUBLIC_SITE_URL'] ?? 'https://modoguerrero.es',
+    siteUrl: process.env['EXPO_PUBLIC_SITE_URL'] ?? 'https://app.modoguerrero.es',
+    privacyPolicyVersion: process.env['EXPO_PUBLIC_PRIVACY_POLICY_VERSION'] ?? '2026-07-30',
   },
 };
 

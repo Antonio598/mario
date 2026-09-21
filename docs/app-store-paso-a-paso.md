@@ -10,30 +10,26 @@ de la parte 1 pueden empezar hoy y no dependen de nada mío.
 
 ---
 
-## Antes de nada: en qué estado está la app nativa
+## Estado de la app nativa (actualizado)
 
-Hay que decirlo claro para que el plazo no sorprenda.
+La app nativa de `apps/mobile` **tiene ya todo lo de la web**: test de entrada,
+contador con tope en gratis, check-in, Bitácora de NOFAP con consentimiento,
+P.A.D, carta anti-recaída, logros, landings de hito con vídeo, Formación,
+Tienda, Perfil con eliminación de cuenta. Tiene icono, pantalla de arranque y
+la configuración de EAS preparada. Metro la empaqueta entera sin errores.
 
-La app que se publica en la App Store **no es la web** que llevas semanas
-viendo. Es la app nativa de la carpeta `apps/mobile`, hecha con Expo. Y esa
-app:
+**La única diferencia deliberada con la web:** en la app nativa la suscripción
+Premium **no se vende**. No hay pantalla de precios tras el test, y las
+funciones bloqueadas dicen «Incluido en Reset Alfa Premium. El acceso se
+gestiona desde tu cuenta en la web», sin precio ni enlace. Es la norma 3.1.1
+de Apple: contenido digital vendido desde la app solo con su sistema de compra
+(comisión del 15-30 %), y enlazar a un pago externo es motivo de rechazo. Quien
+se hace Premium en la web lo ve desbloqueado en la app al instante.
 
-- Tiene las **13 pantallas originales** (contador, check-in, calendario,
-  formación, perfil, recaída).
-- **No tiene nada de lo construido después**: ni P.A.D, ni carta anti-recaída,
-  ni logros, ni Premium, ni el test de entrada, ni los vídeos de hito, ni el
-  nombre «Bitácora de NOFAP».
-- **Nunca se ha compilado.** No tiene icono, ni pantalla de arranque, ni
-  proyecto en EAS.
-
-Publicarla tal cual sería publicar una fracción del producto. Antes de enviarla
-a revisión hay que ponerla al día. Es trabajo mío y está en la parte 2.
-
-**La alternativa ya funciona:** `app.modoguerrero.es` se instala en el iPhone
-desde Safari («Compartir → Añadir a pantalla de inicio») con icono propio y sin
-barra de navegador. Lo único que no da es aparecer buscando «nofap» en la App
-Store. Si el tráfico va a venir de Google y de tu audiencia, esa es la vía
-rápida. Lo que sigue asume que quieres la App Store de todos modos.
+**La alternativa sigue existiendo:** `app.modoguerrero.es` se instala en el
+iPhone desde Safari («Compartir → Añadir a pantalla de inicio») con icono
+propio y sin barra de navegador, y ahí sí se vende Premium. Lo único que no da
+es aparecer buscando «nofap» en la App Store.
 
 ---
 
@@ -115,27 +111,27 @@ Prepáralos en un documento; se pegan en App Store Connect (parte 3):
 
 ---
 
-## Parte 2 — Lo que hago yo (código)
+## Parte 2 — Lo que queda en código
 
-En este orden, con un commit por bloque como siempre:
+Hecho: paridad de funciones, assets, `app.config.ts`, `eas.json`, endpoint de
+eliminación de cuenta. Quedan tres cosas que dependen de ti:
 
-1. **Poner la app nativa al día** con la web: P.A.D, carta, logros, Bitácora de
-   NOFAP, test de entrada, vídeos de hito. Sin precios ni botones de compra —
-   Apple 3.1.1: la app nativa solo puede decir «esto requiere acceso» y abrir
-   el navegador. Es la parte larga.
-2. **Borrado de cuenta desde la app** (Apple 5.1.1(v)). Hoy `borrar_mis_datos`
-   no elimina la identidad porque la base es compartida con tu CRM. Hay que
-   decidir: un endpoint con `service_role` que borre `auth.users` (el usuario
-   desaparece también del CRM) o un proyecto Supabase separado. **Sin esto,
-   rechazo seguro.** Decisión tuya; te lo pregunto cuando llegue.
-3. **Assets**: icono 1024×1024 desde `logos/app.png`, pantalla de arranque
-   negra, icono adaptativo.
-4. **`eas init`** enlazado a tu cuenta de Expo, y `EXPO_PUBLIC_SITE_URL` a
-   `https://app.modoguerrero.es`.
-5. **Primer build de prueba** (`eas build --platform ios --profile preview`) y
-   te lo instalo en tu iPhone por TestFlight.
+1. **`eas init`** con tu cuenta de Expo (paso 1.3). Genera el `projectId`; se
+   pone en la variable `EAS_PROJECT_ID` al compilar.
+2. **La decisión del borrado de identidad** (Apple 5.1.1(v)). La app ya tiene
+   el botón «Eliminar mi cuenta» y llama a `/api/cuenta/eliminar`. Lo que hace
+   ese endpoint depende de una variable en EasyPanel:
 
-Plazo realista de la parte 2: **3-4 semanas** de trabajo.
+   | `BORRAR_IDENTIDAD_AL_ELIMINAR` | Qué borra | ¿Cumple Apple? |
+   |---|---|---|
+   | `true` | Datos de Reset Alfa **y** la cuenta (`auth.users`). **El usuario desaparece también de tu CRM.** | ✅ |
+   | vacío (por defecto) | Solo los datos de Reset Alfa. La cuenta sigue en el CRM. | ❌ |
+
+   Para pasar la revisión tiene que ser `true`. Requiere
+   `SUPABASE_SERVICE_ROLE_KEY` en Environment (ya la tienes).
+3. **Primer build de prueba** (`eas build --platform ios --profile preview`),
+   que te instalo en el iPhone por TestFlight. Lo lanzo yo en cuanto tenga el
+   `projectId`.
 
 ---
 
@@ -259,8 +255,9 @@ en aparecer en todas las tiendas del mundo.
 | Alta en Apple (individual) | Tú | 1-2 días, **empieza hoy** |
 | Alta en Apple (organización) | Tú | 2-4 semanas, **pide el D-U-N-S hoy** |
 | Cuenta Expo + usuario de prueba | Tú | 15 minutos |
-| App nativa al día + borrado de cuenta + assets + build | Yo | 3-4 semanas |
+| App nativa al día + assets | Yo | **Hecho** |
+| `eas init` + decisión del borrado + primer build | Juntos | 1-2 días |
 | TestFlight, capturas, ficha | Juntos | 2-3 días |
 | Revisión de Apple | Apple | 1-2 días (más si rechazan) |
 
-**Total realista: 4-6 semanas** desde hoy si la cuenta es individual.
+**Total realista: 1-2 semanas** desde hoy si la cuenta es individual, contando la revisión.
