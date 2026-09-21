@@ -16,8 +16,9 @@ Pega cada fichero en el SQL Editor de Supabase, **en este orden**:
 | 8 | `premium-1-tipo.sql` | **Pégalo SOLO, en su propia ejecución.** Añade el tipo `suscripcion` al enum. PostgreSQL no deja usar un valor de enum en la misma transacción en que se crea |
 | 9 | `premium-2-suscripcion.sql` | Columnas de suscripción en `entitlements`, producto `premium-mensual` y RPC `es_premium` |
 | 10 | `hitos.sql` | Columna `profiles.hitos_vistos` y RPC `marcar_hito`. Sin él, el vídeo de los 7 días saldría en cada visita |
+| 11 | `tiendas-origen.sql` | **Pégalo SOLO, en su propia ejecución.** Orígenes `apple` y `google` para la suscripción comprada dentro de la app. Sin él, el webhook de RevenueCat falla |
 
-Los diez son idempotentes: puedes reejecutarlos sin duplicar nada.
+Los once son idempotentes: puedes reejecutarlos sin duplicar nada.
 
 **El SQL Editor envuelve cada ejecución en una transacción.** Si un fichero da
 un error en cualquier punto, deshace todo lo anterior y no queda nada. Por eso
@@ -74,6 +75,17 @@ STRIPE_PREMIUM_PRICE_ID=price_...
 ```
 
 **Paso a paso detallado de Stripe:** [`docs/stripe-premium.md`](../docs/stripe-premium.md).
+
+**4. Compra de Premium dentro de la app** (App Store / Google Play via
+RevenueCat), también en Environment:
+
+```
+REVENUECAT_SECRET_KEY=sk_...
+REVENUECAT_WEBHOOK_SECRET=<cadena larga inventada>
+```
+
+Requiere el fichero 11 (`tiendas-origen.sql`). **Paso a paso:**
+[`docs/compras-en-la-app.md`](../docs/compras-en-la-app.md).
 
 En resumen: producto «Reset Alfa Premium» con precio **recurrente
 mensual de 10 USD** (su id es el `price_...`); webhook a

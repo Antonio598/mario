@@ -18,18 +18,17 @@ P.A.D, carta anti-recaída, logros, landings de hito con vídeo, Formación,
 Tienda, Perfil con eliminación de cuenta. Tiene icono, pantalla de arranque y
 la configuración de EAS preparada. Metro la empaqueta entera sin errores.
 
-**La única diferencia deliberada con la web:** en la app nativa la suscripción
-Premium **no se vende**. No hay pantalla de precios tras el test, y las
-funciones bloqueadas dicen «Incluido en Reset Alfa Premium. El acceso se
-gestiona desde tu cuenta en la web», sin precio ni enlace. Es la norma 3.1.1
-de Apple: contenido digital vendido desde la app solo con su sistema de compra
-(comisión del 15-30 %), y enlazar a un pago externo es motivo de rechazo. Quien
-se hace Premium en la web lo ve desbloqueado en la app al instante.
+**Premium se vende también en la app**, con el sistema de compra de Apple y de
+Google a través de RevenueCat (norma 3.1.1: contenido digital solo con su
+sistema, comisión del 15 %). El paywall nativo enseña el precio que devuelve
+la tienda, y una compra en la app desbloquea también la web, y al revés. La
+configuración en RevenueCat, App Store Connect y Google Play está en
+[`compras-en-la-app.md`](compras-en-la-app.md). Mientras no estén las claves
+en el build, la app no enseña botón de compra: dice «Incluido en Reset Alfa
+Premium. El acceso se gestiona desde tu cuenta en la web».
 
-**La alternativa sigue existiendo:** `app.modoguerrero.es` se instala en el
-iPhone desde Safari («Compartir → Añadir a pantalla de inicio») con icono
-propio y sin barra de navegador, y ahí sí se vende Premium. Lo único que no da
-es aparecer buscando «nofap» en la App Store.
+**La eliminación de cuenta** (norma 5.1.1(v)) borra datos e identidad por
+defecto; ya no hay nada que decidir.
 
 ---
 
@@ -113,25 +112,27 @@ Prepáralos en un documento; se pegan en App Store Connect (parte 3):
 
 ## Parte 2 — Lo que queda en código
 
-Hecho: paridad de funciones, assets, `app.config.ts`, `eas.json`, endpoint de
-eliminación de cuenta. Quedan tres cosas que dependen de ti:
+Hecho: paridad de funciones, assets, `app.config.ts`, `eas.json`, compra de
+Premium en la app (RevenueCat), eliminación de cuenta. Quedan tres cosas que
+dependen de ti:
 
 1. **`eas init`** con tu cuenta de Expo (paso 1.3). Genera el `projectId`; se
    pone en la variable `EAS_PROJECT_ID` al compilar.
-2. **La decisión del borrado de identidad** (Apple 5.1.1(v)). La app ya tiene
-   el botón «Eliminar mi cuenta» y llama a `/api/cuenta/eliminar`. Lo que hace
-   ese endpoint depende de una variable en EasyPanel:
-
-   | `BORRAR_IDENTIDAD_AL_ELIMINAR` | Qué borra | ¿Cumple Apple? |
-   |---|---|---|
-   | `true` | Datos de Reset Alfa **y** la cuenta (`auth.users`). **El usuario desaparece también de tu CRM.** | ✅ |
-   | vacío (por defecto) | Solo los datos de Reset Alfa. La cuenta sigue en el CRM. | ❌ |
-
-   Para pasar la revisión tiene que ser `true`. Requiere
-   `SUPABASE_SERVICE_ROLE_KEY` en Environment (ya la tienes).
+2. **RevenueCat + producto de suscripción en App Store Connect**: guía
+   [`compras-en-la-app.md`](compras-en-la-app.md), partes 1 y 2. Necesita el
+   acuerdo de apps de pago firmado (datos bancarios y fiscales), que tarda
+   1-2 días en activarse: **fírmalo el mismo día que te den de alta.**
 3. **Primer build de prueba** (`eas build --platform ios --profile preview`),
    que te instalo en el iPhone por TestFlight. Lo lanzo yo en cuanto tenga el
-   `projectId`.
+   `projectId` y las claves públicas de RevenueCat.
+
+**Eliminación de cuenta**: el botón «Eliminar mi cuenta» de Perfil llama a
+`/api/cuenta/eliminar`, que borra los datos de Reset Alfa **y** la identidad
+(`auth.users`), cancela la suscripción de Stripe si la hay y borra la ficha en
+RevenueCat. Como la base está compartida con tu CRM, el usuario desaparece
+también de allí; es lo que exige Apple. Requiere `SUPABASE_SERVICE_ROLE_KEY`
+en Environment (ya la tienes). Si algún día quisieras conservar la identidad,
+`BORRAR_IDENTIDAD_AL_ELIMINAR=false`, pero con eso no pasa la revisión.
 
 ---
 
@@ -196,11 +197,12 @@ App Store Connect → tu app → **1.0 Preparar para el envío**:
    - **Notas**: pega esto:
 
      > Reset Alfa es una herramienta de seguimiento de hábitos y disciplina.
-     > La cuenta de demostración tiene el nivel Premium activado para que
-     > puedan revisar todas las funciones. Todo el contenido de pago se
-     > adquiere fuera de la app, en nuestra web; la app no contiene compras
-     > integradas. La cuenta se puede eliminar desde Perfil → Eliminar mis
-     > datos.
+     > La suscripción Premium se compra con compras integradas de Apple
+     > (Perfil → Ver Premium). La cuenta de demostración tiene Premium
+     > activado para que puedan revisar todas las funciones. Los enlaces
+     > externos son a un libro físico y a una sesión de consultoría
+     > presencial. La cuenta se puede eliminar desde Perfil → Eliminar mi
+     > cuenta.
 
    - **Contacto**: tu nombre, teléfono y correo. Apple llama si tiene dudas.
 6. **Privacidad de la app** (menú lateral → *App Privacy*): responde el
@@ -214,8 +216,11 @@ App Store Connect → tu app → **1.0 Preparar para el envío**:
 7. **Cifrado**: pregunta «¿Usa cifrado?» → **No** (la app usa solo HTTPS
    estándar, que está exento; ya está declarado en el código con
    `usesNonExemptEncryption: false`).
-8. **Selecciona el build** subido en 3.3.
-9. **Lanzamiento**: «Publicar manualmente esta versión». Así, cuando la
+8. **Compras integradas y suscripciones**: añade la suscripción «Premium
+   mensual» creada en `compras-en-la-app.md` (2.2). Se revisa junto con la
+   app; si no la añades, la app puede aprobarse sin poder vender.
+9. **Selecciona el build** subido en 3.3.
+10. **Lanzamiento**: «Publicar manualmente esta versión». Así, cuando la
    aprueben, decides tú el día.
 
 ### 3.6 Enviar a revisión
@@ -256,7 +261,8 @@ en aparecer en todas las tiendas del mundo.
 | Alta en Apple (organización) | Tú | 2-4 semanas, **pide el D-U-N-S hoy** |
 | Cuenta Expo + usuario de prueba | Tú | 15 minutos |
 | App nativa al día + assets | Yo | **Hecho** |
-| `eas init` + decisión del borrado + primer build | Juntos | 1-2 días |
+| RevenueCat + suscripción en App Store Connect | Tú (con la guía) | 1 h, más 1-2 días del acuerdo de pago |
+| `eas init` + primer build | Juntos | 1-2 días |
 | TestFlight, capturas, ficha | Juntos | 2-3 días |
 | Revisión de Apple | Apple | 1-2 días (más si rechazan) |
 

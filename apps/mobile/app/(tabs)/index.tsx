@@ -29,7 +29,7 @@ export default function InicioScreen() {
   const router = useRouter();
   const [estado, setEstado] = useState<EstadoDiario | null>(null);
   const [perfil, setPerfil] = useState<Perfil | null>(null);
-  const [acceso, setAcceso] = useState<Acceso>({ esPremium: false, expiraEn: null, cancelaAlFinal: false });
+  const [acceso, setAcceso] = useState<Acceso>({ esPremium: false, expiraEn: null, cancelaAlFinal: false, origen: null });
   const [cursos, setCursos] = useState<Curso[]>([]);
   const [cargando, setCargando] = useState(true);
   const [refrescando, setRefrescando] = useState(false);

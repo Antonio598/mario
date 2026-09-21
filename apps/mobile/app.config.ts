@@ -9,10 +9,14 @@ import type { ExpoConfig } from 'expo/config';
  *    DISCIPLINA. Nada de lenguaje sexual explicito ni afirmaciones de salud:
  *    ambas cosas provocan rechazo en la revision de App Store y Google Play.
  *  · Clasificacion por edad 17+/18+, por la naturaleza del tema tratado.
- *  · La app NO contiene compras integradas y no debe declararlas. Todo el
- *    comercio ocurre en la web, en navegador externo. Declarar compras
- *    integradas obligaria a usar el sistema de pago de la tienda y su comision
- *    del 15-30 %.
+ *  · La suscripcion Premium SE VENDE DENTRO de la app con el sistema de pago
+ *    de la tienda (RevenueCat sobre StoreKit y Google Play Billing). Es lo que
+ *    exige Apple (3.1.1) para contenido digital, con su comision del 15-30 %.
+ *    En la ficha hay que declarar "Compras integradas" y crear el producto
+ *    de suscripcion en App Store Connect y en Google Play Console (ver
+ *    docs/compras-en-la-app.md). El libro y la sesion diagnostica siguen
+ *    abriendose en el navegador: son bienes fisicos y servicios presenciales
+ *    (3.1.3(e)), fuera del sistema de compra de la tienda.
  */
 const config: ExpoConfig = {
   name: 'Reset Alfa',
@@ -70,6 +74,15 @@ const config: ExpoConfig = {
     supabaseSchema: process.env['EXPO_PUBLIC_SUPABASE_SCHEMA'] ?? 'public',
     siteUrl: process.env['EXPO_PUBLIC_SITE_URL'] ?? 'https://app.modoguerrero.es',
     privacyPolicyVersion: process.env['EXPO_PUBLIC_PRIVACY_POLICY_VERSION'] ?? '2026-07-30',
+    /**
+     * Claves PUBLICAS de RevenueCat, una por tienda (appl_... y goog_...).
+     * Son publicas por diseno, como la anon key. Sin la de la plataforma, la
+     * compra en la app queda desactivada y Premium se describe como
+     * "gestionado desde la web".
+     */
+    revenueCatIosKey: process.env['EXPO_PUBLIC_REVENUECAT_IOS_KEY'] ?? '',
+    revenueCatAndroidKey: process.env['EXPO_PUBLIC_REVENUECAT_ANDROID_KEY'] ?? '',
+    revenueCatEntitlement: process.env['EXPO_PUBLIC_REVENUECAT_ENTITLEMENT'] ?? 'premium',
   },
 };
 

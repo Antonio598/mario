@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Animated, Text, TextInput, View } from 'react-native';
 import { LIMITE_RACHA_GRATIS, mostrarDias, rachaRecortada } from '@reset-alfa/shared';
 import { ajustarRacha } from '../perfil/api';
-import { Boton, MensajeError, Tarjeta, TEXTO_ACCESO_NATIVO } from '../../components/ui';
+import { Boton, EnlacePremium, MensajeError, Tarjeta, textoAcceso } from '../../components/ui';
 import { colors, fontSize, spacing, theme } from '../../theme';
 
 const HITOS = [7, 21, 30, 90, 180, 365] as const;
@@ -28,8 +28,8 @@ function useCuenta(destino: number, duracion = 900): number {
 
 /**
  * Contador de racha. En gratis se detiene en 30: la racha real sigue contando
- * en el servidor y se dice cual es, sin enlace ni precio (ver
- * TEXTO_ACCESO_NATIVO).
+ * en el servidor y se dice cual es. Sin precio: el paywall lo pone la tienda
+ * (ver textoAcceso y EnlacePremium en components/ui).
  */
 export function ContadorRacha({
   dias,
@@ -86,8 +86,9 @@ export function ContadorRacha({
               contando.
             </Text>
             <Text style={[theme.textoTenue, { fontSize: fontSize.xs, marginTop: 4 }]}>
-              {TEXTO_ACCESO_NATIVO}
+              {textoAcceso()}
             </Text>
+            <EnlacePremium texto="Ver Premium →" />
           </View>
         )}
 

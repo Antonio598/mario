@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, Alert, ScrollView, Share, Switch, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Linking, ScrollView, Share, Switch, Text, View } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import Constants from 'expo-constants';
 import { AVISO_NO_TERAPEUTICO, GRACIA_HORAS } from '@reset-alfa/shared';
@@ -7,7 +7,8 @@ import { siteUrl, supabase } from '../../src/lib/supabase';
 import { useSession } from '../../src/features/auth/SessionProvider';
 import { obtenerEstadoDiario, type EstadoDiario } from '../../src/features/streak/api';
 import { darConsentimiento, obtenerAcceso, obtenerPerfil, type Acceso, type Perfil } from '../../src/features/perfil/api';
-import { Boton, Cabecera, Candado, Tarjeta, TituloSeccion, TEXTO_ACCESO_NATIVO } from '../../src/components/ui';
+import { comprasDisponibles, urlGestionSuscripcion } from '../../src/features/premium/compras';
+import { Boton, Cabecera, Candado, RUTA_PREMIUM, Tarjeta, TituloSeccion, TEXTO_ACCESO_NATIVO } from '../../src/components/ui';
 import { colors, fontSize, spacing, theme } from '../../src/theme';
 
 function fechaCorta(iso: string): string {
@@ -16,16 +17,17 @@ function fechaCorta(iso: string): string {
 }
 
 /**
- * Perfil. Estado de la suscripcion (sin gestion ni compra: eso es en la web),
- * consentimiento del art. 9, zona horaria, exportacion, cierre de sesion y
- * ELIMINACION DE CUENTA, que Apple y Google exigen desde dentro de la app.
+ * Perfil. Estado de la suscripcion (compra y gestion con el sistema de la
+ * tienda, si esta configurado; si no, solo estado), consentimiento del art. 9,
+ * zona horaria, exportacion, cierre de sesion y ELIMINACION DE CUENTA, que
+ * Apple y Google exigen desde dentro de la app.
  */
 export default function PerfilScreen() {
   const router = useRouter();
   const { session } = useSession();
   const [estado, setEstado] = useState<EstadoDiario | null>(null);
   const [perfil, setPerfil] = useState<Perfil | null>(null);
-  const [acceso, setAcceso] = useState<Acceso>({ esPremium: false, expiraEn: null, cancelaAlFinal: false });
+  const [acceso, setAcceso] = useState<Acceso>({ esPremium: false, expiraEn: null, cancelaAlFinal: false, origen: null });
   const [cargando, setCargando] = useState(true);
   const [trabajando, setTrabajando] = useState(false);
 
@@ -81,11 +83,21 @@ export default function PerfilScreen() {
    * Eliminacion de cuenta. La hace el servidor web (/api/cuenta/eliminar),
    * que es quien puede borrar la identidad ademas de los datos. Doble
    * confirmacion y lenguaje explicito sobre la irreversibilidad.
+   *
+   * Una suscripcion comprada en la tienda NO se cancela al borrar la cuenta:
+   * solo puede cancelarla el usuario en los ajustes de su Apple ID o de
+   * Google Play. Se le avisa antes, porque si no seguiria pagando.
    */
   function eliminarCuenta() {
+    const enTienda = acceso.esPremium && (acceso.origen === 'apple' || acceso.origen === 'google');
     Alert.alert(
       'Eliminar tu cuenta',
-      'Se borrarán tu perfil, tus rachas, tu bitácora, tu P.A.D y tu carta. Es irreversible: no hay copia que recuperar.',
+      'Se borrarán tu perfil, tus rachas, tu bitácora, tu P.A.D y tu carta. Es irreversible: no hay copia que recuperar.' +
+        (enTienda
+          ? `
+
+Tienes una suscripción activa comprada en ${acceso.origen === 'apple' ? 'la App Store' : 'Google Play'}. Borrar la cuenta NO la cancela: cancélala antes desde los ajustes de suscripciones de tu cuenta, o seguirás pagando.`
+          : ''),
       [
         { text: 'Cancelar', style: 'cancel' },
         {
@@ -122,6 +134,15 @@ export default function PerfilScreen() {
     );
   }
 
+  async function gestionarSuscripcion() {
+    const url = await urlGestionSuscripcion();
+    if (url === null) {
+      Alert.alert('Gestionar suscripción', 'Se gestiona desde los ajustes de suscripciones de tu cuenta de la tienda.');
+      return;
+    }
+    await Linking.openURL(url);
+  }
+
   async function cerrarSesion() {
     await supabase.auth.signOut();
     router.replace('/(auth)/sign-in');
@@ -151,7 +172,7 @@ export default function PerfilScreen() {
         ))}
       </View>
 
-      {/* Suscripcion: estado, sin compra ni gestion (eso es en la web). */}
+      {/* Suscripcion: estado, y compra o gestion si la tienda esta configurada. */}
       <Tarjeta destacada={!acceso.esPremium}>
         <View style={{ flexDirection: 'row', gap: spacing.md, alignItems: 'flex-start' }}>
           <Candado tamano={14} />
@@ -166,7 +187,30 @@ export default function PerfilScreen() {
                     : `Se renueva el ${fechaCorta(acceso.expiraEn)}.`
                 : 'Bitácora de NOFAP, P.A.D, carta anti-recaída y racha sin límite.'}
             </Text>
-            <Text style={[theme.textoTenue, { fontSize: fontSize.xs, marginTop: 4 }]}>{TEXTO_ACCESO_NATIVO}</Text>
+            {!comprasDisponibles() ? (
+              <Text style={[theme.textoTenue, { fontSize: fontSize.xs, marginTop: 4 }]}>{TEXTO_ACCESO_NATIVO}</Text>
+            ) : acceso.esPremium ? (
+              acceso.origen === 'apple' || acceso.origen === 'google' ? (
+                <Boton
+                  texto="Gestionar suscripción"
+                  variante="fantasma"
+                  onPress={() => void gestionarSuscripcion()}
+                  style={{ alignSelf: 'flex-start', paddingHorizontal: 0, minHeight: 36 }}
+                />
+              ) : (
+                <Text style={[theme.textoTenue, { fontSize: fontSize.xs, marginTop: 4 }]}>
+                  Contratada en la web. {TEXTO_ACCESO_NATIVO}
+                </Text>
+              )
+            ) : (
+              <Boton
+                texto="Ver Premium"
+                variante="fantasma"
+                icono="chevron-forward"
+                onPress={() => router.push(RUTA_PREMIUM)}
+                style={{ alignSelf: 'flex-start', paddingHorizontal: 0, minHeight: 36 }}
+              />
+            )}
           </View>
         </View>
       </Tarjeta>

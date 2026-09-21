@@ -3,7 +3,7 @@ import { Pressable, Text, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { camposRecaida, fechaLarga, LEMA_BITACORA, NOMBRE_BITACORA, type CampoRecaida } from '@reset-alfa/shared';
 import { detalleRecaida, type EntradaHistorial } from '../perfil/api';
-import { Chip, Tarjeta, TituloSeccion, TEXTO_ACCESO_NATIVO } from '../../components/ui';
+import { Chip, EnlacePremium, Tarjeta, TituloSeccion, textoAcceso } from '../../components/ui';
 import { colors, fontSize, spacing, theme } from '../../theme';
 
 /**
@@ -124,9 +124,12 @@ function EntradaBloqueada({ entrada }: { entrada: EntradaHistorial }) {
         />
       </Pressable>
       {aviso && (
-        <Text style={[theme.textoTenue, { fontSize: fontSize.xs, marginTop: spacing.sm }]}>
-          Las respuestas de la bitácora son Premium. {TEXTO_ACCESO_NATIVO}
-        </Text>
+        <>
+          <Text style={[theme.textoTenue, { fontSize: fontSize.xs, marginTop: spacing.sm }]}>
+            Las respuestas de la bitácora son Premium. {textoAcceso()}
+          </Text>
+          <EnlacePremium />
+        </>
       )}
     </Tarjeta>
   );

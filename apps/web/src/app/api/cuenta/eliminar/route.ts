@@ -1,9 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { createClient as createSupabaseClient } from '@supabase/supabase-js';
-import type { Database, EsquemaSupabase } from '@reset-alfa/shared';
-import { createClient } from '@/lib/supabase/server';
+import { clienteDePeticion } from '@/lib/supabase/peticion';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { publicEnv } from '@/lib/env';
+import { PRODUCTO_PREMIUM_ID } from '@/lib/app/enlaces';
+import { obtenerStripe } from '@/lib/stripe/suscripciones';
+import { borrarSuscriptorRevenueCat } from '@/lib/tiendas/revenuecat';
 
 export const runtime = 'nodejs';
 
@@ -11,44 +12,25 @@ export const runtime = 'nodejs';
  * Eliminacion de cuenta (art. 17 RGPD; Apple 5.1.1(v) y Google Play).
  *
  * Las tiendas exigen que el usuario pueda borrar SU CUENTA desde la app, no
- * solo sus datos. En este proyecto la base esta compartida con el CRM del
- * propietario, y borrar la identidad de auth.users la borra tambien alli.
+ * solo sus datos. Por defecto se borra todo: los datos de Reset Alfa (RPC
+ * borrar_mis_datos) y despues la identidad en auth.users con la service_role.
  *
- * Por eso hay dos comportamientos y los decide una variable de entorno:
+ * La base esta compartida con el CRM del propietario, y borrar la identidad la
+ * borra tambien alli. Si en algun momento hiciera falta conservarla,
+ * BORRAR_IDENTIDAD_AL_ELIMINAR=false deja solo el borrado de datos; pero con
+ * eso la app deja de cumplir el requisito de las tiendas.
  *
- *   BORRAR_IDENTIDAD_AL_ELIMINAR=true
- *     Borra los datos de Reset Alfa (RPC borrar_mis_datos) y despues la
- *     identidad en auth.users con la service_role. Es lo que exigen las
- *     tiendas. El usuario desaparece tambien del CRM.
- *
- *   sin definir (por defecto)
- *     Borra solo los datos de Reset Alfa. La identidad sobrevive. Cumple el
- *     art. 17 respecto a esta app pero NO el requisito de las tiendas.
- *
- * La decision es del propietario (ver docs/app-store-paso-a-paso.md). Este
- * endpoint es la unica pieza que la app nativa necesita para cumplir: la web
- * tambien puede llamarlo, pero conserva su boton actual.
+ * ANTES DE BORRAR, EL DINERO:
+ *   - Suscripcion de Stripe: se cancela. Un usuario borrado no puede seguir
+ *     pagando por una cuenta que ya no existe.
+ *   - Suscripcion de App Store / Google Play: NO se puede cancelar desde el
+ *     servidor; solo el usuario en los ajustes de la tienda. La app se lo
+ *     advierte antes de confirmar. Aqui se borra su ficha en RevenueCat.
  *
  * Acepta la sesion por cookie (web) o por Authorization: Bearer (app).
  */
-async function clientePara(request: NextRequest) {
-  const auth = request.headers.get('authorization');
-  if (auth !== null && auth.startsWith('Bearer ')) {
-    return createSupabaseClient<Database, EsquemaSupabase>(
-      publicEnv.supabaseUrl,
-      publicEnv.supabaseAnonKey,
-      {
-        db: { schema: publicEnv.supabaseSchema },
-        auth: { persistSession: false, autoRefreshToken: false },
-        global: { headers: { Authorization: auth } },
-      },
-    );
-  }
-  return createClient();
-}
-
 export async function POST(request: NextRequest) {
-  const supabase = await clientePara(request);
+  const supabase = await clienteDePeticion(request);
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -57,8 +39,36 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'sesion_requerida' }, { status: 401 });
   }
 
+  const esquemaAislado = publicEnv.supabaseSchema === 'reset_alfa';
+
+  // 0. Suscripciones. Se lee con el cliente administrativo porque despues del
+  //    borrado la fila ya no existe. Ningun fallo aqui bloquea el borrado: el
+  //    derecho de supresion no depende de que Stripe responda.
+  if (esquemaAislado) {
+    try {
+      const admin = createAdminClient();
+      const { data: fila } = await admin
+        .from('entitlements')
+        .select('origen, activo, stripe_subscription_id')
+        .eq('user_id', user.id)
+        .eq('product_id', PRODUCTO_PREMIUM_ID)
+        .maybeSingle();
+
+      if (fila?.stripe_subscription_id && fila.activo && fila.origen === 'stripe') {
+        try {
+          await obtenerStripe().subscriptions.cancel(fila.stripe_subscription_id);
+        } catch (e) {
+          console.error('[cuenta] no se pudo cancelar la suscripcion de Stripe', e instanceof Error ? e.message : e);
+        }
+      }
+      await borrarSuscriptorRevenueCat(user.id);
+    } catch (e) {
+      console.error('[cuenta] no se pudieron revisar las suscripciones', e instanceof Error ? e.message : e);
+    }
+  }
+
   // 1. Datos de Reset Alfa, como el propio usuario (RLS + security definer).
-  const rpc = publicEnv.supabaseSchema === 'reset_alfa' ? 'borrar_mis_datos' : 'delete_my_account';
+  const rpc = esquemaAislado ? 'borrar_mis_datos' : 'delete_my_account';
   const { error } = await supabase.rpc(rpc);
   if (error) {
     console.error('[cuenta] fallo al borrar datos', error.message);
@@ -70,11 +80,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ eliminado: true, identidad: true });
   }
 
-  // 2. Identidad, solo si el propietario lo ha decidido.
-  const borrarIdentidad =
-    process.env['BORRAR_IDENTIDAD_AL_ELIMINAR']?.trim().toLowerCase() === 'true';
+  // 2. Identidad. Se borra salvo que el propietario lo haya desactivado.
+  const conservarIdentidad =
+    process.env['BORRAR_IDENTIDAD_AL_ELIMINAR']?.trim().toLowerCase() === 'false';
 
-  if (!borrarIdentidad) {
+  if (conservarIdentidad) {
     return NextResponse.json({ eliminado: true, identidad: false });
   }
 

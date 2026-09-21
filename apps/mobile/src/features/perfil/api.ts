@@ -1,4 +1,4 @@
-import type { Json, RespuestasCarta, RespuestasPlan } from '@reset-alfa/shared';
+import type { EntitlementOrigen, Json, RespuestasCarta, RespuestasPlan } from '@reset-alfa/shared';
 import { leerCarta, PRODUCTO_PREMIUM_ID } from '@reset-alfa/shared';
 import { supabase } from '../../lib/supabase';
 
@@ -74,6 +74,8 @@ export interface Acceso {
   esPremium: boolean;
   expiraEn: string | null;
   cancelaAlFinal: boolean;
+  /** De donde viene: 'stripe' (web), 'apple' o 'google' (compra en la app). */
+  origen: EntitlementOrigen | null;
 }
 
 /**
@@ -83,18 +85,23 @@ export interface Acceso {
 export async function obtenerAcceso(): Promise<Acceso> {
   const { data } = await supabase
     .from('entitlements')
-    .select('activo, expires_at, cancel_at_period_end')
+    .select('activo, expires_at, cancel_at_period_end, origen')
     .eq('product_id', PRODUCTO_PREMIUM_ID)
     .maybeSingle();
 
   if (data === null || data === undefined) {
-    return { esPremium: false, expiraEn: null, cancelaAlFinal: false };
+    return { esPremium: false, expiraEn: null, cancelaAlFinal: false, origen: null };
   }
 
   const vigente =
     data.activo && (data.expires_at === null || new Date(data.expires_at).getTime() > Date.now());
 
-  return { esPremium: vigente, expiraEn: data.expires_at, cancelaAlFinal: data.cancel_at_period_end };
+  return {
+    esPremium: vigente,
+    expiraEn: data.expires_at,
+    cancelaAlFinal: data.cancel_at_period_end,
+    origen: data.origen,
+  };
 }
 
 /* -------------------------------------------------------------------------- */

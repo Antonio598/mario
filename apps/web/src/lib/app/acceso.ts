@@ -1,5 +1,6 @@
 import { cache } from 'react';
 import { createClient } from '@/lib/supabase/server';
+import type { EntitlementOrigen } from '@reset-alfa/shared';
 import { PRODUCTO_PREMIUM_ID } from './enlaces';
 
 export interface Acceso {
@@ -10,6 +11,8 @@ export interface Acceso {
   cancelaAlFinal: boolean;
   /** Hay cliente en Stripe: se puede abrir el portal de facturacion. */
   tieneCliente: boolean;
+  /** De donde viene la suscripcion: web (stripe) o app (apple, google). */
+  origen: EntitlementOrigen | null;
 }
 
 const SIN_ACCESO: Acceso = {
@@ -17,6 +20,7 @@ const SIN_ACCESO: Acceso = {
   expiraEn: null,
   cancelaAlFinal: false,
   tieneCliente: false,
+  origen: null,
 };
 
 /**
@@ -38,7 +42,7 @@ export const obtenerAcceso = cache(async (): Promise<Acceso> => {
 
   const { data } = await supabase
     .from('entitlements')
-    .select('activo, expires_at, cancel_at_period_end, stripe_customer_id')
+    .select('activo, expires_at, cancel_at_period_end, stripe_customer_id, origen')
     .eq('product_id', PRODUCTO_PREMIUM_ID)
     .maybeSingle();
 
@@ -52,5 +56,6 @@ export const obtenerAcceso = cache(async (): Promise<Acceso> => {
     expiraEn: data.expires_at,
     cancelaAlFinal: data.cancel_at_period_end,
     tieneCliente: data.stripe_customer_id !== null,
+    origen: data.origen,
   };
 });

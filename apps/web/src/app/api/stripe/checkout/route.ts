@@ -10,10 +10,10 @@ export const runtime = 'nodejs';
 /**
  * Crea una sesión de pago de Stripe.
  *
- * TODA LA VENTA OCURRE AQUÍ, EN LA WEB. La app móvil nunca abre un checkout:
- * eso obligaría a usar el sistema de compra de Apple y Google, con su comisión
- * del 15-30 %. La app se limita a abrir la ficha del producto en el navegador
- * externo, y ese enlace acaba en este endpoint.
+ * ES LA VENTA DE LA WEB. La app móvil nunca abre este checkout: Apple y
+ * Google exigen su propio sistema de compra para el contenido digital, así
+ * que la app vende Premium con compras integradas (ver lib/tiendas). Los dos
+ * caminos escriben en la misma fila de `entitlements`.
  */
 export async function POST(request: NextRequest) {
   const claveStripe = process.env['STRIPE_SECRET_KEY'];

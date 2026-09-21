@@ -111,34 +111,32 @@ Descríbela como **app de seguimiento de hábitos y disciplina**.
 
 ## 4. Los tres puntos que pueden hacer que te rechacen
 
-### 4.1 Compras fuera de la app (Apple 3.1.1)
+### 4.1 Compras (Apple 3.1.1)
 
-La app enlaza a Stripe para comprar Reset Alfa. Apple ha rechazado
-históricamente los enlaces a pago externo para contenido digital.
+Apple exige su sistema de compra para el contenido digital vendido en la app,
+y rechaza los enlaces a pago externo. Por eso **Premium se vende en la app con
+compras integradas** (RevenueCat sobre StoreKit y Google Play Billing), y el
+libro y la sesión diagnóstica —bien físico y servicio presencial, permitidos
+por 3.1.3(e)— siguen abriendo el navegador. Guía completa:
+[`compras-en-la-app.md`](compras-en-la-app.md).
 
-Desde la DMA europea y los cambios en EE. UU. está permitido, pero **requiere
-solicitar la autorización correspondiente** en App Store Connect y no es
-automático.
-
-**La vía segura:** en la app nativa, no mostrar precio ni botón de compra. Solo
-"este contenido requiere acceso" y abrir el navegador. Es como está construido
-ahora — asegúrate de que sigue así antes de enviar.
+Sin las claves de RevenueCat en el build no hay botón de compra: la app dice
+«Incluido en Reset Alfa Premium. El acceso se gestiona desde tu cuenta en la
+web», sin precio ni enlace. Esa es la vía segura si se envía un build antes de
+tener los productos aprobados.
 
 ### 4.2 Borrado de cuenta (Apple 5.1.1(v) y Play)
 
 Ambas exigen que el usuario pueda **borrar su cuenta desde dentro de la app**,
 no solo sus datos.
 
-**Aquí tienes un problema real.** Con la instalación de esquema compartido,
-`borrar_mis_datos()` NO elimina `auth.users`: borrarlo expulsaría al usuario
-también de tu CRM. Eso puede considerarse incumplimiento.
-
-Opciones:
-1. Proyecto Supabase separado para Reset Alfa. Resuelve esto y el punto RGPD.
-2. Borrado real de `auth.users` desde un endpoint con la service_role, asumiendo
-   que el usuario también desaparece del CRM.
-
-Hay que resolverlo **antes** de enviar.
+**Resuelto.** Perfil → «Eliminar mi cuenta» llama a `/api/cuenta/eliminar`,
+que borra los datos de Reset Alfa **y** la identidad en `auth.users` (con la
+service_role), cancela la suscripción de Stripe si la hay y borra la ficha en
+RevenueCat. Como la base está compartida con el CRM, el usuario desaparece
+también de allí: es la consecuencia aceptada. Una suscripción comprada en la
+tienda no se puede cancelar desde el servidor; la app lo advierte antes de
+confirmar.
 
 ### 4.3 Declaración de privacidad
 

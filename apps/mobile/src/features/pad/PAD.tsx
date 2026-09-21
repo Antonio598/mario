@@ -4,7 +4,7 @@ import * as WebBrowser from 'expo-web-browser';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { CARACTERISTICAS_PAD, MAX_PAD, OPCIONES_PAD, VIDEO_PAD } from '@reset-alfa/shared';
 import { guardarPad } from '../perfil/api';
-import { Boton, MensajeError, Kicker, Opcion, Tarjeta, TEXTO_ACCESO_NATIVO } from '../../components/ui';
+import { Boton, EnlacePremium, MensajeError, Kicker, Opcion, Tarjeta, textoAcceso } from '../../components/ui';
 import { colors, fontSize, spacing, theme } from '../../theme';
 
 /**
@@ -256,9 +256,12 @@ export function AccionesPAD({
         )}
       </View>
       {bloqueado && (
-        <Text style={[theme.textoTenue, { fontSize: fontSize.xs, marginTop: spacing.sm }]}>
-          Modificarlo es Premium. {TEXTO_ACCESO_NATIVO}
-        </Text>
+        <>
+          <Text style={[theme.textoTenue, { fontSize: fontSize.xs, marginTop: spacing.sm }]}>
+            Modificarlo es Premium. {textoAcceso()}
+          </Text>
+          <EnlacePremium />
+        </>
       )}
     </Tarjeta>
   );

@@ -4,6 +4,7 @@ import { Slot, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { SessionProvider, useSession } from '../src/features/auth/SessionProvider';
+import { sincronizarIdentidadCompras } from '../src/features/premium/compras';
 import { colors } from '../src/theme';
 
 /**
@@ -17,6 +18,13 @@ function Guardia() {
   const { session, cargando } = useSession();
   const segments = useSegments();
   const router = useRouter();
+
+  // RevenueCat sigue a la sesion: el mismo id de usuario en las dos casas,
+  // que es lo que permite al webhook conceder el acceso a quien compra.
+  useEffect(() => {
+    if (cargando) return;
+    void sincronizarIdentidadCompras(session?.user.id ?? null);
+  }, [session, cargando]);
 
   useEffect(() => {
     if (cargando) return;

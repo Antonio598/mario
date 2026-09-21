@@ -17,7 +17,7 @@ import {
 import { AccionesPAD, TareaPAD } from '../../src/features/pad/PAD';
 import { AccionesCarta, TareaCarta } from '../../src/features/carta/Carta';
 import { Logros } from '../../src/features/logros/Logros';
-import { AvisoAcceso, Bloqueado, Cabecera, Tarjeta, TEXTO_ACCESO_NATIVO } from '../../src/components/ui';
+import { AvisoAcceso, Bloqueado, Cabecera, Tarjeta, textoAcceso } from '../../src/components/ui';
 import { colors, fontSize, spacing, theme } from '../../src/theme';
 
 export default function CalendarioScreen() {
@@ -137,7 +137,7 @@ export default function CalendarioScreen() {
               onMes={cambiarMes}
               onDia={(d) => {
                 if (esPremium) router.push({ pathname: '/recaida/[id]', params: { id: d.fecha } });
-                else Alert.alert('Bitácora de NOFAP', `Las respuestas de ese día son Premium. ${TEXTO_ACCESO_NATIVO}`);
+                else Alert.alert('Bitácora de NOFAP', `Las respuestas de ese día son Premium. ${textoAcceso()}`);
               }}
             />
           </Tarjeta>

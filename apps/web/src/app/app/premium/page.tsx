@@ -101,10 +101,17 @@ export default async function PremiumPage({
                 ? `Cancelado. Conservas el acceso hasta el ${fechaLarga(acceso.expiraEn)}.`
                 : `Se renueva el ${fechaLarga(acceso.expiraEn)}.`}
           </p>
-          {acceso.tieneCliente && (
-            <div className="mt-4">
-              <BotonPortal />
-            </div>
+          {acceso.origen === 'apple' || acceso.origen === 'google' ? (
+            <p className="mt-3 text-xs text-ra-texto-tenue">
+              Suscripción comprada en la app. Se gestiona y se cancela desde los ajustes de
+              suscripciones de {acceso.origen === 'apple' ? 'tu Apple ID' : 'Google Play'}.
+            </p>
+          ) : (
+            acceso.tieneCliente && (
+              <div className="mt-4">
+                <BotonPortal />
+              </div>
+            )
           )}
         </section>
 

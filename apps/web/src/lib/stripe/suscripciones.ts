@@ -131,6 +131,23 @@ export async function sincronizarSuscripcion(
 
   const activo = ESTADOS_ACTIVOS.has(sub.status);
 
+  // Una suscripcion de Stripe caducada no pisa una fila viva de la App Store o
+  // de Google Play: el usuario paga por la app y su acceso lo manda la tienda.
+  if (!activo) {
+    const { data: fila } = await admin
+      .from('entitlements')
+      .select('origen, activo, expires_at')
+      .eq('user_id', userId)
+      .eq('product_id', PRODUCTO_PREMIUM_ID)
+      .maybeSingle();
+    const vivaEnTienda =
+      fila !== null &&
+      (fila.origen === 'apple' || fila.origen === 'google') &&
+      fila.activo &&
+      (fila.expires_at === null || new Date(fila.expires_at).getTime() > Date.now());
+    if (vivaEnTienda) return { ok: true, activo: true, userId };
+  }
+
   // Con acceso: fin del periodo + gracia. Sin acceso: cuando terminó, o ahora.
   const expiresAt = activo
     ? isoDesdeSegundos(item.current_period_end, GRACIA_HORAS)

@@ -8,7 +8,7 @@ import {
   type RespuestasCarta,
 } from '@reset-alfa/shared';
 import { guardarCarta } from '../perfil/api';
-import { Boton, MensajeError, Kicker, Tarjeta, TEXTO_ACCESO_NATIVO } from '../../components/ui';
+import { Boton, EnlacePremium, MensajeError, Kicker, Tarjeta, textoAcceso } from '../../components/ui';
 import { colors, fontSize, spacing, theme } from '../../theme';
 
 /* -------------------------------------------------------------------------- */
@@ -262,9 +262,12 @@ export function AccionesCarta({
           )}
         </View>
         {bloqueado && (
-          <Text style={[theme.textoTenue, { fontSize: fontSize.xs, marginTop: spacing.sm }]}>
-            Modificarla es Premium. {TEXTO_ACCESO_NATIVO}
-          </Text>
+          <>
+            <Text style={[theme.textoTenue, { fontSize: fontSize.xs, marginTop: spacing.sm }]}>
+              Modificarla es Premium. {textoAcceso()}
+            </Text>
+            <EnlacePremium />
+          </>
         )}
       </Tarjeta>
       <LeerCarta carta={carta} visible={leyendo} onCerrar={() => setLeyendo(false)} />
