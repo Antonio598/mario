@@ -64,37 +64,23 @@ siempre y es el que recibirá los correos de revisión.
 3. Paga los 99 USD. Es anual: si no se renueva, la app desaparece de la tienda.
 4. Espera el correo de bienvenida. Hasta que llegue no puedes hacer nada más.
 
-### 1.3 Cuenta en Expo (gratis)
+### 1.3 Cuenta en Expo (gratis) — HECHO
 
 La app se compila en la nube de Expo (EAS Build) porque compilar para iPhone
-exige un Mac, y tú trabajas en Windows. Yo también.
+exige un Mac, y tu trabajas en Windows. Yo tambien.
 
-1. Crea una cuenta en <https://expo.dev/signup>. ✅ Hecha: **AntonioMaya**, ya
-   fijada en `apps/mobile/app.config.ts` (`owner`). El proyecto queda a tu
-   nombre y las credenciales de firma viven en tu cuenta.
-2. Enlaza el proyecto. Esto **no puedo hacerlo yo**: pide iniciar sesion y la
-   contraseña se teclea en la terminal, en el momento en que la pregunta.
+Ya esta todo: cuenta `antoniomaya`, sesion iniciada en tu equipo (el CLI la
+aprueba desde el navegador, sin contrasena) y proyecto creado con `eas init`:
 
-   En VS Code: menu **Terminal -> Nueva terminal**, y ahi:
+| Dato | Valor |
+|---|---|
+| Cuenta | `antoniomaya` (en minusculas; es el `owner` de `app.config.ts`) |
+| Proyecto | `@antoniomaya/reset-alfa` |
+| Project ID | `9e4f12ca-5d39-40be-a713-847ae3eb86da`, ya fijado en `app.config.ts` |
 
-   ```
-   cd apps/mobile
-   npx eas-cli@latest login
-   npx eas-cli@latest init
-   ```
-
-   - La primera vez npm pregunta si descarga `eas-cli`: responde `y`.
-   - `login` pregunta **Email or username** (pon `AntonioMaya`) y luego
-     **Password**. Al teclear la contraseña **no se ve nada**, ni puntos ni
-     asteriscos: es normal, escribela y pulsa Enter.
-   - La contraseña no se guarda en el proyecto: queda una sesion en tu equipo,
-     en `~/.expo`. No va en ningun fichero del repositorio y no hace falta que
-     me la pases nunca.
-   - `init` dira «Created project @AntonioMaya/reset-alfa» y un **Project ID**
-     (un UUID tipo `a1b2c3d4-...`). Eso si pasamelo: va en la variable
-     `EAS_PROJECT_ID` al compilar. No es secreto.
-
-El plan gratuito da ~30 builds al mes, de sobra.
+El plan gratuito da ~30 builds al mes, de sobra. Si algun dia pierdes la
+sesion, se recupera con `npx eas-cli@latest login` en `apps/mobile`: abre el
+navegador para aprobarla y no pide contrasena en la terminal.
 
 ### 1.4 Cuenta de prueba para el revisor
 
@@ -137,9 +123,8 @@ Hecho: paridad de funciones, assets, `app.config.ts`, `eas.json`, compra de
 Premium en la app (RevenueCat), eliminación de cuenta. Quedan tres cosas que
 dependen de ti:
 
-1. **El Project ID de EAS** (paso 1.3). La cuenta `AntonioMaya` ya está
-   fijada; falta que corras `npx eas init` y me pases el UUID, que va en
-   `EAS_PROJECT_ID` al compilar.
+1. ~~**El Project ID de EAS**~~ ✅ Hecho (paso 1.3): cuenta `antoniomaya`,
+   proyecto `@antoniomaya/reset-alfa`, ID ya en `app.config.ts`.
 2. **RevenueCat + producto de suscripción en App Store Connect**: guía
    [`compras-en-la-app.md`](compras-en-la-app.md), partes 1 y 2. Necesita el
    acuerdo de apps de pago firmado (datos bancarios y fiscales), que tarda
@@ -284,7 +269,8 @@ en aparecer en todas las tiendas del mundo.
 | Cuenta Expo + usuario de prueba | Tú | 15 minutos |
 | App nativa al día + assets | Yo | **Hecho** |
 | RevenueCat + suscripción en App Store Connect | Tú (con la guía) | 1 h, más 1-2 días del acuerdo de pago |
-| `eas init` + primer build | Juntos | 1-2 días |
+| `eas init` | Hecho | ✅ |
+| Primer build + TestFlight | Juntos | 1-2 días |
 | TestFlight, capturas, ficha | Juntos | 2-3 días |
 | Revisión de Apple | Apple | 1-2 días (más si rechazan) |
 

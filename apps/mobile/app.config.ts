@@ -26,7 +26,9 @@ const config: ExpoConfig = {
    * bajo la cuenta del propietario y las credenciales de firma de Apple y de
    * Google viven en su cuenta, no en la de quien lanza el build.
    */
-  owner: 'AntonioMaya',
+  // En minusculas: es el slug de la cuenta en Expo, y `eas build` exige que
+  // coincida exactamente.
+  owner: 'antoniomaya',
   version: '1.0.0',
   icon: './assets/icon.png',
   orientation: 'portrait',
@@ -70,10 +72,11 @@ const config: ExpoConfig = {
 
   extra: {
     /**
-     * Proyecto EAS. Lo rellena `eas init` con la cuenta de Expo del
-     * propietario; hasta entonces queda vacio y `eas build` lo pide.
+     * Proyecto EAS, creado con `eas init` en la cuenta antoniomaya. Literal y
+     * no una variable de entorno a proposito: identifica al proyecto, no es un
+     * secreto, y un valor ausente en el entorno haria fallar el build.
      */
-    eas: { projectId: process.env['EAS_PROJECT_ID'] ?? '' },
+    eas: { projectId: '9e4f12ca-5d39-40be-a713-847ae3eb86da' },
     supabaseUrl: process.env['EXPO_PUBLIC_SUPABASE_URL'],
     supabaseAnonKey: process.env['EXPO_PUBLIC_SUPABASE_ANON_KEY'],
     // 'public' o 'reset_alfa'. Ver supabase/instalacion-esquema-aislado.sql
