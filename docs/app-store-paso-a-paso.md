@@ -72,16 +72,27 @@ exige un Mac, y tú trabajas en Windows. Yo también.
 1. Crea una cuenta en <https://expo.dev/signup>. ✅ Hecha: **AntonioMaya**, ya
    fijada en `apps/mobile/app.config.ts` (`owner`). El proyecto queda a tu
    nombre y las credenciales de firma viven en tu cuenta.
-2. Enlaza el proyecto, en la carpeta `apps/mobile` y con tu contraseña (esto no
-   puedo hacerlo yo, pide iniciar sesión):
+2. Enlaza el proyecto. Esto **no puedo hacerlo yo**: pide iniciar sesion y la
+   contraseña se teclea en la terminal, en el momento en que la pregunta.
+
+   En VS Code: menu **Terminal -> Nueva terminal**, y ahi:
 
    ```
-   npx eas login
-   npx eas init
+   cd apps/mobile
+   npx eas-cli@latest login
+   npx eas-cli@latest init
    ```
 
-   Te dirá «Created project @AntonioMaya/reset-alfa» y un **Project ID**
-   (un UUID). Pásamelo: va en la variable `EAS_PROJECT_ID` al compilar.
+   - La primera vez npm pregunta si descarga `eas-cli`: responde `y`.
+   - `login` pregunta **Email or username** (pon `AntonioMaya`) y luego
+     **Password**. Al teclear la contraseña **no se ve nada**, ni puntos ni
+     asteriscos: es normal, escribela y pulsa Enter.
+   - La contraseña no se guarda en el proyecto: queda una sesion en tu equipo,
+     en `~/.expo`. No va en ningun fichero del repositorio y no hace falta que
+     me la pases nunca.
+   - `init` dira «Created project @AntonioMaya/reset-alfa» y un **Project ID**
+     (un UUID tipo `a1b2c3d4-...`). Eso si pasamelo: va en la variable
+     `EAS_PROJECT_ID` al compilar. No es secreto.
 
 El plan gratuito da ~30 builds al mes, de sobra.
 
