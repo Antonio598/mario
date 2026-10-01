@@ -5,7 +5,7 @@ Reset Alfa Premium (10 USD/mes) se vende en dos sitios con la misma cuenta:
 | Dónde | Cómo cobra | Comisión | Quién avisa al servidor |
 |---|---|---|---|
 | Web (`app.modoguerrero.es`) | Stripe | ~3 % | Webhook de Stripe → `/api/stripe/webhook` |
-| App iPhone / Android | **Apple / Google**, a través de RevenueCat | **15 % el primer año**, 30 % después de 1 M USD/año | Webhook de RevenueCat → `/api/tiendas/webhook` |
+| App iPhone / Android | **Apple / Google**, a través de RevenueCat | **15 %** con el Small Business Program (ver 2.0); **30 %** sin inscribirse | Webhook de RevenueCat → `/api/tiendas/webhook` |
 
 Los dos escriben en la misma tabla `entitlements`. Quien compra en la app lo
 ve desbloqueado en la web al instante, y al revés. Cada usuario tiene **una**
@@ -14,7 +14,10 @@ suscripción: el paywall no deja comprar en la app si ya es Premium.
 **Por qué no Stripe en la app:** Apple (norma 3.1.1) rechaza cualquier app que
 venda contenido digital sin su sistema de compra, incluido enlazar a una web
 para pagar. Google igual. RevenueCat es la capa que habla con las dos tiendas,
-valida los recibos y nos avisa; es gratis hasta 2 500 USD/mes de ingresos.
+valida los recibos y nos avisa. Su plan gratuito cubre hasta unos **2 500 USD/mes de
+ingresos rastreados** -a 10 USD, unos 250 suscriptores activos-; por encima cobra
+en torno al **1 %**. Confirma la cifra en <https://www.revenuecat.com/pricing>: la
+cambian de vez en cuando.
 
 **Lo que sí sigue abriéndose en el navegador:** el libro (bien físico) y la
 sesión diagnóstica (servicio presencial). Apple lo permite (3.1.3(e)).
@@ -88,6 +91,24 @@ ejecución** (fichero 11 de `supabase/LEEME.md`). Añade los orígenes `apple` y
 
 Necesitas la cuenta de desarrollador de Apple y la app creada en App Store
 Connect (guía `app-store-paso-a-paso.md`, pasos 1.2 y 3.2).
+
+### 2.0 Inscríbete en el Small Business Program (divide la comisión por dos)
+
+**Esto es dinero, no burocracia.** La comisión normal de Apple es del **30 %**. Con el
+*App Store Small Business Program* baja al **15 %** para quien ingresa menos de 1 M
+USD/año, que es tu caso. **No es automático: hay que solicitarlo**, y se renueva cada
+año.
+
+A 10 USD por suscriptor, la diferencia es 1,50 USD frente a 3 USD por cada uno y cada
+mes. Con 100 suscriptores son 150 USD/mes de diferencia.
+
+App Store Connect → **Negocio** (*Business*) → **App Store Small Business Program** →
+solicitar. Requiere el acuerdo de apps de pago ya firmado (2.1). Suele aprobarse en
+días y aplica desde el mes siguiente.
+
+Aparte de eso, en suscripciones Apple baja sola al 15 % a partir del segundo año de un
+mismo suscriptor, aunque no estuvieras en el programa. En Google Play las
+suscripciones son del 15 % desde el primer día, sin trámite.
 
 ### 2.1 Acuerdo de pago
 
