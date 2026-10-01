@@ -16,3 +16,4 @@ export * from './hitos';
 export * from './plan-preguntas';
 export * from './plan-calculos';
 export * from './logros';
+export * from './acceso-social';

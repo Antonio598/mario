@@ -1,7 +1,7 @@
 import { createClient, type SupportedStorage } from '@supabase/supabase-js';
 import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
-import { Platform } from 'react-native';
+import { proveedoresSociales } from '@reset-alfa/shared';
 import type { Database, EsquemaSupabase } from '@reset-alfa/shared';
 
 /**
@@ -103,5 +103,13 @@ export const supabase = createClient<Database, EsquemaSupabase>(
   },
 );
 
-/** Solo iOS ofrece Sign in with Apple; en Android el boton no debe aparecer. */
-export const soportaAppleSignIn = Platform.OS === 'ios';
+/**
+ * Proveedores de acceso social configurados en GoTrue. Vacio por defecto: ver
+ * packages/shared/src/dominio/acceso-social.ts. Que un proveedor este aqui no
+ * lo configura; solo declara que YA lo esta.
+ */
+export const proveedoresLoginSocial = proveedoresSociales(
+  typeof Constants.expoConfig?.extra?.['loginSocial'] === 'string'
+    ? (Constants.expoConfig.extra['loginSocial'] as string)
+    : '',
+);

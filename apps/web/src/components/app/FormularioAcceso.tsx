@@ -5,11 +5,17 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { registrarConsentimiento } from '@/lib/app/consentimiento';
 import { publicEnv } from '@/lib/env';
+import type { ProveedorSocial } from '@reset-alfa/shared';
 
 type Modo = 'entrar' | 'registro';
 
 /**
- * Acceso por correo y por Google.
+ * Acceso por correo y, si estan configurados, por Google o Apple.
+ *
+ * Los botones sociales solo aparecen si el proveedor esta en
+ * NEXT_PUBLIC_LOGIN_SOCIAL. Vacio por defecto: un boton que falla porque el
+ * proveedor no esta configurado en GoTrue pierde el registro, porque el
+ * usuario no suele reintentar por correo.
  *
  * En el registro se recoge el consentimiento del art. 9 RGPD por separado y
  * DESMARCADO. Una casilla premarcada no es consentimiento válido (art. 4.11 y
@@ -97,10 +103,12 @@ export function FormularioAcceso({
     router.refresh();
   }
 
-  async function entrarConGoogle() {
+  const sociales = publicEnv.loginSocial;
+
+  async function entrarCon(provider: ProveedorSocial) {
     const supabase = createClient();
     await supabase.auth.signInWithOAuth({
-      provider: 'google',
+      provider,
       options: { redirectTo: `${publicEnv.siteUrl}/auth/callback?next=${destino}` },
     });
   }
@@ -169,17 +177,27 @@ export function FormularioAcceso({
         </button>
       </form>
 
-      <div className="my-6 flex items-center gap-4 text-xs text-mg-gris-apagado">
-        <span className="h-px flex-1 bg-mg-negro-borde" />o<span className="h-px flex-1 bg-mg-negro-borde" />
-      </div>
+      {sociales.length > 0 && (
+        <>
+          <div className="my-6 flex items-center gap-4 text-xs text-mg-gris-apagado">
+            <span className="h-px flex-1 bg-mg-negro-borde" />o
+            <span className="h-px flex-1 bg-mg-negro-borde" />
+          </div>
 
-      <button
-        type="button"
-        onClick={() => void entrarConGoogle()}
-        className="min-h-[52px] w-full rounded-md border border-mg-negro-borde font-titular tracking-wider uppercase transition-colors hover:border-mg-gris-tenue"
-      >
-        Continuar con Google
-      </button>
+          <div className="grid gap-3">
+            {sociales.map((p) => (
+              <button
+                key={p}
+                type="button"
+                onClick={() => void entrarCon(p)}
+                className="min-h-[52px] w-full rounded-md border border-mg-negro-borde font-titular tracking-wider uppercase transition-colors hover:border-mg-gris-tenue"
+              >
+                Continuar con {p === 'google' ? 'Google' : 'Apple'}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
 
       <button
         type="button"

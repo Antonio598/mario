@@ -92,6 +92,12 @@ const config: ExpoConfig = {
     revenueCatIosKey: process.env['EXPO_PUBLIC_REVENUECAT_IOS_KEY'] ?? '',
     revenueCatAndroidKey: process.env['EXPO_PUBLIC_REVENUECAT_ANDROID_KEY'] ?? '',
     revenueCatEntitlement: process.env['EXPO_PUBLIC_REVENUECAT_ENTITLEMENT'] ?? 'premium',
+    /**
+     * Proveedores de acceso social, separados por comas (google,apple). Vacio
+     * por defecto: un boton que falla al pulsarlo es motivo de rechazo. En iOS,
+     * si se pone google hay que poner tambien apple.
+     */
+    loginSocial: process.env['EXPO_PUBLIC_LOGIN_SOCIAL'] ?? '',
   },
 };
 

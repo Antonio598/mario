@@ -1,3 +1,4 @@
+import { proveedoresSociales } from '@reset-alfa/shared';
 import type { EsquemaSupabase } from '@reset-alfa/shared';
 
 /**
@@ -76,4 +77,10 @@ export const publicEnv = {
     '2026-07-30',
   ),
   environment: conRespaldo(process.env.NEXT_PUBLIC_ENVIRONMENT, 'development'),
+  /**
+   * Proveedores de acceso social que se ensenan. Vacio por defecto: un boton
+   * que falla porque el proveedor no esta configurado en GoTrue pierde el
+   * registro. Ver packages/shared/src/dominio/acceso-social.ts
+   */
+  loginSocial: proveedoresSociales(process.env.NEXT_PUBLIC_LOGIN_SOCIAL),
 } as const;
