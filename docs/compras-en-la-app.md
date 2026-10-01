@@ -165,11 +165,35 @@ RevenueCat → **Project settings → Apps → + New → App Store**:
   paga.
 - Guarda. Copia la **Public API key** (`appl_...`) → `EXPO_PUBLIC_REVENUECAT_IOS_KEY`.
 
-**App Store Server Notifications** (para que Apple avise a RevenueCat de
-renovaciones y cancelaciones): App Store Connect → tu app → **Información de
-la app → Notificaciones del servidor de App Store** → URL de producción y de
-sandbox: la que muestra RevenueCat en la ficha de la app (
-`https://api.revenuecat.com/v1/subscribers/apple/...`). Versión 2.
+**App Store Server Notifications.** Es lo que hace que Apple avise de cada
+renovacion y cada cancelacion; sin esto, una suscripcion cancelada seguiria
+dando acceso hasta que alguien abriese la app.
+
+En la ficha de la app en RevenueCat, copia la **Apple Server Notification URL**
+(`https://api.revenuecat.com/v1/incoming-webhooks/apple-server-to-server-notification/...`)
+y pegala en App Store Connect → tu app → **Informacion de la app →
+Notificaciones del servidor de App Store**, en **las dos** casillas, produccion
+y sandbox, con **version 2**. Sin la de sandbox, las compras de prueba no se
+reflejan y pareceria que nada funciona.
+
+Marca tambien **Track new purchases from server-to-server notifications**: cubre
+el caso de una compra que la tienda confirma pero el movil no llega a reportar.
+
+**El campo _Apple Server Notification Forwarding URL_ se deja VACIO.** Es para
+reenviar a tu servidor las notificaciones crudas de Apple, y nuestro
+`/api/tiendas/webhook` no las entiende: espera el formato de RevenueCat y una
+cabecera Authorization, asi que las rechazaria todas con un 401. Nosotros nos
+enteramos por el webhook de RevenueCat (1.4), que ya trae el estado resuelto.
+
+**Lo que no hace falta tocar** en esa pantalla: *StoreKit Subscription Offer key*
+(solo para ofertas promocionales), *StoreKit testing framework*, *Apple
+Retention Messaging* y *Refund request handling*.
+
+**App Store Connect API key** (opcional, recomendada): permite a RevenueCat
+importar el producto y seguir los cambios de precio en vez de teclearlos.
+Es una clave DISTINTA de la de compras integradas y se descarga como
+`AuthKey_XXXXXXXXXX.p8`: App Store Connect → Usuarios y acceso → Integraciones
+→ **App Store Connect API** → **+**, con rol **App Manager**.
 
 ### 2.5 Producto en RevenueCat
 
