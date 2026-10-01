@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { publicEnv } from '@/lib/env';
+import { titular, titularCompleto } from '@/lib/legal';
 
 export const metadata: Metadata = {
   title: 'Politica de privacidad',
@@ -18,6 +19,8 @@ export const metadata: Metadata = {
  * NEXT_PUBLIC_PRIVACY_POLICY_VERSION, que es lo que se guarda en cada fila de
  * `consents`. Asi se puede demostrar que texto acepto exactamente cada usuario.
  */
+export const dynamic = 'force-dynamic';
+
 export default function PrivacidadPage() {
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
@@ -29,10 +32,20 @@ export default function PrivacidadPage() {
       <div className="mt-8 space-y-8 text-mg-gris-texto">
         <section>
           <h2 className="text-xl text-mg-blanco">Responsable</h2>
-          <p className="mt-2">
-            {/* PENDIENTE: identidad, NIF, domicilio y correo del responsable. */}
-            Pendiente de completar por el titular del proyecto.
-          </p>
+          {titularCompleto ? (
+            <div className="mt-2 space-y-1">
+              <p>{titular.nombre}</p>
+              <p>{titular.domicilio}</p>
+              {titular.identificacion !== null && <p>RFC: {titular.identificacion}</p>}
+              <p>
+                <a href={`mailto:${titular.correo}`} className="text-mg-rojo hover:underline">
+                  {titular.correo}
+                </a>
+              </p>
+            </div>
+          ) : (
+            <p className="mt-2">Pendiente de completar por el titular del proyecto.</p>
+          )}
         </section>
 
         <section>

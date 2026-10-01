@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { titular, titularCompleto } from '@/lib/legal';
 
 export const metadata: Metadata = {
   title: 'Contacto',
@@ -9,9 +10,11 @@ export const metadata: Metadata = {
  * Pagina obligatoria para AdSense y, en Espana, tambien para la LSSI-CE, que
  * exige datos identificativos accesibles del prestador del servicio.
  *
- * PENDIENTE: el cliente debe aportar razon social o nombre completo, NIF y
- * domicilio antes de publicar. Sin ellos la pagina no cumple.
+ * Los datos del titular llegan del entorno (ver lib/legal.ts), no del codigo:
+ * son publicos en la pagina, pero no deben quedar en un repositorio publico.
  */
+
+export const dynamic = 'force-dynamic';
 export default function ContactoPage() {
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
@@ -24,18 +27,22 @@ export default function ContactoPage() {
         </p>
 
         <p>
-          {/* PENDIENTE: sustituir por la direccion real. */}
-          <a href="mailto:hola@modoguerrero.es" className="text-mg-rojo hover:underline">
-            hola@modoguerrero.es
+          <a href={`mailto:${titular.correo}`} className="text-mg-rojo hover:underline">
+            {titular.correo}
           </a>
         </p>
 
         <div className="border-t border-mg-negro-borde pt-5 text-sm text-mg-gris-tenue">
           <p className="font-semibold text-mg-gris-texto">Datos identificativos</p>
-          <p className="mt-2">
-            {/* PENDIENTE: obligatorio por LSSI-CE art. 10. */}
-            Titular, NIF y domicilio pendientes de completar.
-          </p>
+          {titularCompleto ? (
+            <div className="mt-2 space-y-1">
+              <p>{titular.nombre}</p>
+              <p>{titular.domicilio}</p>
+              {titular.identificacion !== null && <p>RFC: {titular.identificacion}</p>}
+            </div>
+          ) : (
+            <p className="mt-2">Titular y domicilio pendientes de completar.</p>
+          )}
         </div>
       </div>
     </main>
