@@ -16,14 +16,16 @@
       "distribution": "internal",
       "android": { "buildType": "apk" },
       "env": {
-        "EXPO_PUBLIC_SITE_URL": "https://app.modoguerrero.es"
+        "EXPO_PUBLIC_SITE_URL": "https://app.modoguerrero.es",
+        "EXPO_PUBLIC_REVENUECAT_IOS_KEY": "appl_jgIgnhOFRvPNDdwrbZHhScGaknA"
       }
     },
 
     "production": {
       "autoIncrement": true,
       "env": {
-        "EXPO_PUBLIC_SITE_URL": "https://app.modoguerrero.es"
+        "EXPO_PUBLIC_SITE_URL": "https://app.modoguerrero.es",
+        "EXPO_PUBLIC_REVENUECAT_IOS_KEY": "appl_jgIgnhOFRvPNDdwrbZHhScGaknA"
       }
     }
   },

@@ -354,6 +354,6 @@ POST /api/tiendas/sincronizar ────────────────�
 | EasyPanel → Environment | `REVENUECAT_SECRET_KEY` | `sk_...` (1.3) |
 | EasyPanel → Environment | `REVENUECAT_WEBHOOK_SECRET` | la cadena de 1.4 |
 | EasyPanel → Environment | `REVENUECAT_ENTITLEMENT_ID` | `premium` (opcional) |
-| `eas.json` → env | `EXPO_PUBLIC_REVENUECAT_IOS_KEY` | `appl_...` (2.4) |
+| `eas.json` → env | `EXPO_PUBLIC_REVENUECAT_IOS_KEY` | ✅ ya puesta (`appl_jgIgn...`) en `preview` y `production` |
 | `eas.json` → env | `EXPO_PUBLIC_REVENUECAT_ANDROID_KEY` | `goog_...` (3.3) |
 | `eas.json` → env | `EXPO_PUBLIC_REVENUECAT_ENTITLEMENT` | `premium` (opcional) |
