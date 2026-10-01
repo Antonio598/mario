@@ -152,6 +152,17 @@ RevenueCat → **Project settings → Apps → + New → App Store**:
 - **App-Specific Shared Secret**: App Store Connect → tu app → **Información
   de la app → Secreto compartido específico de la app → Gestionar → Generar**.
   Pégalo aquí.
+
+  RevenueCat lo marca como *Legacy* porque StoreKit 2 usa la clave `.p8` de
+  arriba. **Aun así hay que ponerlo**: la app se compila con Expo 54, cuyo
+  mínimo es iOS 15.1, y en iOS 15 el SDK cae a StoreKit 1, donde este secreto
+  es lo único que valida la compra. Sin él, un usuario con iPhone antiguo paga
+  y no recibe el acceso. Dejará de hacer falta el día que el mínimo suba a
+  iOS 16.
+- **Apple Small Business Program**: deja las fechas vacías hasta que Apple
+  apruebe la solicitud (2.0), y pon entonces la fecha efectiva que te dé. Solo
+  afecta a las gráficas de ingresos netos de RevenueCat, no a lo que Apple
+  paga.
 - Guarda. Copia la **Public API key** (`appl_...`) → `EXPO_PUBLIC_REVENUECAT_IOS_KEY`.
 
 **App Store Server Notifications** (para que Apple avise a RevenueCat de
