@@ -182,6 +182,17 @@ en ese momento**. Lo coordinamos en una llamada de 10 minutos.
 
 ### 3.2 Crear la app en App Store Connect
 
+Datos del proyecto, para no volver a buscarlos:
+
+| Dato | Valor |
+|---|---|
+| Team ID | `JBRSKY3H5L` |
+| Bundle ID / App ID | `es.modoguerrero.resetalfa` (Explicit) |
+| Capacidades del App ID | In-App Purchase, Sign In with Apple (como *primary*), Push Notifications |
+| SKU sugerido | `resetalfa-ios-001` |
+| Suscripcion | `es.modoguerrero.resetalfa.premium.mensual`, 9,99 USD/mes |
+
+
 Tú, en <https://appstoreconnect.apple.com>:
 
 1. **Mis apps → +  → Nueva app**.
@@ -273,6 +284,10 @@ en aparecer en todas las tiendas del mundo.
 
 ## Después de publicar
 
+- **Version 1.1: notificaciones push.** Decidido no meterlas en la 1.0. El plan
+  y las piezas que faltan estan en [`notificaciones.md`](notificaciones.md). La
+  capacidad *Push Notifications* ya esta marcada en el App ID a proposito:
+  activarla despues obligaria a regenerar los perfiles de firma.
 - **Cada actualización** repite 3.3 → 3.5 (solo capturas y novedades) → 3.6.
   Revisión de 24 h en la mayoría de los casos.
 - **La suscripción anual** de Apple se renueva sola si dejas la tarjeta; si
