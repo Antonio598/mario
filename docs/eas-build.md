@@ -38,21 +38,27 @@ eas submit --platform all --profile production
 
 ## Reglas de plataforma que condicionan el producto
 
-### Nada de compras dentro de la app
+### Premium se vende con el sistema de la tienda
 
 Apple (guideline 3.1.1) y Google exigen su sistema de compra integrada —comisión del
-15-30 %— para contenido digital vendido dentro de la app.
+15-30 %— para contenido digital vendido dentro de la app. Por eso la suscripción Premium
+se compra **dentro** de la app con StoreKit y Google Play Billing, a través de RevenueCat
+(`src/features/premium/compras.ts`), y el precio que se muestra es el que devuelve la
+tienda. Nunca hay enlace a un pago externo.
 
-Por eso la app **nunca muestra un precio ni un botón de compra**. Lee `entitlements` para
-saber qué puede desbloquear, y cuando el usuario quiere adquirir algo abre
-`products.url_web` en el **navegador externo** con `expo-web-browser`.
+Consecuencia práctica: en la ficha **sí** hay que declarar compras integradas y añadir la
+suscripción a la versión antes de enviarla a revisión. Guía completa:
+[`compras-en-la-app.md`](compras-en-la-app.md).
 
-Consecuencia práctica: en la ficha de la tienda **no** debe declararse que la app contiene
-compras integradas, porque no las contiene.
+Sin las claves de RevenueCat en el build no hay botón de compra: la app dice «Incluido en
+Reset Alfa Premium. El acceso se gestiona desde tu cuenta en la web», sin precio ni enlace.
 
-> Un enlace a la web es aceptable; una llamada a la acción del tipo "más barato en nuestra
-> web" dentro de la app no lo es y provoca rechazo. La pantalla de bloqueo debe limitarse a
-> indicar que el contenido requiere acceso y ofrecer abrir la web.
+El **libro** y la **sesión diagnóstica** siguen abriéndose en el navegador externo con
+`expo-web-browser`: son un bien físico y un servicio presencial, que la norma 3.1.3(e)
+deja fuera del sistema de compra de la tienda.
+
+> Lo que provoca rechazo es una llamada a la acción del tipo «más barato en nuestra web»
+> dentro de la app, o enlazar a un pago externo para contenido digital.
 
 ### Sign in with Apple
 
@@ -78,7 +84,7 @@ Ambas tiendas exigen declarar qué datos se recogen. Hay que marcar la categorí
 **"Información sensible"** por los registros de recaída. Ocultarlo es motivo de retirada de
 la app.
 
-Enlazar la política de privacidad publicada en `https://modoguerrero.es/privacidad`.
+Enlazar la política de privacidad publicada en `https://app.modoguerrero.es/privacidad`.
 
 ---
 
