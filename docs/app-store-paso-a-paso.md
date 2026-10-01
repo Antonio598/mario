@@ -85,12 +85,35 @@ navegador para aprobarla y no pide contrasena en la terminal.
 ### 1.4 Cuenta de prueba para el revisor
 
 Apple entra en la app con un usuario real para revisarla. **Sin cuenta de
-prueba te rechazan al primer intento**, porque toda la app está detrás del
-inicio de sesión.
+prueba te rechazan al primer intento**, porque toda la app esta detras del
+inicio de sesion. Google pide lo mismo.
 
-Crea un usuario en la app (`app.modoguerrero.es`) con un correo tipo
-`revisor@modoguerrero.es` y una contraseña que puedas dar. Yo le pongo Premium
-a mano desde la base para que el revisor vea todo desbloqueado.
+**1. El correo.** Usa `israelmayalara+revisor@gmail.com`. El `+algo` es un
+alias de Gmail: llega a tu bandeja de siempre, asi que puedes confirmar el
+registro sin crear ningun buzon nuevo. Apple acepta cualquier direccion.
+
+**2. La contrasena.** Inventa una **solo para esto** y apuntala. Vas a
+entregarsela a Apple y queda guardada en App Store Connect: no puede ser la
+que usas en ningun otro sitio.
+
+**3. Crea la cuenta** en <https://app.modoguerrero.es>: haz el test de entrada
+y registrate con ese correo y esa contrasena. Te llegara un correo de
+confirmacion; pulsa el enlace.
+
+**4. Entra una vez en la app.** Es imprescindible: el perfil no existe hasta la
+primera entrada, y sin perfil el paso 5 falla. Aprovecha para hacer el
+check-in del dia.
+
+**5. Dale Premium.** Abre `supabase/premium-manual.sql`, cambia el correo de la
+linea marcada `>>> CAMBIA ESTO <<<` por el del alias, y pegalo en el SQL Editor
+de Supabase. Al final sale una fila de comprobacion con `premium = true`. La
+fila queda con origen `manual`, asi que ni Stripe ni la tienda la tocan, y no
+caduca.
+
+**6. No borres esa cuenta.** Apple la usa en cada actualizacion que envies.
+
+Cuando llegues al paso 3.5 (rellenar la ficha), ese correo y esa contrasena van
+en **Informacion de revision de la app -> Se requiere iniciar sesion**.
 
 ### 1.5 Capturas de pantalla
 

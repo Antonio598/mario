@@ -20,6 +20,12 @@ Pega cada fichero en el SQL Editor de Supabase, **en este orden**:
 
 Los once son idempotentes: puedes reejecutarlos sin duplicar nada.
 
+**Fuera de ese orden**, cuando haga falta:
+
+| Fichero | Para que |
+|---|---|
+| `premium-manual.sql` | Dar Premium a mano a una cuenta (la del revisor de Apple, o cortesia). Cambia el correo de la linea marcada y pegalo |
+
 **El SQL Editor envuelve cada ejecución en una transacción.** Si un fichero da
 un error en cualquier punto, deshace todo lo anterior y no queda nada. Por eso
 un fallo en la línea 900 deja la base exactamente como estaba.
