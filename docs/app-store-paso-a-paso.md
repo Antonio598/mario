@@ -69,9 +69,19 @@ siempre y es el que recibirá los correos de revisión.
 La app se compila en la nube de Expo (EAS Build) porque compilar para iPhone
 exige un Mac, y tú trabajas en Windows. Yo también.
 
-1. Crea una cuenta en <https://expo.dev/signup>.
-2. Pásame el **nombre de usuario** (no la contraseña). Yo enlazo el proyecto a
-   esa cuenta; el proyecto quedará a tu nombre.
+1. Crea una cuenta en <https://expo.dev/signup>. ✅ Hecha: **AntonioMaya**, ya
+   fijada en `apps/mobile/app.config.ts` (`owner`). El proyecto queda a tu
+   nombre y las credenciales de firma viven en tu cuenta.
+2. Enlaza el proyecto, en la carpeta `apps/mobile` y con tu contraseña (esto no
+   puedo hacerlo yo, pide iniciar sesión):
+
+   ```
+   npx eas login
+   npx eas init
+   ```
+
+   Te dirá «Created project @AntonioMaya/reset-alfa» y un **Project ID**
+   (un UUID). Pásamelo: va en la variable `EAS_PROJECT_ID` al compilar.
 
 El plan gratuito da ~30 builds al mes, de sobra.
 
@@ -116,8 +126,9 @@ Hecho: paridad de funciones, assets, `app.config.ts`, `eas.json`, compra de
 Premium en la app (RevenueCat), eliminación de cuenta. Quedan tres cosas que
 dependen de ti:
 
-1. **`eas init`** con tu cuenta de Expo (paso 1.3). Genera el `projectId`; se
-   pone en la variable `EAS_PROJECT_ID` al compilar.
+1. **El Project ID de EAS** (paso 1.3). La cuenta `AntonioMaya` ya está
+   fijada; falta que corras `npx eas init` y me pases el UUID, que va en
+   `EAS_PROJECT_ID` al compilar.
 2. **RevenueCat + producto de suscripción en App Store Connect**: guía
    [`compras-en-la-app.md`](compras-en-la-app.md), partes 1 y 2. Necesita el
    acuerdo de apps de pago firmado (datos bancarios y fiscales), que tarda

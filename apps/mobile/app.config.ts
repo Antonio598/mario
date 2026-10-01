@@ -21,6 +21,12 @@ import type { ExpoConfig } from 'expo/config';
 const config: ExpoConfig = {
   name: 'Reset Alfa',
   slug: 'reset-alfa',
+  /**
+   * Cuenta de Expo propietaria del proyecto. Con esto, `eas build` compila
+   * bajo la cuenta del propietario y las credenciales de firma de Apple y de
+   * Google viven en su cuenta, no en la de quien lanza el build.
+   */
+  owner: 'AntonioMaya',
   version: '1.0.0',
   icon: './assets/icon.png',
   orientation: 'portrait',
