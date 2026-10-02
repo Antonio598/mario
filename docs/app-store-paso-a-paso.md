@@ -124,19 +124,22 @@ formación, P.A.D.
 
 **Sin lenguaje sexual explícito en las capturas.** Es motivo de rechazo.
 
-### 1.6 Textos de la ficha
+### 1.6 Textos de la ficha — YA ESCRITOS
 
-Prepáralos en un documento; se pegan en App Store Connect (parte 3):
+Estan listos y medidos en [`ficha-app-store.md`](ficha-app-store.md): nombre,
+subtitulo, palabras clave, descripcion, novedades, notas para el revisor y las
+respuestas del cuestionario de privacidad. Se copian y se pegan.
 
-| Campo | Límite | Notas |
-|---|---|---|
-| Nombre | 30 caracteres | `Reset Alfa` |
-| Subtítulo | 30 | `Disciplina, enfoque, libertad` |
-| Descripción | 4 000 | Hábitos, autocontrol, constancia. **Sin afirmaciones de salud** (nada de testosterona, hormonas, «recuperación») |
-| Palabras clave | 100, separadas por comas | `nofap, disciplina, hábitos, autocontrol, racha, enfoque` |
-| URL de soporte | — | `https://modoguerrero.es/contacto` |
-| URL de privacidad | — | `https://app.modoguerrero.es/privacidad` |
-| Novedades | 4 000 | «Primera versión» |
+Dos cosas que ya estan resueltas ahi y conviene no tocar:
+
+- La **URL de soporte** es `https://app.modoguerrero.es/contacto`.
+  `modoguerrero.es/contacto` da **404**, y Apple comprueba ese enlace: un 404
+  es rechazo.
+- La descripcion acaba con el **bloque de la suscripcion** (precio, duracion,
+  renovacion automatica y los dos enlaces legales). No es relleno: lo exige la
+  norma 3.1.2 en la ficha, no solo en la app.
+
+Lo que falta son las **capturas** (1.5), que salen del build de TestFlight.
 
 ---
 
