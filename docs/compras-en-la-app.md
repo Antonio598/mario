@@ -203,23 +203,29 @@ Es una clave DISTINTA de la de compras integradas y se descarga como
 - **Entitlements → premium → Attach** → ese producto.
 - **Offerings → default → paquete Monthly → Attach** → ese producto.
 
-### 2.6 Probar sin pagar (sandbox)
+### 2.6 Probar sin pagar
 
-1. App Store Connect → **Usuarios y acceso → Sandbox → Testers → +**: crea un
-   Apple ID de prueba (un correo que no exista en Apple, p. ej.
-   `prueba1@modoguerrero.es`).
-2. En el iPhone: **Ajustes → App Store → Cuenta Sandbox** → inicia sesión con
-   ese usuario (solo aparece en iOS 12+ y tras instalar un build de
-   TestFlight o de desarrollo).
-3. Abre la app de TestFlight, ve a Perfil → **Ver Premium** → Suscribirme.
-   La hoja de pago de Apple dice «[Entorno: Sandbox]». No se cobra.
-4. Al volver, la app dice «Ya está» y en la web (misma cuenta) Premium sale
-   activo. En RevenueCat → **Customers** aparece el usuario con el
+**Desde TestFlight no hace falta cuenta de sandbox.** Las compras integradas de
+un build de TestFlight van siempre contra el entorno de pruebas de Apple y
+**son gratis**, usando el Apple ID normal del probador. Es el camino corto:
+
+1. Instala la app desde TestFlight en el iPhone.
+2. Perfil -> **Ver Premium** -> Suscribirme. La hoja de pago avisa de que es un
+   entorno de pruebas y no cobra.
+3. Al volver, la app dice "Ya esta", y en la web (misma cuenta) Premium sale
+   activo. En RevenueCat -> **Customers** aparece el usuario con el
    entitlement.
-5. En sandbox una suscripción mensual se renueva **cada 5 minutos** y caduca
-   tras 6 renovaciones: así ves en media hora todo el ciclo (renovación,
-   caducidad) sin esperar meses.
+4. Las renovaciones van aceleradas: una mensual se renueva cada pocos minutos y
+   caduca tras 6 renovaciones, asi que en media hora se ve el ciclo entero
+   -renovacion, cancelacion, caducidad- sin esperar meses.
 
+**La cuenta de sandbox hace falta solo para builds de desarrollo** (Xcode o
+`--profile development`), donde no hay TestFlight que ponga el entorno. Si
+llega el caso: App Store Connect -> **Usuarios y acceso -> Sandbox ->
+Probadores -> +**, con un correo que NO sea ya un Apple ID (un alias
+`+sandbox` de Gmail sirve), y en el iPhone **Ajustes -> App Store -> Cuenta de
+sandbox**, al final de la pantalla. Esa sesion de sandbox es una ranura aparte:
+no te saca de tu Apple ID normal.
 ### 2.7 En la ficha de la app
 
 Al enviar a revisión (guía principal, 3.5):
