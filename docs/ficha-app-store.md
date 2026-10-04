@@ -186,18 +186,49 @@ direcciones.
   declara que **no** es un producto sanitario regulado. Con la categoria
   **Estilo de vida** esa declaracion no aparece.
 
-## Privacidad de la app (App Privacy)
+## Privacidad de la app (App Privacy) — casilla por casilla
 
-Hay que declarar, todo vinculado al usuario y con finalidad "Funcionalidad de
-la app":
+En **App Privacy -> Recopilacion de datos**, marca estas ocho y NADA mas:
 
-- **Informacion de contacto** -> correo electronico
-- **Informacion confidencial** (*Sensitive Info*) -> si, por el detalle de las
-  caidas. **Ocultarlo es motivo de retirada.**
-- **Identificadores** -> ID de usuario
+| Seccion | Casilla | De donde sale |
+|---|---|---|
+| Informacion de contacto | Nombre | `profiles.nombre` |
+| Informacion de contacto | Direccion de correo electronico | La cuenta |
+| Datos confidenciales | **Informacion confidencial** | Los registros de recaida |
+| Contenido del usuario | Otro contenido de usuario | P.A.D, carta y respuestas de la bitacora |
+| Identificadores | ID de usuario | El id de Supabase |
+| Identificadores | ID del dispositivo | Lo recoge el SDK de RevenueCat |
+| Compras | Compras | El estado de la suscripcion |
+| Datos de uso | Interaccion del producto | RevenueCat registra cuando se abre la app |
 
-No marques publicidad ni seguimiento: la app nativa no tiene anuncios ni
-analitica.
+Para las ocho, las tres preguntas siguientes se responden igual:
+
+- Finalidad: **Funcionalidad de la app**, y ninguna mas.
+- Vinculado a la identidad del usuario: **Si**.
+- Usado para seguimiento (tracking): **NO**. Decir que si obliga a pedir el
+  permiso de seguimiento de Apple, que esta app no implementa: seria rechazo.
+
+### Lo que NO se marca
+
+**Salud** es la importante: marcarla mete la app en datos medicos, activa la
+declaracion de producto sanitario regulado y abre la puerta a que pidan
+documentacion clinica. La app dice expresamente que no es un tratamiento.
+
+Tampoco: Aptitud fisica, Informacion financiera (la de pago la gestiona Apple
+y el propio formulario dice que no hay que declararla), Ubicacion, Contactos,
+Fotos, Audio, Correos, Historial de navegacion o busqueda, Diagnostico,
+Alrededores, Cuerpo.
+
+### Dos criterios, por si se revisan en el futuro
+
+- **Informacion confidencial**: la lista de Apple menciona orientacion sexual,
+  no conducta sexual, asi que seria discutible. Se marca igual porque el RGPD
+  si considera los datos sobre la vida sexual de categoria especial, y
+  declarar de mas nunca provoca rechazo mientras que declarar de menos provoca
+  retiradas.
+- **Interaccion del producto**: la app no lleva analitica propia, pero el panel
+  de RevenueCat muestra "Last opened the app". Es interaccion y hay que
+  declararla aunque no sea codigo nuestro.
 
 ## Cifrado
 
