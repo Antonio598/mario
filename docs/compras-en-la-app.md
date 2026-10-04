@@ -57,12 +57,22 @@ sesión diagnóstica (servicio presencial). Apple lo permite (3.1.3(e)).
   ```
   Ponlas en `apps/mobile/eas.json`, en `build.production.env` y
   `build.preview.env`, junto a `EXPO_PUBLIC_SITE_URL`.
-- **Secret API keys → + New**: nombre `servidor`, permisos de lectura de
-  *customer information* y *delete customer*. Empieza por `sk_`. **Solo en
-  EasyPanel → Environment:**
+- **La clave secreta V1**, tambien llamada *Legacy*. **Solo en EasyPanel →
+  Environment:**
   ```
   REVENUECAT_SECRET_KEY=sk_...
   ```
+
+  ⚠️ **Tiene que ser la V1, no una V2.** El panel nuevo ofrece crear "Secret
+  API keys" y esas son V2: sirven para la API v2 y devuelven **401** en los
+  endpoints v1, que son los que usa `lib/tiendas/revenuecat.ts`
+  (`GET /v1/subscribers/{id}`). El sintoma es identico a no tener clave
+  -el pago se cobra y no concede acceso, sin ningun error visible en la app-,
+  asi que se tarda en encontrar. La V1 esta en **Project settings → API keys**,
+  a veces bajo "Legacy".
+
+  Si algun dia se migra a la API v2, hay que cambiar tambien el endpoint y el
+  formato de respuesta en ese fichero: no basta con poner la clave nueva.
 
 ### 1.4 Webhook
 
