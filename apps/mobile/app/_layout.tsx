@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
-import { Slot, useRouter, useSegments } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { faltaConfiguracion } from '../src/lib/supabase';
@@ -50,7 +50,34 @@ function Guardia() {
     );
   }
 
-  return <Slot />;
+  return (
+    <Stack
+      screenOptions={{
+        /**
+         * Sin cabecera por defecto: las pestanas traen la suya y las pantallas
+         * a pantalla completa (acceso, test de entrada, modales) estan
+         * disenadas sin ella.
+         *
+         * Las de detalle la activan abajo, y eso es lo que les da el boton de
+         * volver. Antes este layout usaba <Slot>, que no crea navegador: el
+         * detalle de una masterclass se abria sin cabecera y sin forma de
+         * salir, y el contenido empezaba pegado a la barra de estado.
+         */
+        headerShown: false,
+        headerStyle: { backgroundColor: colors.negro },
+        headerTintColor: colors.blanco,
+        headerTitleStyle: { fontWeight: '700' },
+        headerShadowVisible: false,
+        // Solo la flecha: el texto de al lado lo pone el sistema en su idioma.
+        headerBackButtonDisplayMode: 'minimal' as const,
+        // Evita el destello blanco entre pantallas sobre fondo negro.
+        contentStyle: { backgroundColor: colors.negro },
+      }}
+    >
+      <Stack.Screen name="curso/[slug]" options={{ headerShown: true, title: 'Formación' }} />
+      <Stack.Screen name="recaida/[id]" options={{ headerShown: true }} />
+    </Stack>
+  );
 }
 
 /**

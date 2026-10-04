@@ -183,17 +183,30 @@ export function Boton({
       accessibilityRole="button"
       style={({ pressed }) => [
         base,
-        { borderRadius: radius.md, flexDirection: 'row', gap: spacing.sm },
+        {
+          borderRadius: radius.md,
+          flexDirection: 'row',
+          gap: spacing.sm,
+          // Deja respirar al texto largo y permite que el boton crezca en alto.
+          paddingHorizontal: spacing.md,
+          paddingVertical: spacing.sm,
+        },
         pressed && { transform: [{ scale: 0.98 }] },
         deshabilitado && { opacity: 0.55 },
         style,
       ]}
     >
       {icono !== undefined && <Ionicons name={icono} size={16} color={color} />}
+      {/*
+        flexShrink y textAlign: una etiqueta larga -"Agendar llamada de
+        admision", en mayusculas y con espaciado- no cabe en el ancho de una
+        tarjeta. Sin esto el texto se sale del boton en vez de partirse en dos
+        lineas, y el boton se ve descolocado.
+      */}
       <Text
         style={[
           theme.textoBoton,
-          { color },
+          { color, flexShrink: 1, textAlign: 'center' },
           variante === 'fantasma' && { textTransform: 'none', letterSpacing: 0, fontWeight: '600' },
         ]}
       >
