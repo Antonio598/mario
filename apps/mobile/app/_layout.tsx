@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { Slot, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { faltaConfiguracion } from '../src/lib/supabase';
 import { SessionProvider, useSession } from '../src/features/auth/SessionProvider';
 import { sincronizarIdentidadCompras } from '../src/features/premium/compras';
-import { colors } from '../src/theme';
+import { colors, fontSize, spacing } from '../src/theme';
 
 /**
  * Portero de sesion.
@@ -52,7 +53,51 @@ function Guardia() {
   return <Slot />;
 }
 
+/**
+ * Build sin configurar: se dice QUE falta, en la pantalla.
+ *
+ * Un build al que le faltan las variables no puede funcionar, pero tampoco
+ * debe cerrarse solo: una app que se cierra al abrir no da ninguna pista y es
+ * rechazo seguro en la revision. Esto solo puede verlo quien compila.
+ */
+function SinConfigurar({ variables }: { variables: readonly string[] }) {
+  return (
+    <ScrollView
+      style={{ flex: 1, backgroundColor: colors.negro }}
+      contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: spacing.lg, gap: spacing.md }}
+    >
+      <Text style={{ color: colors.rojo, fontSize: fontSize.sm, fontWeight: '700', letterSpacing: 1.5, textTransform: 'uppercase' }}>
+        Build sin configurar
+      </Text>
+      <Text style={{ color: colors.blanco, fontSize: fontSize.xl, fontWeight: '700' }}>
+        Faltan variables de entorno
+      </Text>
+      <Text style={{ color: colors.grisTexto, fontSize: fontSize.sm }}>
+        Este build se compilo sin estos valores, asi que no puede conectarse:
+      </Text>
+      {variables.map((v) => (
+        <Text key={v} style={{ color: colors.rojoClaro, fontSize: fontSize.sm, fontWeight: '600' }}>
+          · {v}
+        </Text>
+      ))}
+      <Text style={{ color: colors.grisTenue, fontSize: fontSize.xs }}>
+        Se definen en apps/mobile/eas.json, en el perfil con el que se compilo, y hace falta
+        volver a compilar. Si estas viendo esto como usuario, escribenos: no es culpa tuya.
+      </Text>
+    </ScrollView>
+  );
+}
+
 export default function RootLayout() {
+  if (faltaConfiguracion.length > 0) {
+    return (
+      <SafeAreaProvider>
+        <StatusBar style="light" />
+        <SinConfigurar variables={faltaConfiguracion} />
+      </SafeAreaProvider>
+    );
+  }
+
   return (
     <SafeAreaProvider>
       <SessionProvider>

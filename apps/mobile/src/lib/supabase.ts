@@ -58,14 +58,37 @@ const secureStorage: SupportedStorage = {
   },
 };
 
-function leerExtra(clave: 'supabaseUrl' | 'supabaseAnonKey' | 'siteUrl'): string {
+type ClaveExtra = 'supabaseUrl' | 'supabaseAnonKey' | 'siteUrl';
+
+const VARIABLE_DE: Record<ClaveExtra, string> = {
+  supabaseUrl: 'EXPO_PUBLIC_SUPABASE_URL',
+  supabaseAnonKey: 'EXPO_PUBLIC_SUPABASE_ANON_KEY',
+  siteUrl: 'EXPO_PUBLIC_SITE_URL',
+};
+
+const ausentes: string[] = [];
+
+/**
+ * Lee un valor de la configuracion del build.
+ *
+ * NO LANZA. Antes si lo hacia, y como este modulo se importa al arrancar, el
+ * resultado era que la app se cerraba sola sin decir nada: pantalla negra y
+ * fuera. Eso ya paso una vez con un build de TestFlight compilado sin las
+ * variables de Supabase, y es ademas motivo de rechazo en la revision.
+ *
+ * Ahora anota lo que falta y devuelve un valor inerte. El layout raiz lee
+ * `faltaConfiguracion` y ensena que variable falta, que es lo que permite
+ * arreglarlo en un minuto en vez de adivinar.
+ */
+function leerExtra(clave: ClaveExtra): string {
   const valor = Constants.expoConfig?.extra?.[clave];
-  if (typeof valor !== 'string' || valor === '') {
-    throw new Error(
-      `Falta ${clave} en la configuracion. Define las variables EXPO_PUBLIC_* antes de compilar.`,
-    );
+  if (typeof valor !== 'string' || valor.trim() === '') {
+    ausentes.push(VARIABLE_DE[clave]);
+    // Dominio reservado por la IETF (RFC 2606): nunca resuelve, asi que una
+    // peticion accidental falla limpio en lugar de salir a un host ajeno.
+    return clave === 'supabaseAnonKey' ? 'sin-configurar' : 'https://sin-configurar.invalid';
   }
-  return valor;
+  return valor.trim();
 }
 
 export const siteUrl = leerExtra('siteUrl');
@@ -108,6 +131,12 @@ export const supabase = createClient<Database, EsquemaSupabase>(
  * packages/shared/src/dominio/acceso-social.ts. Que un proveedor este aqui no
  * lo configura; solo declara que YA lo esta.
  */
+/**
+ * Variables que faltaban en el build. Vacio = configuracion completa.
+ * El layout raiz lo comprueba antes de montar la app.
+ */
+export const faltaConfiguracion: readonly string[] = ausentes;
+
 export const proveedoresLoginSocial = proveedoresSociales(
   typeof Constants.expoConfig?.extra?.['loginSocial'] === 'string'
     ? (Constants.expoConfig.extra['loginSocial'] as string)
