@@ -140,11 +140,51 @@ consultoria presencial, ambos fuera del ambito de las compras integradas
 La cuenta se puede eliminar por completo desde Perfil -> Eliminar mi cuenta.
 ```
 
-## Clasificacion por edad
+## Clasificacion por edad (obligatoria antes de enviar)
 
-Responde el cuestionario de forma que el resultado sea **17+**. En "Temas
-sexuales o desnudos" marca **poco frecuentes / moderados**. Marcarla apta para
-todos los publicos es motivo de rechazo y de retirada posterior.
+Apple retiro las escalas 12+ y 17+: ahora son **4+, 9+, 13+, 16+ y 18+**. No se
+elige el resultado, se contesta un cuestionario y Apple lo calcula. Respondiendo
+con honestidad, esta app sale en **16+ o 18+**, que es donde debe estar.
+
+| Bloque | Respuesta |
+|---|---|
+| In-App Controls (controles parentales, verificacion de edad) | Ninguno |
+| Capabilities (web sin restriccion, contenido de usuarios, redes, mensajeria, publicidad) | Ninguno en todo |
+| Mature Themes (lenguaje, terror, alcohol/tabaco/drogas) | Ninguno en todo |
+| Medical or Wellness -> **Medical or Treatment Information** | **Ninguno** |
+| Medical or Wellness -> Health or Wellness Topics | Poco frecuente / leve |
+| Sexuality or Nudity -> **Mature or Suggestive Themes** | **Poco frecuente / leve** |
+| Sexuality or Nudity -> Sexual Content or Nudity / Graphic | Ninguno |
+| Violence (todo) | Ninguno |
+| Chance-Based Activities (apuestas, concursos, cajas) | Ninguno en todo |
+
+Las dos filas en negrita son las que importan:
+
+- **Mature or Suggestive Themes: poco frecuente.** Es la respuesta honesta -la
+  app trata sobre el control del impulso sexual- y es la que sube la
+  clasificacion. Declararla apta para todos los publicos es motivo de rechazo y
+  de retirada posterior.
+- **Medical or Treatment Information: ninguno.** La app no da informacion
+  medica ni de tratamiento, y lo dice expresamente en su propio texto. Marcar
+  "frecuente" aqui obliga ademas a presentar la declaracion de producto
+  sanitario regulado.
+
+Por que "Capabilities" va todo a ninguno: lo que el usuario escribe en la
+bitacora o en la carta es privado y nunca lo ve nadie mas, asi que no es
+contenido generado por usuarios en el sentido de Apple; y la app abre enlaces
+concretos en el navegador del sistema, no tiene navegador propio con barra de
+direcciones.
+
+### Las otras casillas de esa pantalla
+
+- **App Encryption Documentation**: no subas nada. La app solo usa HTTPS
+  estandar, que esta exento, y ya va declarado en el binario.
+- **Digital Services Act**: ya figura como comerciante. Hecho.
+- **Labels and Markings** y **Vietnam Game License**: no aplican.
+- **Regulated Medical Devices**: solo hay que declararlo si la categoria es
+  Medicina o Salud y forma fisica. Si eliges **Salud y forma fisica**, entra y
+  declara que **no** es un producto sanitario regulado. Con la categoria
+  **Estilo de vida** esa declaracion no aparece.
 
 ## Privacidad de la app (App Privacy)
 

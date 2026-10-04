@@ -234,8 +234,9 @@ App Store Connect → tu app → **1.0 Preparar para el envío**:
 3. **Categoría**: Salud y forma física; secundaria: Estilo de vida.
 4. **Clasificación por edad**: responde el cuestionario. Marca **«Temas
    sexuales o desnudos: poco frecuentes/moderados»** y que el resultado sea
-   **17+**. Marcarla apta para todos es motivo de rechazo y de retirada
-   posterior.
+   **16+ o 18+** (Apple retiro la escala 17+). El detalle de cada respuesta
+   esta en [`ficha-app-store.md`](ficha-app-store.md). Marcarla apta para todos
+   es motivo de rechazo y de retirada posterior.
 5. **Información de revisión de la app**:
    - **Cuenta de demostración**: el correo y contraseña de 1.4. ✅ Obligatorio.
    - **Notas**: pega esto:

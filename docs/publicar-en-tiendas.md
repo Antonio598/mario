@@ -88,7 +88,7 @@ npx eas build --platform all --profile production
 | Nombre | Reset Alfa |
 | Subtítulo | Seguimiento de hábitos y disciplina |
 | Categoría | Salud y forma física, o Estilo de vida |
-| **Clasificación por edad** | **17+ / 18+** |
+| **Clasificación por edad** | **16+ / 18+** (Apple retiró la escala 17+) |
 | Capturas | iPhone 6.7" y 6.5"; Android teléfono y tablet |
 | Gráfico destacado (solo Play) | 1024x500 |
 | Política de privacidad | https://app.modoguerrero.es/privacidad |

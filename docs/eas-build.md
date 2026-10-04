@@ -71,7 +71,7 @@ correo cuando no hay nombre; el onboarding debe pedirlo.
 
 ### Ficha de la tienda
 
-- Clasificación por edad **17+ / 18+**.
+- Clasificación por edad **16+ / 18+** (Apple retiró la escala 17+).
 - Describir la app como **herramienta de seguimiento de hábitos y disciplina**.
 - **Sin** lenguaje sexual explícito y **sin** afirmaciones de salud (nada de testosterona,
   efectos hormonales o beneficios fisiológicos). Ambas cosas provocan rechazo en la
