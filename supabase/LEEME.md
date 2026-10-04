@@ -25,6 +25,7 @@ Los once son idempotentes: puedes reejecutarlos sin duplicar nada.
 | Fichero | Para que |
 |---|---|
 | `premium-manual.sql` | Dar Premium a mano a una cuenta (la del revisor de Apple, o cortesia). Cambia el correo de la linea marcada y pegalo |
+| `textos-revision.sql` | Quita de los cursos las afirmaciones de salud que rechazan las tiendas ("revertir los danos", "adiccion", "disfunciones sexuales", "probado"). Pegalo antes de enviar a revision |
 
 **El SQL Editor envuelve cada ejecución en una transacción.** Si un fichero da
 un error en cualquier punto, deshace todo lo anterior y no queda nada. Por eso
