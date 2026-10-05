@@ -270,6 +270,13 @@ App Store Connect → tu app → **1.0 Preparar para el envío**:
 
 ### 3.6 Enviar a revisión
 
+**Si rechazan con «Directriz 2.1 - Information Needed», no es un fallo.** Es el
+cuestionario que Apple manda a las cuentas sin historial de revisiones: piden
+un vídeo y siete respuestas sobre la app. Está todo preparado en
+[`respuesta-revision-apple.md`](respuesta-revision-apple.md), con el guion del
+vídeo y el texto listo para pegar.
+
+
 Botón **Añadir para revisión** → **Enviar**.
 
 - Apple responde en **24-48 h** normalmente.
