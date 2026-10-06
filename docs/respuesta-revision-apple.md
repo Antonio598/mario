@@ -5,10 +5,15 @@ manda a las cuentas de desarrollador sin historial: quieren entender la app
 antes de aprobarla. Se contesta, se reenvía, y suele resolverse en el mismo
 ciclo de revisión.
 
-**Dónde va.** Las respuestas se pegan en **dos sitios**, como pide el mensaje:
+**Dónde va.** El mismo texto se pega en **dos sitios**, como pide el mensaje:
 
 1. En **Resolution Center** (responder al mensaje del rechazo).
 2. En **App Review Information → Notes** de la versión, para los envíos futuros.
+
+**Los dos campos tienen un límite de 4.000 caracteres**, así que se usa la
+versión corta (Parte 3) en ambos. Con la línea del enlace al vídeo suma 3.716:
+quedan 284 de margen. La versión larga de la Parte 2 no cabe; se conserva solo
+como referencia de lo que se está afirmando.
 
 El texto está en inglés a propósito: es el idioma de trabajo de App Review.
 Abajo tienes, en español, qué dice cada parte.
@@ -55,7 +60,7 @@ cuenta como no entregado.
 
 ---
 
-## Parte 2 — El texto, listo para pegar
+## Parte 2 — Versión larga (solo referencia, NO cabe en los campos)
 
 ```
 Thank you for your review. Below is the information requested.
@@ -174,11 +179,17 @@ Policy.
 
 ---
 
-## Parte 3 — Versión corta para el campo Notes (3.606 / 4.000)
+## Parte 3 — ESTE es el texto que se pega (3.606 / 4.000)
 
-El texto de arriba son 5.151 caracteres y **el campo Notes solo admite 4.000**.
-Para ahí usa esta versión recortada; dice lo mismo, sin las frases de cortesía.
-En el **Reply** de Resolution Center pega el largo, que no tiene ese límite.
+Va tal cual en **Resolution Center** y en **App Review Information → Notes**.
+Antes del texto, añade estas dos líneas con el enlace a tu vídeo:
+
+```
+Screen recording of the app running on a physical iPhone, starting from launch:
+https://youtu.be/TU-ENLACE
+```
+
+Y a continuación:
 
 ```
 Reset Alfa is a habit-tracking and self-discipline app for adult men who want to stop watching pornography and build daily consistency. It provides a streak counter, a 30-second daily check-in, a plan decided in advance for high-risk moments (P.A.D), and a structured 9-question log filled in after a relapse so patterns become visible data. It is a tracking tool: it is not a medical or therapeutic product, does not diagnose or treat any condition, and states this inside the app.
