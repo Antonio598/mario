@@ -174,6 +174,49 @@ Policy.
 
 ---
 
+## Parte 3 — Versión corta para el campo Notes (3.606 / 4.000)
+
+El texto de arriba son 5.151 caracteres y **el campo Notes solo admite 4.000**.
+Para ahí usa esta versión recortada; dice lo mismo, sin las frases de cortesía.
+En el **Reply** de Resolution Center pega el largo, que no tiene ese límite.
+
+```
+Reset Alfa is a habit-tracking and self-discipline app for adult men who want to stop watching pornography and build daily consistency. It provides a streak counter, a 30-second daily check-in, a plan decided in advance for high-risk moments (P.A.D), and a structured 9-question log filled in after a relapse so patterns become visible data. It is a tracking tool: it is not a medical or therapeutic product, does not diagnose or treat any condition, and states this inside the app.
+
+DEMO ACCOUNT (Premium already granted manually, so every feature can be reviewed without purchasing):
+User name: israelmayalara+revisor@gmail.com
+Password: RevisorApple2026!
+There is only one account type. No sample files or extra setup needed.
+
+NAVIGATION
+Home: streak counter, daily check-in, P.A.D, anti-relapse letter.
+Formacion: video masterclasses and PDF protocols.
+Tienda: books and a coaching program; these open in the external browser because they are physical goods and an in-person service.
+Calendario: monthly history, achievements, relapse log.
+Perfil: subscription status, consent, data export, sign out, account deletion.
+
+IN-APP PURCHASE
+One auto-renewable subscription, "Reset Alfa Premium", 9.99 USD/month, renewing monthly until cancelled. It unlocks the complete relapse log (9 questions), the P.A.D, the anti-relapse letter, the 90/180/365-day medals and the streak counter beyond 30 days. The free version keeps the streak up to 30 days, the daily check-in, basic relapse recording and all masterclasses.
+To reach it: Perfil (fifth tab) -> "Ver Premium" -> "Suscribirme por 9,99 US$ al mes". Tapping any locked feature opens the same screen. That screen shows the title, the monthly duration, the price returned by the App Store, the auto-renewal terms, a "Restaurar compras" button and links to the Terms of Use (Apple standard EULA) and our Privacy Policy.
+
+ACCOUNT DELETION
+Perfil -> "Eliminar mi cuenta", with two confirmations. It permanently deletes the user's data and the account itself.
+
+USER-GENERATED CONTENT
+The app stores text written by the user: the P.A.D, the anti-relapse letter and the relapse log answers. This content is strictly private to the account that created it and is never shown to other users. There is no social feed, no comments, no messaging and no public profiles, so no content can be reported or blocked and no moderation mechanism is applicable. The relapse log may contain sensitive information and is stored only with explicit opt-in consent, which can be withdrawn at any time in Perfil; without it, only the date is recorded.
+
+EXTERNAL SERVICES
+Apple In-App Purchase (StoreKit 2) is the only payment method in the app. RevenueCat handles subscription state and receipt validation on top of StoreKit; it does not process payments. Supabase (self-hosted on our own server) provides authentication and database. Resend delivers transactional email, used only to forward the user's own relapse log to our support team and only with the consent described above. The app uses no AI service, no advertising network, no analytics SDK and no third-party data provider. Our website offers the same subscription through Stripe; the iOS app does not use Stripe, contains no link to it, and never directs users outside the app to purchase digital content.
+
+REGIONAL DIFFERENCES
+None. Same features and content in every region, Spanish only, same subscription worldwide.
+
+REGULATED INDUSTRY / THIRD-PARTY MATERIAL
+Not a regulated industry and not a medical device. All educational content (masterclasses, PDF protocols, books) is original material owned by the developer.
+```
+
+---
+
 ## Qué dice cada parte, en español
 
 | Punto | Resumen de lo que responde |
