@@ -140,6 +140,34 @@ consultoria presencial, ambos fuera del ambito de las compras integradas
 La cuenta se puede eliminar por completo desde Perfil -> Eliminar mi cuenta.
 ```
 
+## Capturas: la regla 2.3.8, que no es la que parece
+
+**Las capturas tienen que ser aptas para 4+, aunque la app este clasificada
+18+.** Apple lo dice expresamente: "Even when purchasing is restricted by the
+app's rating, this content must meet the requirements for a 4+ rating". Los
+metadatos publicos -icono, capturas, subtitulo, descripcion- los ve cualquiera
+navegando por la tienda, sin haber descargado nada.
+
+Esto costo un rechazo (2.3.8, 7 oct 2026). Las dos capturas que lo provocaron:
+
+| Pantalla | Que se leia |
+|---|---|
+| Inicio | "Sin porno", debajo del contador |
+| Tienda | "ENERGIA SEXUAL MASCULINA", "retencion seminal", "Transmutacion Sexual" |
+
+**Palabras que no pueden aparecer en una captura**: porno, pornografia, sexual,
+sexo, seminal, masturbacion. Y por prudencia tampoco NOFAP, que significa
+literalmente lo que significa.
+
+Las tres que si valen y estan en `Capturas/app-store/`: Calendario con logros,
+P.A.D, y la pantalla de planes. La descripcion ya esta escrita sin ninguna de
+esas palabras; las palabras clave si pueden llevar "nofap" porque no se
+muestran al publico.
+
+La pantalla de Inicio es la que mejor explica la app y seria la mejor primera
+captura. Para poder usarla hay que cambiar en el codigo el subtitulo del
+contador ("Sin porno"), y eso exige un build nuevo.
+
 ## Clasificacion por edad (obligatoria antes de enviar)
 
 Apple retiro las escalas 12+ y 17+: ahora son **4+, 9+, 13+, 16+ y 18+**. No se
@@ -153,17 +181,18 @@ con honestidad, esta app sale en **16+ o 18+**, que es donde debe estar.
 | Mature Themes (lenguaje, terror, alcohol/tabaco/drogas) | Ninguno en todo |
 | Medical or Wellness -> **Medical or Treatment Information** | **Ninguno** |
 | Medical or Wellness -> Health or Wellness Topics | Poco frecuente / leve |
-| Sexuality or Nudity -> **Mature or Suggestive Themes** | **Poco frecuente / leve** |
+| Sexuality or Nudity -> **Mature or Suggestive Themes** | **Frecuente / intenso** (*Frequent/Intense*) |
 | Sexuality or Nudity -> Sexual Content or Nudity / Graphic | Ninguno |
 | Violence (todo) | Ninguno |
 | Chance-Based Activities (apuestas, concursos, cajas) | Ninguno en todo |
 
 Las dos filas en negrita son las que importan:
 
-- **Mature or Suggestive Themes: poco frecuente.** Es la respuesta honesta -la
-  app trata sobre el control del impulso sexual- y es la que sube la
-  clasificacion. Declararla apta para todos los publicos es motivo de rechazo y
-  de retirada posterior.
+- **Mature or Suggestive Themes: FRECUENTE.** No "poco frecuente": Apple
+  rechazo la app por esto (2.3.6, 7 oct 2026) y pidio expresamente "Frequent".
+  El criterio no es cuantas pantallas lo mencionan, sino que el tema central de
+  la app ES ese; cuando vertebra el producto entero, es frecuente. Da 18+, que
+  es donde debe estar.
 - **Medical or Treatment Information: ninguno.** La app no da informacion
   medica ni de tratamiento, y lo dice expresamente en su propio texto. Marcar
   "frecuente" aqui obliga ademas a presentar la declaracion de producto
