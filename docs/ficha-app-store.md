@@ -159,8 +159,20 @@ Esto costo un rechazo (2.3.8, 7 oct 2026). Las dos capturas que lo provocaron:
 sexo, seminal, masturbacion. Y por prudencia tampoco NOFAP, que significa
 literalmente lo que significa.
 
-Las tres que si valen y estan en `Capturas/app-store/`: Calendario con logros,
-P.A.D, y la pantalla de planes. La descripcion ya esta escrita sin ninguna de
+**Tampoco puede aparecer el PRECIO** (norma 2.3.7, segundo rechazo por lo
+mismo, 14 oct 2026). Ni el de la app ni el de la suscripcion. Eso descarta la
+pantalla de planes y el paywall, que son justo las que mas tientan por lo bien
+que explican el producto. El precio va en la descripcion, no en una imagen.
+
+**Y las capturas viejas no se borran solas.** App Store Connect las guarda por
+tamano de pantalla, en huecos independientes: subir al hueco de 6,1" no toca lo
+que haya en el de 6,5", y la revision las mira todas. Al cambiarlas hay que
+entrar en **View All Sizes in Media Manager** y vaciar todos los tamanos, uno
+por uno. Esto provoco el segundo 2.3.8: las originales seguian vivas en otro
+hueco.
+
+Las dos que si valen, en `Capturas/app-store/`: Calendario con logros y P.A.D.
+Dos bastan: Apple exige una como minimo. La descripcion ya esta escrita sin ninguna de
 esas palabras; las palabras clave si pueden llevar "nofap" porque no se
 muestran al publico.
 
